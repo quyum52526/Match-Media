@@ -1,0 +1,135 @@
+{
+  "Brand": {
+    "name": "MatchMedia",
+    "tagline": "Privacy-first, nationwide matrimony"
+  },
+  "Nav": {
+    "home": "Home",
+    "browse": "Browse",
+    "requests": "Requests",
+    "interests": "Interests"
+  },
+  "Home": {
+    "title": "MatchMedia",
+    "subtitle": "Privacy-first, nationwide matrimonial platform",
+    "viewSample": "View sample Profile"
+  },
+  "Browse": {
+    "title": "Browse profiles",
+    "subtitle": "Photos stay blurred until you send a Request",
+    "empty": "No profiles found"
+  },
+  "Actions": {
+    "request": "Request",
+    "accept": "Accept",
+    "decline": "Decline",
+    "profile": "Profile",
+    "interest": "Express Interest",
+    "unlock": "Unlock"
+  },
+  "Profile": {
+    "nameHidden": "Name hidden",
+    "verified": "Verified",
+    "vip": "Premium Verified",
+    "ageLine": "<n>{age}</n> yrs · {gender} · {upazila}, {district}",
+    "mediaPartner": "Media: {name}",
+    "keyFacts": "Key information",
+    "viewFullDetails": "View Full Details",
+    "details": {
+      "title": "Full Details",
+      "height": "Height",
+      "weight": "Weight",
+      "children": "Children",
+      "family": "Family details"
+    },
+    "facts": {
+      "address": "Address",
+      "profession": "Profession",
+      "education": "Education",
+      "maritalStatus": "Marital status"
+    },
+    "about": "About",
+    "completion": "Profile completion",
+    "interest": {
+      "express": "Express Interest",
+      "sent": "Interest sent",
+      "accepted": "Interest accepted",
+      "declined": "Interest declined"
+    },
+    "photo": {
+      "blurredNotice": "Photo is blurred to protect privacy",
+      "request": "Send Photo Request",
+      "pending": "Photo Request sent",
+      "waiting": "Pending",
+      "denied": "Request not accepted",
+      "revoked": "Photo access was revoked",
+      "requestAgain": "Send Request again",
+      "granted": "You have photo access",
+      "alt": "{name}'s photo"
+    },
+    "contact": {
+      "title": "Contact information",
+      "mobile": "Mobile",
+      "email": "Email",
+      "upgradePrompt": "Upgrade to Pro to view contact info",
+      "upgrade": "Upgrade to Pro",
+      "eligibilityNote": "Contact unlocks after your Interest is accepted"
+    },
+    "card": {
+      "request": "Request",
+      "requested": "Requested",
+      "viewProfile": "View Profile",
+      "ageLocation": "<n>{age}</n> · {upazila}, {district}"
+    }
+  },
+  "Requests": {
+    "title": "Photo Requests",
+    "tabs": {
+      "received": "Received Requests",
+      "sent": "Sent Requests"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "denied": "Denied"
+    },
+    "actions": {
+      "approve": "Approve",
+      "deny": "Deny"
+    },
+    "meta": {
+      "requestedOn": "Requested {date}"
+    },
+    "empty": {
+      "received": "No requests received",
+      "sent": "No requests sent"
+    }
+  },
+  "Interests": {
+    "title": "Received Interests",
+    "empty": "No interests yet",
+    "status": {
+      "accepted": "Accepted",
+      "declined": "Declined"
+    },
+    "actions": {
+      "accept": "Accept",
+      "decline": "Decline"
+    },
+    "meta": {
+      "receivedOn": "Received {date}"
+    }
+  },
+  "Auth": {
+    "title": "Log in",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Log in",
+    "error": "Invalid email or password",
+    "login": "Log in",
+    "logout": "Log out"
+  },
+  "LocaleSwitcher": {
+    "label": "Language"
+  }
+}

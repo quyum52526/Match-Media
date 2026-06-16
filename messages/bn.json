@@ -1,0 +1,135 @@
+{
+  "Brand": {
+    "name": "MatchMedia",
+    "tagline": "Privacy-first, nationwide matrimony"
+  },
+  "Nav": {
+    "home": "Home",
+    "browse": "Browse",
+    "requests": "Requests",
+    "interests": "Interests"
+  },
+  "Home": {
+    "title": "MatchMedia",
+    "subtitle": "Privacy-first matrimonial platform — সারাদেশজুড়ে বিশ্বস্ত matchmaking",
+    "viewSample": "Sample Profile দেখুন"
+  },
+  "Browse": {
+    "title": "Profile Browse করুন",
+    "subtitle": "Request পাঠানোর আগ পর্যন্ত Photo blurred থাকবে",
+    "empty": "কোনো Profile পাওয়া যায়নি"
+  },
+  "Actions": {
+    "request": "Request",
+    "accept": "Accept",
+    "decline": "Decline",
+    "profile": "Profile",
+    "interest": "Interest জানান",
+    "unlock": "Unlock"
+  },
+  "Profile": {
+    "nameHidden": "নাম গোপন",
+    "verified": "Verified",
+    "vip": "Premium Verified",
+    "ageLine": "<n>{age}</n> বছর · {gender} · {upazila}, {district}",
+    "mediaPartner": "Media: {name}",
+    "keyFacts": "মৌলিক তথ্য",
+    "viewFullDetails": "Full Details দেখুন",
+    "details": {
+      "title": "Full Details",
+      "height": "Height",
+      "weight": "Weight",
+      "children": "Children",
+      "family": "Family details"
+    },
+    "facts": {
+      "address": "ঠিকানা",
+      "profession": "Profession",
+      "education": "Education",
+      "maritalStatus": "বৈবাহিক অবস্থা"
+    },
+    "about": "নিজের সম্পর্কে",
+    "completion": "Profile সম্পূর্ণতা",
+    "interest": {
+      "express": "Interest জানান",
+      "sent": "Interest পাঠানো হয়েছে",
+      "accepted": "Interest গৃহীত হয়েছে",
+      "declined": "Interest গ্রহণ করা হয়নি"
+    },
+    "photo": {
+      "blurredNotice": "Privacy রক্ষায় Photo ঝাপসা রাখা হয়েছে",
+      "request": "Photo Request পাঠান",
+      "pending": "Photo Request পাঠানো হয়েছে",
+      "waiting": "Pending",
+      "denied": "Request গ্রহণ করা হয়নি",
+      "revoked": "Photo দেখার অনুমতি প্রত্যাহার করা হয়েছে",
+      "requestAgain": "আবার Request পাঠান",
+      "granted": "Photo access পেয়েছেন",
+      "alt": "{name} এর Photo"
+    },
+    "contact": {
+      "title": "Contact তথ্য",
+      "mobile": "Mobile",
+      "email": "Email",
+      "upgradePrompt": "Contact info দেখতে Pro Upgrade করুন",
+      "upgrade": "Upgrade to Pro",
+      "eligibilityNote": "Interest Accepted হলে Contact তথ্য দেখা যাবে"
+    },
+    "card": {
+      "request": "Request",
+      "requested": "Requested",
+      "viewProfile": "Profile দেখুন",
+      "ageLocation": "<n>{age}</n> · {upazila}, {district}"
+    }
+  },
+  "Requests": {
+    "title": "Photo Requests",
+    "tabs": {
+      "received": "Received Requests",
+      "sent": "Sent Requests"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "denied": "Denied"
+    },
+    "actions": {
+      "approve": "Approve",
+      "deny": "Deny"
+    },
+    "meta": {
+      "requestedOn": "{date} এ Request"
+    },
+    "empty": {
+      "received": "কোনো Request আসেনি",
+      "sent": "কোনো Request পাঠানো হয়নি"
+    }
+  },
+  "Interests": {
+    "title": "Received Interests",
+    "empty": "এখনো কোনো Interest আসেনি",
+    "status": {
+      "accepted": "Accepted",
+      "declined": "Declined"
+    },
+    "actions": {
+      "accept": "Accept",
+      "decline": "Decline"
+    },
+    "meta": {
+      "receivedOn": "{date} এ Received"
+    }
+  },
+  "Auth": {
+    "title": "Login করুন",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Login",
+    "error": "Email বা Password ভুল",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "LocaleSwitcher": {
+    "label": "ভাষা"
+  }
+}

@@ -1,0 +1,231 @@
+// matchmedia.com.bd — Prisma schema (FOUNDATION ONLY)
+// Privacy-first nationwide Bangladeshi matrimonial platform.
+// Core funnel: browse (blurred photos) -> photo-access request -> interest
+//              -> accept -> contact-reveal (paywall).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum Role {
+  GENERAL
+  GUARDIAN
+  MEDIA
+  AGENT
+  ADMIN
+}
+
+enum ImagePrivacy {
+  BLURRED
+  PUBLIC
+}
+
+enum PhotoAccessStatus {
+  PENDING
+  APPROVED
+  DENIED
+  REVOKED
+}
+
+enum InterestStatus {
+  SENT
+  ACCEPTED
+  DECLINED
+}
+
+enum ServiceStatus {
+  PENDING
+  IN_PROGRESS
+  VERIFIED
+}
+
+// ---------------------------------------------------------------------------
+// Core identity
+// ---------------------------------------------------------------------------
+
+model User {
+  id               String   @id @default(cuid())
+  role             Role     @default(GENERAL)
+  email            String   @unique
+  passwordHash     String
+  mobile           String?  @unique
+  isMobileVerified Boolean  @default(false)
+  // Pro (paid) membership — drives the VIP badge and contact-reveal gate.
+  isPro            Boolean  @default(false)
+  createdAt        DateTime @default(now())
+
+  // 1:1 — the user's own profile
+  profile Profile?
+
+  // Profiles a MEDIA user has referred onto the platform
+  referredProfiles Profile[] @relation("MediaReferrals")
+
+  // Photo-access requests
+  photoRequestsMade     PhotoAccessRequest[] @relation("PhotoRequestsMade")
+  photoRequestsReceived PhotoAccessRequest[] @relation("PhotoRequestsReceived")
+
+  // Interests
+  interestsSent     Interest[] @relation("InterestsSent")
+  interestsReceived Interest[] @relation("InterestsReceived")
+
+  // Guardian-managed wards
+  wards WardDetails[] @relation("GuardianWards")
+
+  // Agent service requests
+  agentServiceRequests     ServiceRequest[] @relation("AgentServices")
+  requestedServiceRequests ServiceRequest[] @relation("RequesterServices")
+
+  // Profile view activity (as the viewer)
+  profileViews ProfileViewLog[] @relation("ViewsMade")
+}
+
+model Profile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  fullName      String?
+  gender        String
+  dateOfBirth   DateTime
+  // Profile-detail fields are nullable so completion can grow over time
+  // (see completionScore, which defaults to 10 for a fresh profile).
+  district      String?
+  upazila       String?
+  profession    String?
+  education     String?
+  maritalStatus String?
+  bio           String?
+
+  // Extended attributes (shown in the "View Full Details" modal)
+  height        String?
+  weight        String?
+  childrenStatus String?
+  familyDetails  String?
+
+  // Trust badge: ID/photo verified by an admin/agent.
+  isVerified      Boolean @default(false)
+  nameHidden      Boolean @default(false)
+  completionScore Int     @default(10)
+
+  // Referral attribution -> the MEDIA User who brought this profile in
+  referredById String?
+  referredBy   User?   @relation("MediaReferrals", fields: [referredById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  images          ProfileImage[]
+  viewLogs        ProfileViewLog[] @relation("ProfileViews")
+  serviceRequests ServiceRequest[] @relation("ServiceTargets")
+
+  @@index([referredById])
+  @@index([district, upazila])
+}
+
+model ProfileImage {
+  id        String       @id @default(cuid())
+  profileId String
+  profile   Profile      @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  privacy   ImagePrivacy @default(BLURRED)
+  originalKey String
+  blurredKey  String
+  isPrimary   Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+
+  @@index([profileId])
+}
+
+// ---------------------------------------------------------------------------
+// Funnel: photo-access -> interest
+// ---------------------------------------------------------------------------
+
+model PhotoAccessRequest {
+  id          String            @id @default(cuid())
+  viewerId    String
+  viewer      User              @relation("PhotoRequestsMade", fields: [viewerId], references: [id], onDelete: Cascade)
+  ownerId     String
+  owner       User              @relation("PhotoRequestsReceived", fields: [ownerId], references: [id], onDelete: Cascade)
+  status      PhotoAccessStatus @default(PENDING)
+  requestedAt DateTime          @default(now())
+  respondedAt DateTime?
+
+  @@unique([viewerId, ownerId])
+  @@index([ownerId, status])
+}
+
+model Interest {
+  id         String         @id @default(cuid())
+  senderId   String
+  sender     User           @relation("InterestsSent", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  receiver   User           @relation("InterestsReceived", fields: [receiverId], references: [id], onDelete: Cascade)
+  status     InterestStatus @default(SENT)
+  createdAt  DateTime       @default(now())
+
+  @@unique([senderId, receiverId])
+  @@index([receiverId, status])
+}
+
+// ---------------------------------------------------------------------------
+// Role-specific structures
+// ---------------------------------------------------------------------------
+
+model WardDetails {
+  id            String   @id @default(cuid())
+  guardianId    String
+  guardian      User     @relation("GuardianWards", fields: [guardianId], references: [id], onDelete: Cascade)
+  targetMetrics Json
+  createdAt     DateTime @default(now())
+
+  @@index([guardianId])
+}
+
+model ServiceRequest {
+  id              String        @id @default(cuid())
+  agentId         String
+  agent           User          @relation("AgentServices", fields: [agentId], references: [id], onDelete: Cascade)
+  requesterId     String
+  requester       User          @relation("RequesterServices", fields: [requesterId], references: [id], onDelete: Cascade)
+  targetProfileId String
+  targetProfile   Profile       @relation("ServiceTargets", fields: [targetProfileId], references: [id], onDelete: Cascade)
+  status          ServiceStatus @default(PENDING)
+  agentShare      Int
+  adminShare      Int
+  createdAt       DateTime      @default(now())
+
+  @@index([agentId, status])
+  @@index([requesterId])
+}
+
+// ---------------------------------------------------------------------------
+// Platform config + analytics
+// ---------------------------------------------------------------------------
+
+model AppSettings {
+  id                     String   @id @default(cuid())
+  subscriptionModeActive Boolean  @default(false)
+  visibilityFloorPercent Int      @default(30)
+  updatedAt              DateTime @updatedAt
+}
+
+model ProfileViewLog {
+  id              String   @id @default(cuid())
+  viewerId        String
+  viewer          User     @relation("ViewsMade", fields: [viewerId], references: [id], onDelete: Cascade)
+  viewedProfileId String
+  viewedProfile   Profile  @relation("ProfileViews", fields: [viewedProfileId], references: [id], onDelete: Cascade)
+  date            DateTime @db.Date
+  createdAt       DateTime @default(now())
+
+  // One row per viewer/profile/day -> enables daily-unique view counting
+  @@unique([viewerId, viewedProfileId, date])
+  @@index([viewedProfileId, date])
+}
