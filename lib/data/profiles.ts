@@ -1,4 +1,5 @@
 import "server-only";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { calcAge } from "@/lib/utils";
 import type {
@@ -63,17 +64,48 @@ export async function getEditableProfile(
   };
 }
 
+/** Search/filter criteria (all optional; values are canonical English). */
+export interface SearchFilters {
+  gender?: string;
+  minAge?: number;
+  maxAge?: number;
+  district?: string;
+  profession?: string;
+  education?: string;
+}
+
+/** A Date `years` ago from now (for age <-> dateOfBirth conversion). */
+function yearsAgo(years: number): Date {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - years);
+  return d;
+}
+
 /**
- * List profiles for the browse grid (viewer-scoped). Excludes the viewer's own
- * profile and includes the viewer's current photo-access state per card.
- * Photos always start blurred in the payload; only the viewer's access state
- * is exposed, not the underlying image keys.
+ * List profiles for the browse/search grid (viewer-scoped). Excludes the
+ * viewer's own profile, applies the given filters, and includes the viewer's
+ * current photo-access state per card. Photos always start blurred in the
+ * payload; only the viewer's access state is exposed, not the image keys.
  */
 export async function getBrowseProfiles(
   viewerId: string,
+  filters: SearchFilters = {},
 ): Promise<ProfileSummary[]> {
+  const where: Prisma.ProfileWhereInput = { userId: { not: viewerId } };
+  if (filters.gender) where.gender = filters.gender;
+  if (filters.district) where.district = filters.district;
+  if (filters.profession) where.profession = filters.profession;
+  if (filters.education) where.education = filters.education;
+
+  // Age range -> dateOfBirth bounds. age >= minAge means born on/before
+  // (today - minAge yrs); age <= maxAge means born on/after (today - maxAge-1 yrs).
+  const dob: Prisma.DateTimeFilter = {};
+  if (filters.minAge != null) dob.lte = yearsAgo(filters.minAge);
+  if (filters.maxAge != null) dob.gte = yearsAgo(filters.maxAge + 1);
+  if (dob.lte || dob.gte) where.dateOfBirth = dob;
+
   const profiles = await prisma.profile.findMany({
-    where: { userId: { not: viewerId } },
+    where,
     orderBy: { createdAt: "asc" },
     include: {
       user: { select: { isPro: true } },

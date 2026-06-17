@@ -18,7 +18,25 @@
   "Browse": {
     "title": "Profile Browse করুন",
     "subtitle": "Request পাঠানোর আগ পর্যন্ত Photo blurred থাকবে",
-    "empty": "কোনো Profile পাওয়া যায়নি"
+    "empty": "কোনো Profile পাওয়া যায়নি",
+    "resultCount": "{count, plural, =0 {কোনো match নেই} other {{n} টি profile}}",
+    "filters": {
+      "heading": "Filters",
+      "gender": "Gender",
+      "ageRange": "বয়স",
+      "minAge": "Min",
+      "maxAge": "Max",
+      "district": "District",
+      "profession": "Profession",
+      "education": "Education",
+      "any": "যেকোনো",
+      "clear": "Filter clear করুন"
+    },
+    "noMatch": {
+      "title": "আপনার filter-এ কোনো profile মেলেনি",
+      "hint": "Search criteria একটু বিস্তৃত করে দেখুন।",
+      "clear": "সব filter clear করুন"
+    }
   },
   "Actions": {
     "request": "Request",

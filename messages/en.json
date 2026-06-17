@@ -18,7 +18,25 @@
   "Browse": {
     "title": "Browse profiles",
     "subtitle": "Photos stay blurred until you send a Request",
-    "empty": "No profiles found"
+    "empty": "No profiles found",
+    "resultCount": "{count, plural, =0 {No matches} one {{n} profile} other {{n} profiles}}",
+    "filters": {
+      "heading": "Filters",
+      "gender": "Gender",
+      "ageRange": "Age",
+      "minAge": "Min",
+      "maxAge": "Max",
+      "district": "District",
+      "profession": "Profession",
+      "education": "Education",
+      "any": "Any",
+      "clear": "Clear filters"
+    },
+    "noMatch": {
+      "title": "No profiles match your filters",
+      "hint": "Try broadening your search criteria.",
+      "clear": "Clear all filters"
+    }
   },
   "Actions": {
     "request": "Request",
