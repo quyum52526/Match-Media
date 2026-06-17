@@ -7,7 +7,8 @@
     "home": "Home",
     "browse": "Browse",
     "requests": "Requests",
-    "interests": "Interests"
+    "interests": "Interests",
+    "editProfile": "My Profile"
   },
   "Home": {
     "title": "MatchMedia",
@@ -118,6 +119,50 @@
     },
     "meta": {
       "receivedOn": "Received {date}"
+    }
+  },
+  "ProfileEdit": {
+    "title": "Edit your profile",
+    "save": "Save changes",
+    "saved": "Profile saved",
+    "sections": {
+      "basic": "Basic information",
+      "background": "Location & background",
+      "details": "Additional details",
+      "about": "About you"
+    },
+    "fields": {
+      "fullName": "Full name",
+      "gender": "Gender",
+      "dateOfBirth": "Date of birth",
+      "district": "District",
+      "upazila": "Upazila",
+      "profession": "Profession",
+      "education": "Education",
+      "maritalStatus": "Marital status",
+      "height": "Height",
+      "weight": "Weight",
+      "childrenStatus": "Children",
+      "familyDetails": "Family details",
+      "bio": "Bio",
+      "nameHidden": "Hide my name on my profile"
+    },
+    "gender": {
+      "placeholder": "Select gender",
+      "male": "Male",
+      "female": "Female"
+    },
+    "marital": {
+      "placeholder": "Select status",
+      "single": "Single",
+      "married": "Married",
+      "divorced": "Divorced",
+      "widowed": "Widowed"
+    },
+    "errors": {
+      "MISSING": "Gender and date of birth are required",
+      "AGE": "You must be at least 18 years old",
+      "UNAUTH": "Please log in again"
     }
   },
   "Auth": {

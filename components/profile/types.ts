@@ -42,6 +42,28 @@ export interface ProfileFullDetails {
   family: string;
 }
 
+/**
+ * The current user's own profile, shaped for an edit form. All values are
+ * strings (empty when unset) so inputs are controlled-friendly; dateOfBirth is
+ * "yyyy-mm-dd" for <input type="date">.
+ */
+export interface EditableProfile {
+  fullName: string;
+  gender: string;
+  dateOfBirth: string;
+  district: string;
+  upazila: string;
+  profession: string;
+  education: string;
+  maritalStatus: string;
+  height: string;
+  weight: string;
+  childrenStatus: string;
+  familyDetails: string;
+  bio: string;
+  nameHidden: boolean;
+}
+
 /** Lightweight, presentation-ready profile for the browse/listing grid. */
 export interface ProfileSummary {
   id: string;

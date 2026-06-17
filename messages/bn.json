@@ -7,7 +7,8 @@
     "home": "Home",
     "browse": "Browse",
     "requests": "Requests",
-    "interests": "Interests"
+    "interests": "Interests",
+    "editProfile": "My Profile"
   },
   "Home": {
     "title": "MatchMedia",
@@ -118,6 +119,50 @@
     },
     "meta": {
       "receivedOn": "{date} এ Received"
+    }
+  },
+  "ProfileEdit": {
+    "title": "Profile Edit করুন",
+    "save": "Save করুন",
+    "saved": "Profile save হয়েছে",
+    "sections": {
+      "basic": "Basic information",
+      "background": "ঠিকানা ও background",
+      "details": "অতিরিক্ত তথ্য",
+      "about": "আপনার সম্পর্কে"
+    },
+    "fields": {
+      "fullName": "Full name",
+      "gender": "Gender",
+      "dateOfBirth": "Date of birth",
+      "district": "District",
+      "upazila": "Upazila",
+      "profession": "Profession",
+      "education": "Education",
+      "maritalStatus": "Marital status",
+      "height": "Height",
+      "weight": "Weight",
+      "childrenStatus": "Children",
+      "familyDetails": "Family details",
+      "bio": "Bio",
+      "nameHidden": "আমার নাম profile-এ গোপন রাখুন"
+    },
+    "gender": {
+      "placeholder": "Gender নির্বাচন করুন",
+      "male": "Male",
+      "female": "Female"
+    },
+    "marital": {
+      "placeholder": "Status নির্বাচন করুন",
+      "single": "অবিবাহিত",
+      "married": "বিবাহিত",
+      "divorced": "তালাকপ্রাপ্ত",
+      "widowed": "বিধবা/বিপত্নীক"
+    },
+    "errors": {
+      "MISSING": "Gender ও Date of birth দিতে হবে",
+      "AGE": "বয়স কমপক্ষে 18 হতে হবে",
+      "UNAUTH": "আবার Login করুন"
     }
   },
   "Auth": {

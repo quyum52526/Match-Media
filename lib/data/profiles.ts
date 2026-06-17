@@ -4,6 +4,7 @@ import { calcAge } from "@/lib/utils";
 import type {
   ProfileDetailView,
   ProfileSummary,
+  EditableProfile,
   ViewerState,
   PhotoAccessState,
   InterestState,
@@ -12,6 +13,55 @@ import type {
 
 // Placeholder shown when a profile chooses to hide its name.
 export const HIDDEN_NAME = "নাম গোপন রাখা হয়েছে";
+
+const EMPTY_EDITABLE: EditableProfile = {
+  fullName: "",
+  gender: "",
+  dateOfBirth: "",
+  district: "",
+  upazila: "",
+  profession: "",
+  education: "",
+  maritalStatus: "",
+  height: "",
+  weight: "",
+  childrenStatus: "",
+  familyDetails: "",
+  bio: "",
+  nameHidden: false,
+};
+
+/**
+ * The current user's own profile shaped for the edit form. Returns blanks when
+ * the user has no profile yet (so the form doubles as first-time setup).
+ */
+export async function getEditableProfile(
+  viewerId: string,
+): Promise<EditableProfile> {
+  const profile = await prisma.profile.findUnique({
+    where: { userId: viewerId },
+  });
+  if (!profile) return { ...EMPTY_EDITABLE };
+
+  return {
+    fullName: profile.fullName ?? "",
+    gender: profile.gender ?? "",
+    dateOfBirth: profile.dateOfBirth
+      ? profile.dateOfBirth.toISOString().slice(0, 10)
+      : "",
+    district: profile.district ?? "",
+    upazila: profile.upazila ?? "",
+    profession: profile.profession ?? "",
+    education: profile.education ?? "",
+    maritalStatus: profile.maritalStatus ?? "",
+    height: profile.height ?? "",
+    weight: profile.weight ?? "",
+    childrenStatus: profile.childrenStatus ?? "",
+    familyDetails: profile.familyDetails ?? "",
+    bio: profile.bio ?? "",
+    nameHidden: profile.nameHidden,
+  };
+}
 
 /**
  * List profiles for the browse grid (viewer-scoped). Excludes the viewer's own

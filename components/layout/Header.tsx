@@ -42,6 +42,12 @@ export async function Header() {
               >
                 {nav("interests")}
               </Link>
+              <Link
+                href="/profile/edit"
+                className="text-sm font-medium text-charcoal/70 transition-colors hover:text-charcoal"
+              >
+                {nav("editProfile")}
+              </Link>
             </nav>
           )}
         </div>
@@ -50,9 +56,12 @@ export async function Header() {
           <LocaleSwitcher />
           {session?.user ? (
             <div className="flex items-center gap-2">
-              <span className="hidden font-sans text-xs text-charcoal/60 sm:inline">
+              <Link
+                href="/profile/edit"
+                className="hidden font-sans text-xs text-charcoal/60 transition-colors hover:text-charcoal sm:inline"
+              >
                 {session.user.email}
-              </span>
+              </Link>
               <form action={logout}>
                 <Button type="submit" variant="ghost" size="sm">
                   {authT("logout")}
