@@ -1,7 +1,10 @@
 "use server";
 
 import { AuthError } from "next-auth";
+import bcrypt from "bcryptjs";
 import { signIn, signOut } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import { calcAge } from "@/lib/utils";
 
 /**
  * Credentials login. Returns "INVALID" on bad credentials so the form can show
@@ -27,4 +30,73 @@ export async function authenticate(
 
 export async function logout(): Promise<void> {
   await signOut({ redirectTo: "/" });
+}
+
+/**
+ * Register a new user: creates a User (bcrypt-hashed password) + a minimal
+ * Profile (gender + dateOfBirth are required by the schema), then signs the
+ * user in. Returns an error code on failure so the form can localize it.
+ */
+export async function register(
+  _prevState: string | undefined,
+  formData: FormData,
+): Promise<string | undefined> {
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
+  const password = String(formData.get("password") ?? "");
+  const fullName = String(formData.get("fullName") ?? "").trim();
+  const gender = String(formData.get("gender") ?? "");
+  const dob = String(formData.get("dateOfBirth") ?? "");
+
+  // --- Validation ---
+  if (!email || !email.includes("@") || !password || !gender || !dob) {
+    return "MISSING";
+  }
+  if (password.length < 8) return "WEAK";
+
+  const birthDate = new Date(dob);
+  if (Number.isNaN(birthDate.getTime())) return "MISSING";
+  if (calcAge(birthDate) < 18) return "AGE";
+
+  // --- Email uniqueness ---
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) return "EXISTS";
+
+  // --- Create user + minimal profile ---
+  try {
+    await prisma.user.create({
+      data: {
+        email,
+        passwordHash: bcrypt.hashSync(password, 10),
+        profile: {
+          create: {
+            fullName: fullName || null,
+            gender,
+            dateOfBirth: birthDate,
+            completionScore: 20,
+          },
+        },
+      },
+    });
+  } catch (error) {
+    // Unique-constraint race (P2002) -> treat as duplicate email.
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      (error as { code?: string }).code === "P2002"
+    ) {
+      return "EXISTS";
+    }
+    throw error;
+  }
+
+  // --- Auto sign-in (throws a redirect on success) ---
+  try {
+    await signIn("credentials", { email, password, redirectTo: "/" });
+  } catch (error) {
+    if (error instanceof AuthError) return "INVALID";
+    throw error;
+  }
 }

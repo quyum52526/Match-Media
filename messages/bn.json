@@ -127,7 +127,30 @@
     "submit": "Login",
     "error": "Email বা Password ভুল",
     "login": "Login",
-    "logout": "Logout"
+    "logout": "Logout",
+    "noAccount": "Account নেই?",
+    "registerLink": "Sign up",
+    "register": {
+      "title": "Account তৈরি করুন",
+      "fullName": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "gender": "Gender",
+      "genderPlaceholder": "Gender নির্বাচন করুন",
+      "genderMale": "Male",
+      "genderFemale": "Female",
+      "dateOfBirth": "Date of birth",
+      "submit": "Sign up",
+      "haveAccount": "আগে থেকে account আছে?",
+      "loginLink": "Login",
+      "errors": {
+        "MISSING": "সব required field পূরণ করুন",
+        "WEAK": "Password কমপক্ষে 8 অক্ষরের হতে হবে",
+        "EXISTS": "এই Email দিয়ে account আগে থেকেই আছে",
+        "AGE": "বয়স কমপক্ষে 18 হতে হবে",
+        "INVALID": "Account তৈরি হয়েছে, কিন্তু sign-in হয়নি। Login করুন।"
+      }
+    }
   },
   "LocaleSwitcher": {
     "label": "ভাষা"

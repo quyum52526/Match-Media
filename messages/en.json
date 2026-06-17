@@ -127,7 +127,30 @@
     "submit": "Log in",
     "error": "Invalid email or password",
     "login": "Log in",
-    "logout": "Log out"
+    "logout": "Log out",
+    "noAccount": "Don't have an account?",
+    "registerLink": "Sign up",
+    "register": {
+      "title": "Create your account",
+      "fullName": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "gender": "Gender",
+      "genderPlaceholder": "Select gender",
+      "genderMale": "Male",
+      "genderFemale": "Female",
+      "dateOfBirth": "Date of birth",
+      "submit": "Sign up",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Log in",
+      "errors": {
+        "MISSING": "Please fill in all required fields",
+        "WEAK": "Password must be at least 8 characters",
+        "EXISTS": "An account with this email already exists",
+        "AGE": "You must be at least 18 years old",
+        "INVALID": "Account created, but sign-in failed. Please log in."
+      }
+    }
   },
   "LocaleSwitcher": {
     "label": "Language"
