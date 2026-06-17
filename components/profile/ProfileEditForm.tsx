@@ -1,11 +1,18 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import { updateProfile } from "@/lib/actions/profile";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardTitle } from "@/components/ui/Card";
 import { CheckIcon } from "@/components/ui/icons";
+import {
+  PROFESSIONS,
+  EDUCATION_LEVELS,
+  MARITAL_STATUSES,
+  HEIGHTS,
+} from "@/lib/constants/profileOptions";
+import { DISTRICTS, upazilasFor } from "@/lib/constants/bdGeo";
 import type { EditableProfile } from "./types";
 
 const inputClass =
@@ -13,9 +20,21 @@ const inputClass =
 const areaClass =
   "w-full rounded-xl border border-charcoal/15 bg-white p-3 text-sm text-charcoal outline-none focus:border-trustGreen focus:ring-2 focus:ring-trustGreen/30";
 
+/** Include the current (possibly legacy/non-standard) value so it isn't lost. */
+function withCurrent(options: readonly string[], current: string): string[] {
+  return current && !options.includes(current)
+    ? [current, ...options]
+    : [...options];
+}
+
 export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
   const t = useTranslations("ProfileEdit");
   const [state, formAction, pending] = useActionState(updateProfile, undefined);
+
+  // District -> Upazila cascade is controlled so the upazila list stays in sync.
+  const [district, setDistrict] = useState(initial.district);
+  const [upazila, setUpazila] = useState(initial.upazila);
+  const upazilaOptions = withCurrent(upazilasFor(district), upazila);
 
   return (
     <form action={formAction} className="space-y-6">
@@ -64,50 +83,69 @@ export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
         <CardBody className="space-y-4">
           <CardTitle>{t("sections.background")}</CardTitle>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {/* District (cascades into Upazila) */}
             <Field label={t("fields.district")}>
-              <input
+              <select
                 name="district"
-                type="text"
-                defaultValue={initial.district}
+                value={district}
+                onChange={(e) => {
+                  setDistrict(e.target.value);
+                  setUpazila(""); // reset — upazilas differ per district
+                }}
                 className={inputClass}
-              />
+              >
+                <option value="">{t("select")}</option>
+                {withCurrent(DISTRICTS, district).map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                ))}
+              </select>
             </Field>
+
+            {/* Upazila (depends on the selected district) */}
             <Field label={t("fields.upazila")}>
-              <input
+              <select
                 name="upazila"
-                type="text"
-                defaultValue={initial.upazila}
-                className={inputClass}
-              />
+                value={upazila}
+                disabled={!district}
+                onChange={(e) => setUpazila(e.target.value)}
+                className={`${inputClass} disabled:bg-charcoal/5 disabled:text-charcoal/40`}
+              >
+                <option value="">
+                  {district ? t("select") : t("selectDistrictFirst")}
+                </option>
+                {upazilaOptions.map((u) => (
+                  <option key={u} value={u}>
+                    {u}
+                  </option>
+                ))}
+              </select>
             </Field>
+
             <Field label={t("fields.profession")}>
-              <input
+              <StandardSelect
                 name="profession"
-                type="text"
-                defaultValue={initial.profession}
-                className={inputClass}
+                value={initial.profession}
+                options={PROFESSIONS}
+                placeholder={t("select")}
               />
             </Field>
             <Field label={t("fields.education")}>
-              <input
+              <StandardSelect
                 name="education"
-                type="text"
-                defaultValue={initial.education}
-                className={inputClass}
+                value={initial.education}
+                options={EDUCATION_LEVELS}
+                placeholder={t("select")}
               />
             </Field>
             <Field label={t("fields.maritalStatus")}>
-              <select
+              <StandardSelect
                 name="maritalStatus"
-                defaultValue={initial.maritalStatus}
-                className={inputClass}
-              >
-                <option value="">{t("marital.placeholder")}</option>
-                <option value="অবিবাহিত">{t("marital.single")}</option>
-                <option value="বিবাহিত">{t("marital.married")}</option>
-                <option value="তালাকপ্রাপ্ত">{t("marital.divorced")}</option>
-                <option value="বিধবা/বিপত্নীক">{t("marital.widowed")}</option>
-              </select>
+                value={initial.maritalStatus}
+                options={MARITAL_STATUSES}
+                placeholder={t("select")}
+              />
             </Field>
           </div>
         </CardBody>
@@ -119,11 +157,12 @@ export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
           <CardTitle>{t("sections.details")}</CardTitle>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <Field label={t("fields.height")}>
-              <input
+              <StandardSelect
                 name="height"
-                type="text"
-                defaultValue={initial.height}
-                className={inputClass}
+                value={initial.height}
+                options={HEIGHTS}
+                placeholder={t("select")}
+                latin
               />
             </Field>
             <Field label={t("fields.weight")}>
@@ -195,6 +234,36 @@ export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
         )}
       </div>
     </form>
+  );
+}
+
+/** An uncontrolled standardized <select> that keeps the user's current value. */
+function StandardSelect({
+  name,
+  value,
+  options,
+  placeholder,
+  latin,
+}: {
+  name: string;
+  value: string;
+  options: readonly string[];
+  placeholder: string;
+  latin?: boolean;
+}) {
+  return (
+    <select
+      name={name}
+      defaultValue={value}
+      className={`${inputClass}${latin ? " font-sans" : ""}`}
+    >
+      <option value="">{placeholder}</option>
+      {withCurrent(options, value).map((o) => (
+        <option key={o} value={o}>
+          {o}
+        </option>
+      ))}
+    </select>
   );
 }
 

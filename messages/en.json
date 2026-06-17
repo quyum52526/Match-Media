@@ -125,6 +125,8 @@
     "title": "Edit your profile",
     "save": "Save changes",
     "saved": "Profile saved",
+    "select": "Select",
+    "selectDistrictFirst": "Select a district first",
     "sections": {
       "basic": "Basic information",
       "background": "Location & background",

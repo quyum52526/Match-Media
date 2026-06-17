@@ -125,6 +125,8 @@
     "title": "Profile Edit করুন",
     "save": "Save করুন",
     "saved": "Profile save হয়েছে",
+    "select": "নির্বাচন করুন",
+    "selectDistrictFirst": "আগে District নির্বাচন করুন",
     "sections": {
       "basic": "Basic information",
       "background": "ঠিকানা ও background",
