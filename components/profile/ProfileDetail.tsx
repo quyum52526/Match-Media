@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import {
   requestPhotoAccess as requestPhotoAccessAction,
   sendInterest as sendInterestAction,
@@ -23,6 +23,7 @@ import {
   RingIcon,
 } from "@/components/ui/icons";
 import { computeCompletion } from "@/lib/utils";
+import { localize } from "@/lib/constants/labels";
 import { BlurredImage } from "./BlurredImage";
 import type { ProfileDetailView, ViewerState } from "./types";
 
@@ -43,6 +44,7 @@ interface ProfileDetailProps {
  */
 export function ProfileDetail({ data }: ProfileDetailProps) {
   const t = useTranslations("Profile");
+  const locale = useLocale();
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -139,9 +141,9 @@ export function ProfileDetail({ data }: ProfileDetailProps) {
             <p className="text-sm text-charcoal/60">
               {t.rich("ageLine", {
                 age: String(data.age),
-                gender: data.gender,
-                upazila: data.upazila,
-                district: data.district,
+                gender: localize(data.gender, locale),
+                upazila: localize(data.upazila, locale),
+                district: localize(data.district, locale),
                 n: (chunks) => (
                   <span className="font-sans font-semibold text-charcoal/80">
                     {chunks}
@@ -165,22 +167,22 @@ export function ProfileDetail({ data }: ProfileDetailProps) {
                 <Fact
                   icon={<MapPinIcon />}
                   label={t("facts.address")}
-                  value={`${data.upazila}, ${data.district}`}
+                  value={`${localize(data.upazila, locale)}, ${localize(data.district, locale)}`}
                 />
                 <Fact
                   icon={<BriefcaseIcon />}
                   label={t("facts.profession")}
-                  value={data.profession}
+                  value={localize(data.profession, locale)}
                 />
                 <Fact
                   icon={<GraduationIcon />}
                   label={t("facts.education")}
-                  value={data.education}
+                  value={localize(data.education, locale)}
                 />
                 <Fact
                   icon={<RingIcon />}
                   label={t("facts.maritalStatus")}
-                  value={data.maritalStatus}
+                  value={localize(data.maritalStatus, locale)}
                 />
               </dl>
 

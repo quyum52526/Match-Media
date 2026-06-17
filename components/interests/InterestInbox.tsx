@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import {
@@ -13,6 +13,7 @@ import {
   InboxIcon,
 } from "@/components/ui/icons";
 import { formatDate } from "@/lib/utils";
+import { localize } from "@/lib/constants/labels";
 import { respondToInterest } from "@/lib/actions/funnel";
 import type {
   ReceivedInterest,
@@ -88,6 +89,7 @@ function PersonInfo({
   createdAt: string;
 }) {
   const t = useTranslations("Interests");
+  const locale = useLocale();
   return (
     <div className="flex items-center gap-3">
       {/* Blurred mini thumbnail (privacy-first) */}
@@ -121,7 +123,7 @@ function PersonInfo({
           <span className="font-sans font-medium text-charcoal/80">
             {person.age}
           </span>{" "}
-          · {person.upazila}, {person.district}
+          · {localize(person.upazila, locale)}, {localize(person.district, locale)}
         </p>
         <p className="mt-0.5 text-xs text-charcoal/40">
           {t("meta.receivedOn", { date: formatDate(createdAt) })}

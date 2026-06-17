@@ -1,18 +1,20 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { updateProfile } from "@/lib/actions/profile";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardTitle } from "@/components/ui/Card";
 import { CheckIcon } from "@/components/ui/icons";
 import {
+  GENDERS,
   PROFESSIONS,
   EDUCATION_LEVELS,
   MARITAL_STATUSES,
   HEIGHTS,
 } from "@/lib/constants/profileOptions";
 import { DISTRICTS, upazilasFor } from "@/lib/constants/bdGeo";
+import { localize } from "@/lib/constants/labels";
 import type { EditableProfile } from "./types";
 
 const inputClass =
@@ -20,21 +22,25 @@ const inputClass =
 const areaClass =
   "w-full rounded-xl border border-charcoal/15 bg-white p-3 text-sm text-charcoal outline-none focus:border-trustGreen focus:ring-2 focus:ring-trustGreen/30";
 
+type Valued = { value: string };
+
 /** Include the current (possibly legacy/non-standard) value so it isn't lost. */
-function withCurrent(options: readonly string[], current: string): string[] {
-  return current && !options.includes(current)
-    ? [current, ...options]
+function withCurrent(options: readonly Valued[], current: string): Valued[] {
+  return current && !options.some((o) => o.value === current)
+    ? [{ value: current }, ...options]
     : [...options];
 }
 
+const HEIGHT_OPTIONS: Valued[] = HEIGHTS.map((h) => ({ value: h }));
+
 export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
   const t = useTranslations("ProfileEdit");
+  const locale = useLocale();
   const [state, formAction, pending] = useActionState(updateProfile, undefined);
 
   // District -> Upazila cascade is controlled so the upazila list stays in sync.
   const [district, setDistrict] = useState(initial.district);
   const [upazila, setUpazila] = useState(initial.upazila);
-  const upazilaOptions = withCurrent(upazilasFor(district), upazila);
 
   return (
     <form action={formAction} className="space-y-6">
@@ -52,18 +58,14 @@ export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
           </Field>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label={t("fields.gender")}>
-              <select
+              <StdSelect
                 name="gender"
+                value={initial.gender}
+                options={GENDERS}
+                placeholder={t("gender.placeholder")}
+                locale={locale}
                 required
-                defaultValue={initial.gender}
-                className={inputClass}
-              >
-                <option value="" disabled>
-                  {t("gender.placeholder")}
-                </option>
-                <option value="পুরুষ">{t("gender.male")}</option>
-                <option value="নারী">{t("gender.female")}</option>
-              </select>
+              />
             </Field>
             <Field label={t("fields.dateOfBirth")}>
               <input
@@ -96,8 +98,8 @@ export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
               >
                 <option value="">{t("select")}</option>
                 {withCurrent(DISTRICTS, district).map((d) => (
-                  <option key={d} value={d}>
-                    {d}
+                  <option key={d.value} value={d.value}>
+                    {localize(d.value, locale)}
                   </option>
                 ))}
               </select>
@@ -115,36 +117,39 @@ export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
                 <option value="">
                   {district ? t("select") : t("selectDistrictFirst")}
                 </option>
-                {upazilaOptions.map((u) => (
-                  <option key={u} value={u}>
-                    {u}
+                {withCurrent(upazilasFor(district), upazila).map((u) => (
+                  <option key={u.value} value={u.value}>
+                    {localize(u.value, locale)}
                   </option>
                 ))}
               </select>
             </Field>
 
             <Field label={t("fields.profession")}>
-              <StandardSelect
+              <StdSelect
                 name="profession"
                 value={initial.profession}
                 options={PROFESSIONS}
                 placeholder={t("select")}
+                locale={locale}
               />
             </Field>
             <Field label={t("fields.education")}>
-              <StandardSelect
+              <StdSelect
                 name="education"
                 value={initial.education}
                 options={EDUCATION_LEVELS}
                 placeholder={t("select")}
+                locale={locale}
               />
             </Field>
             <Field label={t("fields.maritalStatus")}>
-              <StandardSelect
+              <StdSelect
                 name="maritalStatus"
                 value={initial.maritalStatus}
                 options={MARITAL_STATUSES}
                 placeholder={t("select")}
+                locale={locale}
               />
             </Field>
           </div>
@@ -157,11 +162,12 @@ export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
           <CardTitle>{t("sections.details")}</CardTitle>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <Field label={t("fields.height")}>
-              <StandardSelect
+              <StdSelect
                 name="height"
                 value={initial.height}
-                options={HEIGHTS}
+                options={HEIGHT_OPTIONS}
                 placeholder={t("select")}
+                locale={locale}
                 latin
               />
             </Field>
@@ -237,30 +243,40 @@ export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
   );
 }
 
-/** An uncontrolled standardized <select> that keeps the user's current value. */
-function StandardSelect({
+/**
+ * Uncontrolled standardized <select>: submits the canonical English `value`,
+ * displays the locale-appropriate label, and keeps any legacy value.
+ */
+function StdSelect({
   name,
   value,
   options,
   placeholder,
+  locale,
+  required,
   latin,
 }: {
   name: string;
   value: string;
-  options: readonly string[];
+  options: readonly Valued[];
   placeholder: string;
+  locale: string;
+  required?: boolean;
   latin?: boolean;
 }) {
   return (
     <select
       name={name}
       defaultValue={value}
+      required={required}
       className={`${inputClass}${latin ? " font-sans" : ""}`}
     >
-      <option value="">{placeholder}</option>
+      <option value="" disabled={required}>
+        {placeholder}
+      </option>
       {withCurrent(options, value).map((o) => (
-        <option key={o} value={o}>
-          {o}
+        <option key={o.value} value={o.value}>
+          {latin ? o.value : localize(o.value, locale)}
         </option>
       ))}
     </select>

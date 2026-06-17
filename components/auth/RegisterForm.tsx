@@ -71,9 +71,9 @@ export function RegisterForm() {
             <option value="" disabled>
               {t("genderPlaceholder")}
             </option>
-            {/* Data values stay Bengali by project convention */}
-            <option value="পুরুষ">{t("genderMale")}</option>
-            <option value="নারী">{t("genderFemale")}</option>
+            {/* Canonical value is English; label follows the locale */}
+            <option value="Male">{t("genderMale")}</option>
+            <option value="Female">{t("genderFemale")}</option>
           </select>
         </div>
 

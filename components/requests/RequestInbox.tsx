@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { respondToPhotoRequest } from "@/lib/actions/funnel";
+import { localize } from "@/lib/constants/labels";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import {
@@ -160,6 +161,7 @@ function RequestRow({
   children: React.ReactNode;
 }) {
   const t = useTranslations("Requests");
+  const locale = useLocale();
 
   return (
     <li className="flex flex-col gap-3 rounded-2xl border border-charcoal/10 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -191,7 +193,7 @@ function RequestRow({
             <span className="font-sans font-medium text-charcoal/80">
               {person.age}
             </span>{" "}
-            · {person.upazila}, {person.district}
+            · {localize(person.upazila, locale)}, {localize(person.district, locale)}
           </p>
           <p className="mt-0.5 text-xs text-charcoal/40">
             {t("meta.requestedOn", { date: formatDate(requestedAt) })}

@@ -1,52 +1,66 @@
 /**
- * Standardized option arrays for profile fields + search/filtering.
- * IMPORTANT: keep these VALUES stable — both the edit form and the (future)
- * search queries depend on them, so changing a value silently breaks filters.
- * Data values are Bengali by project convention; numerals stay English.
+ * Standardized options for profile fields + search/filtering.
+ *
+ * IMPORTANT: `value` is the CANONICAL value stored in the DB (English, stable —
+ * search queries depend on it). `bn` is the Bengali display label. The UI shows
+ * `value` in English locale and `bn` in Bengali locale (see lib/constants/labels).
+ * Numerals stay English in both locales.
  */
 
-export const PROFESSIONS = [
-  "ছাত্র/ছাত্রী",
-  "ডাক্তার",
-  "ইঞ্জিনিয়ার",
-  "আইটি/সফটওয়্যার",
-  "শিক্ষক",
-  "ব্যাংকার",
-  "সরকারি চাকরিজীবী",
-  "বেসরকারি চাকরিজীবী",
-  "ব্যবসায়ী",
-  "আইনজীবী",
-  "সেনাবাহিনী/পুলিশ",
-  "কৃষিকাজ",
-  "প্রবাসী",
-  "গৃহিণী",
-  "অন্যান্য",
-] as const;
+export interface Option {
+  /** Canonical English value persisted to the DB. */
+  value: string;
+  /** Bengali display label. */
+  bn: string;
+}
 
-export const EDUCATION_LEVELS = [
-  "প্রাথমিক",
-  "এসএসসি/সমমান",
-  "এইচএসসি/সমমান",
-  "ডিপ্লোমা",
-  "স্নাতক (সম্মান)",
-  "স্নাতকোত্তর",
-  "এমবিবিএস/মেডিকেল",
-  "ইঞ্জিনিয়ারিং",
-  "মাদ্রাসা (দাখিল/আলিম/ফাজিল/কামিল)",
-  "পিএইচডি",
-  "অন্যান্য",
-] as const;
+export const GENDERS: readonly Option[] = [
+  { value: "Male", bn: "পুরুষ" },
+  { value: "Female", bn: "নারী" },
+];
 
-export const MARITAL_STATUSES = [
-  "অবিবাহিত",
-  "বিবাহিত",
-  "তালাকপ্রাপ্ত",
-  "বিধবা",
-  "বিপত্নীক",
-] as const;
+export const PROFESSIONS: readonly Option[] = [
+  { value: "Student", bn: "ছাত্র/ছাত্রী" },
+  { value: "Doctor", bn: "ডাক্তার" },
+  { value: "Engineer", bn: "ইঞ্জিনিয়ার" },
+  { value: "IT/Software", bn: "আইটি/সফটওয়্যার" },
+  { value: "Teacher", bn: "শিক্ষক" },
+  { value: "Banker", bn: "ব্যাংকার" },
+  { value: "Government Service", bn: "সরকারি চাকরিজীবী" },
+  { value: "Private Service", bn: "বেসরকারি চাকরিজীবী" },
+  { value: "Business", bn: "ব্যবসায়ী" },
+  { value: "Lawyer", bn: "আইনজীবী" },
+  { value: "Defense/Police", bn: "সেনাবাহিনী/পুলিশ" },
+  { value: "Agriculture", bn: "কৃষিকাজ" },
+  { value: "Expatriate", bn: "প্রবাসী" },
+  { value: "Homemaker", bn: "গৃহিণী" },
+  { value: "Other", bn: "অন্যান্য" },
+];
 
-/** Heights from 4'6" to 6'5" in 1-inch steps (English numerals). */
-export const HEIGHTS: string[] = (() => {
+export const EDUCATION_LEVELS: readonly Option[] = [
+  { value: "Primary", bn: "প্রাথমিক" },
+  { value: "SSC/Equivalent", bn: "এসএসসি/সমমান" },
+  { value: "HSC/Equivalent", bn: "এইচএসসি/সমমান" },
+  { value: "Diploma", bn: "ডিপ্লোমা" },
+  { value: "Bachelor's (Honours)", bn: "স্নাতক (সম্মান)" },
+  { value: "Master's", bn: "স্নাতকোত্তর" },
+  { value: "MBBS/Medical", bn: "এমবিবিএস/মেডিকেল" },
+  { value: "Engineering", bn: "ইঞ্জিনিয়ারিং" },
+  { value: "Madrasa", bn: "মাদ্রাসা (দাখিল/আলিম/ফাজিল/কামিল)" },
+  { value: "PhD", bn: "পিএইচডি" },
+  { value: "Other", bn: "অন্যান্য" },
+];
+
+export const MARITAL_STATUSES: readonly Option[] = [
+  { value: "Single", bn: "অবিবাহিত" },
+  { value: "Married", bn: "বিবাহিত" },
+  { value: "Divorced", bn: "তালাকপ্রাপ্ত" },
+  { value: "Widow", bn: "বিধবা" },
+  { value: "Widower", bn: "বিপত্নীক" },
+];
+
+/** Heights from 4'6" to 6'5" in 1-inch steps (identical in both locales). */
+export const HEIGHTS: readonly string[] = (() => {
   const out: string[] = [];
   for (let ft = 4; ft <= 6; ft++) {
     for (let inch = 0; inch <= 11; inch++) {

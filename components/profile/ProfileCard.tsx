@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -12,6 +12,7 @@ import {
   StarIcon,
 } from "@/components/ui/icons";
 import { requestPhotoAccess as requestPhotoAccessAction } from "@/lib/actions/funnel";
+import { localize } from "@/lib/constants/labels";
 import type { ProfileSummary, PhotoAccessState } from "./types";
 
 interface ProfileCardProps {
@@ -24,6 +25,7 @@ function isRevealed(profile: ProfileSummary, state: PhotoAccessState): boolean {
 
 export function ProfileCard({ profile }: ProfileCardProps) {
   const t = useTranslations("Profile");
+  const locale = useLocale();
   const [isSubmitting, startTransition] = useTransition();
 
   // Photo-access state comes from the server; the action + revalidate refresh it.
@@ -106,8 +108,8 @@ export function ProfileCard({ profile }: ProfileCardProps) {
         <p className="text-xs text-charcoal/60">
           {t.rich("card.ageLocation", {
             age: String(profile.age),
-            upazila: profile.upazila,
-            district: profile.district,
+            upazila: localize(profile.upazila, locale),
+            district: localize(profile.district, locale),
             n: (chunks) => (
               <span className="font-sans font-semibold text-charcoal/80">
                 {chunks}
