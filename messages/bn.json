@@ -145,8 +145,19 @@
       "receivedOn": "{date} এ Received"
     }
   },
+  "ProfileCompletion": {
+    "title": "আপনার Profile সম্পূর্ণ করুন",
+    "subtitle": "সম্পূর্ণ Profile-এ বেশি সাড়া পাওয়া যায়",
+    "missingLabel": "এখনো বাকি:",
+    "more": "+{n} আরও",
+    "cta": "Profile সম্পূর্ণ করুন"
+  },
   "ProfileEdit": {
     "title": "Profile Edit করুন",
+    "welcome": {
+      "title": "MatchMedia-তে স্বাগতম! 🎉",
+      "body": "আপনার account তৈরি হয়ে গেছে। নিচে আরও কিছু তথ্য যোগ করুন যাতে সঠিক match আপনাকে খুঁজে পায় — আপনি না চাইলে আপনার ছবি গোপন থাকবে।"
+    },
     "save": "Save করুন",
     "saved": "Profile save হয়েছে",
     "select": "নির্বাচন করুন",
@@ -203,15 +214,20 @@
     "registerLink": "Sign up",
     "register": {
       "title": "Account তৈরি করুন",
+      "subtitle": "Privacy-first — আপনার তথ্য সুরক্ষিত থাকে।",
       "fullName": "Full name",
+      "optional": "ঐচ্ছিক",
       "email": "Email",
       "password": "Password",
+      "passwordHint": "কমপক্ষে 8 অক্ষর",
       "gender": "Gender",
       "genderPlaceholder": "Gender নির্বাচন করুন",
       "genderMale": "Male",
       "genderFemale": "Female",
       "dateOfBirth": "Date of birth",
       "submit": "Sign up",
+      "submitting": "Account তৈরি হচ্ছে…",
+      "privacyNote": "Sign up করার মাধ্যমে আপনি আমাদের community-কে সম্মানজনক এবং আপনার তথ্য সত্য রাখতে সম্মত হচ্ছেন।",
       "haveAccount": "আগে থেকে account আছে?",
       "loginLink": "Login",
       "errors": {

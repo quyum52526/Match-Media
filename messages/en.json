@@ -145,8 +145,19 @@
       "receivedOn": "Received {date}"
     }
   },
+  "ProfileCompletion": {
+    "title": "Complete your profile",
+    "subtitle": "Complete profiles get more responses",
+    "missingLabel": "Still to add:",
+    "more": "+{n} more",
+    "cta": "Complete profile"
+  },
   "ProfileEdit": {
     "title": "Edit your profile",
+    "welcome": {
+      "title": "Welcome to MatchMedia! 🎉",
+      "body": "Your account is ready. Add a few more details below so the right matches can find you — your photos stay private until you choose to share."
+    },
     "save": "Save changes",
     "saved": "Profile saved",
     "select": "Select",
@@ -203,15 +214,20 @@
     "registerLink": "Sign up",
     "register": {
       "title": "Create your account",
+      "subtitle": "Private by design — your details stay protected.",
       "fullName": "Full name",
+      "optional": "optional",
       "email": "Email",
       "password": "Password",
+      "passwordHint": "At least 8 characters",
       "gender": "Gender",
       "genderPlaceholder": "Select gender",
       "genderMale": "Male",
       "genderFemale": "Female",
       "dateOfBirth": "Date of birth",
       "submit": "Sign up",
+      "submitting": "Creating account…",
+      "privacyNote": "By signing up you agree to keep our community respectful and your information truthful.",
       "haveAccount": "Already have an account?",
       "loginLink": "Log in",
       "errors": {

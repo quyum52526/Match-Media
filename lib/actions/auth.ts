@@ -48,6 +48,7 @@ export async function register(
   const fullName = String(formData.get("fullName") ?? "").trim();
   const gender = String(formData.get("gender") ?? "");
   const dob = String(formData.get("dateOfBirth") ?? "");
+  const locale = String(formData.get("locale") ?? "bn");
 
   // --- Validation ---
   if (!email || !email.includes("@") || !password || !gender || !dob) {
@@ -93,8 +94,14 @@ export async function register(
   }
 
   // --- Auto sign-in (throws a redirect on success) ---
+  // New users land on the edit form (?welcome=1) to finish their profile.
+  // 'bn' is the default, unprefixed locale; 'en' is path-prefixed.
+  const onboarding =
+    locale === "en"
+      ? "/en/profile/edit?welcome=1"
+      : "/profile/edit?welcome=1";
   try {
-    await signIn("credentials", { email, password, redirectTo: "/" });
+    await signIn("credentials", { email, password, redirectTo: onboarding });
   } catch (error) {
     if (error instanceof AuthError) return "INVALID";
     throw error;
