@@ -37,7 +37,10 @@
     "heading": "Who viewed me",
     "seeAll": "See all {n}",
     "empty": "No one has viewed your profile yet",
-    "viewedOn": "Viewed {date}"
+    "viewedOn": "Viewed {date}",
+    "locked": "Someone viewed you",
+    "unlocksIn": "Unlocks in {n}h",
+    "lockNote": "New viewers are revealed 24 hours after they view your profile."
   },
   "Browse": {
     "title": "Browse profiles",

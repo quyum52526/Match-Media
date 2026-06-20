@@ -37,7 +37,10 @@
     "heading": "কে আমাকে দেখেছে",
     "seeAll": "সব {n} টি দেখুন",
     "empty": "এখনো কেউ আপনার profile দেখেনি",
-    "viewedOn": "{date}-এ দেখেছে"
+    "viewedOn": "{date}-এ দেখেছে",
+    "locked": "কেউ আপনাকে দেখেছে",
+    "unlocksIn": "{n} ঘণ্টা পর unlock হবে",
+    "lockNote": "নতুন viewer-রা আপনার profile দেখার 24 ঘণ্টা পর reveal হয়।"
   },
   "Browse": {
     "title": "Profile Browse করুন",
