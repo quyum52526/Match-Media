@@ -32,6 +32,22 @@ export function computeCompletion(values: Array<unknown>): number {
   return Math.round((filled / values.length) * 100);
 }
 
+/**
+ * Gender is IMMUTABLE once chosen. Given the currently-stored gender and a
+ * newly-submitted one, returns the value that must be persisted: the stored
+ * value always wins (any submission is ignored once a gender exists), and only
+ * a first-time setup (no stored gender) accepts the submission. This is the
+ * security boundary for the gender-based features — the locked edit UI is just
+ * convenience on top of it.
+ */
+export function resolveImmutableGender(
+  stored: string | null | undefined,
+  submitted: string,
+): string {
+  const locked = stored?.trim();
+  return locked ? locked : submitted.trim();
+}
+
 /** Whole-year age from a date of birth. */
 export function calcAge(dateOfBirth: Date | string): number {
   const dob = new Date(dateOfBirth);

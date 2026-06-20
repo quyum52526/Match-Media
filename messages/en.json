@@ -189,6 +189,7 @@
     "saved": "Profile saved",
     "select": "Select",
     "selectDistrictFirst": "Select a district first",
+    "genderLocked": "Gender can't be changed. Contact support to correct a mistake.",
     "sections": {
       "basic": "Basic information",
       "background": "Location & background",

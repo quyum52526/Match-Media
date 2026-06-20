@@ -5,7 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { updateProfile } from "@/lib/actions/profile";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardTitle } from "@/components/ui/Card";
-import { CheckIcon } from "@/components/ui/icons";
+import { CheckIcon, LockIcon } from "@/components/ui/icons";
 import {
   GENDERS,
   PROFESSIONS,
@@ -58,14 +58,34 @@ export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
           </Field>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label={t("fields.gender")}>
-              <StdSelect
-                name="gender"
-                value={initial.gender}
-                options={GENDERS}
-                placeholder={t("gender.placeholder")}
-                locale={locale}
-                required
-              />
+              {initial.gender ? (
+                // Gender is immutable once set (enforced server-side too).
+                <>
+                  <div
+                    className={`${inputClass} flex items-center justify-between bg-charcoal/5 text-charcoal/70`}
+                    aria-readonly="true"
+                  >
+                    <span>{localize(initial.gender, locale)}</span>
+                    <LockIcon
+                      width={14}
+                      height={14}
+                      className="shrink-0 text-charcoal/40"
+                    />
+                  </div>
+                  <p className="mt-1 text-xs text-charcoal/45">
+                    {t("genderLocked")}
+                  </p>
+                </>
+              ) : (
+                <StdSelect
+                  name="gender"
+                  value={initial.gender}
+                  options={GENDERS}
+                  placeholder={t("gender.placeholder")}
+                  locale={locale}
+                  required
+                />
+              )}
             </Field>
             <Field label={t("fields.dateOfBirth")}>
               <input

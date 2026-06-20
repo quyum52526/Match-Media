@@ -189,6 +189,7 @@
     "saved": "Profile save হয়েছে",
     "select": "নির্বাচন করুন",
     "selectDistrictFirst": "আগে District নির্বাচন করুন",
+    "genderLocked": "Gender পরিবর্তন করা যাবে না। ভুল হলে support-এ যোগাযোগ করুন।",
     "sections": {
       "basic": "Basic information",
       "background": "ঠিকানা ও background",

@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { calcAge, computeCompletion } from "@/lib/utils";
+import { calcAge, computeCompletion, resolveImmutableGender } from "@/lib/utils";
 import { getViewerId } from "@/lib/session";
+import { GENDERS } from "@/lib/constants/profileOptions";
 
 const PROFILE_EDIT = "/[locale]/profile/edit";
 const BROWSE = "/[locale]/browse";
@@ -25,9 +26,23 @@ export async function updateProfile(
   const viewerId = await getViewerId();
   if (!viewerId) return "UNAUTH";
 
-  const gender = field(formData, "gender");
   const dob = field(formData, "dateOfBirth");
+
+  // Gender is IMMUTABLE once set. Read the stored value and, if present, keep
+  // it regardless of what the form submitted — this is the security boundary
+  // for the gender-based logic (the locked UI is convenience, not enforcement).
+  const existing = await prisma.profile.findUnique({
+    where: { userId: viewerId },
+    select: { gender: true },
+  });
+  const lockedGender = existing?.gender?.trim();
+  const gender = resolveImmutableGender(existing?.gender, field(formData, "gender"));
   if (!gender || !dob) return "MISSING";
+  // A first-time gender must be a recognized value (Male/Female drives the
+  // gender-based features); already-stored values are trusted as-is.
+  if (!lockedGender && !GENDERS.some((g) => g.value === gender)) {
+    return "MISSING";
+  }
 
   const birthDate = new Date(dob);
   if (Number.isNaN(birthDate.getTime())) return "MISSING";
