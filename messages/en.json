@@ -31,6 +31,14 @@
       "action": "Browse matches"
     }
   },
+  "Viewers": {
+    "title": "Who viewed your profile",
+    "subtitle": "{count, plural, =0 {No one has viewed your profile yet} one {{n} person viewed your profile} other {{n} people viewed your profile}}",
+    "heading": "Who viewed me",
+    "seeAll": "See all {n}",
+    "empty": "No one has viewed your profile yet",
+    "viewedOn": "Viewed {date}"
+  },
   "Browse": {
     "title": "Browse profiles",
     "subtitle": "Photos stay blurred until you send a Request",

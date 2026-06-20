@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { Card, CardBody } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ProfileCompletionBanner } from "@/components/profile/ProfileCompletionBanner";
+import { WhoViewedMe } from "@/components/profile/WhoViewedMe";
 import {
   EyeIcon,
   InboxIcon,
@@ -13,15 +14,19 @@ import {
 } from "@/components/ui/icons";
 import type { DashboardStats } from "@/lib/data/dashboard";
 import type { ProfileCompletion } from "@/lib/data/profileCompletion";
+import type { ProfileViewers } from "@/lib/data/viewers";
 
 export async function Dashboard({
   stats,
   completion,
+  viewers,
 }: {
   stats: DashboardStats;
   completion: ProfileCompletion;
+  viewers: ProfileViewers;
 }) {
   const t = await getTranslations("Dashboard");
+  const v = await getTranslations("Viewers");
 
   const greeting = stats.firstName
     ? t("greetingName", { name: stats.firstName })
@@ -48,6 +53,7 @@ export async function Dashboard({
           icon={<EyeIcon width={20} height={20} />}
           value={stats.profileViews}
           label={t("stats.views")}
+          href="/viewers"
         />
         <StatCard
           icon={<InboxIcon width={20} height={20} />}
@@ -87,6 +93,24 @@ export async function Dashboard({
           </Link>
         </CardBody>
       </Card>
+
+      {/* Who viewed me */}
+      <section className="mt-8">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="text-base font-semibold text-charcoal">
+            {v("heading")}
+          </h2>
+          {viewers.total > viewers.viewers.length && (
+            <Link
+              href="/viewers"
+              className="shrink-0 text-sm font-medium text-trustGreen hover:underline"
+            >
+              {v("seeAll", { n: String(viewers.total) })}
+            </Link>
+          )}
+        </div>
+        <WhoViewedMe viewers={viewers.viewers} />
+      </section>
     </main>
   );
 }
