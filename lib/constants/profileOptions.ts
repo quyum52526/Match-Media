@@ -71,3 +71,31 @@ export const HEIGHTS: readonly string[] = (() => {
   }
   return out;
 })();
+
+/**
+ * Parse a height label like `5'6"` to a sortable total-inch index, or null when
+ * unparseable. Heights are stored as strings, so string comparison is unsafe
+ * (`5'10"` < `5'6"` lexically); convert to inches whenever ordering matters.
+ */
+export function heightToInches(height: string): number | null {
+  const m = /^(\d+)'(\d+)"$/.exec(height.trim());
+  if (!m) return null;
+  return Number(m[1]) * 12 + Number(m[2]);
+}
+
+/**
+ * The subset of HEIGHTS within the inclusive [min, max] inch range (each bound
+ * optional). Returns canonical height strings so a query can match with
+ * `{ in: [...] }`. An inverted range (min > max) yields [], i.e. matches none.
+ */
+export function heightsInRange(min?: string, max?: string): string[] {
+  const lo = min ? heightToInches(min) : null;
+  const hi = max ? heightToInches(max) : null;
+  return HEIGHTS.filter((h) => {
+    const inches = heightToInches(h);
+    if (inches == null) return false;
+    if (lo != null && inches < lo) return false;
+    if (hi != null && inches > hi) return false;
+    return true;
+  });
+}

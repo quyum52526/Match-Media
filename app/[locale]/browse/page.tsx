@@ -42,8 +42,12 @@ export default async function BrowsePage({
     minAge: num(sp.minAge),
     maxAge: num(sp.maxAge),
     district: str(sp.district),
+    upazila: str(sp.upazila),
     profession: str(sp.profession),
     education: str(sp.education),
+    maritalStatus: str(sp.maritalStatus),
+    minHeight: str(sp.minHeight),
+    maxHeight: str(sp.maxHeight),
   };
   const hasFilters = Object.values(filters).some((v) => v !== undefined);
 

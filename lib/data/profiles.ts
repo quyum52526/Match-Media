@@ -2,6 +2,7 @@ import "server-only";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { calcAge } from "@/lib/utils";
+import { heightsInRange } from "@/lib/constants/profileOptions";
 import type {
   ProfileDetailView,
   ProfileSummary,
@@ -70,8 +71,12 @@ export interface SearchFilters {
   minAge?: number;
   maxAge?: number;
   district?: string;
+  upazila?: string;
   profession?: string;
   education?: string;
+  maritalStatus?: string;
+  minHeight?: string;
+  maxHeight?: string;
 }
 
 /** A Date `years` ago from now (for age <-> dateOfBirth conversion). */
@@ -94,8 +99,10 @@ export async function getBrowseProfiles(
   const where: Prisma.ProfileWhereInput = { userId: { not: viewerId } };
   if (filters.gender) where.gender = filters.gender;
   if (filters.district) where.district = filters.district;
+  if (filters.upazila) where.upazila = filters.upazila;
   if (filters.profession) where.profession = filters.profession;
   if (filters.education) where.education = filters.education;
+  if (filters.maritalStatus) where.maritalStatus = filters.maritalStatus;
 
   // Age range -> dateOfBirth bounds. age >= minAge means born on/before
   // (today - minAge yrs); age <= maxAge means born on/after (today - maxAge-1 yrs).
@@ -103,6 +110,13 @@ export async function getBrowseProfiles(
   if (filters.minAge != null) dob.lte = yearsAgo(filters.minAge);
   if (filters.maxAge != null) dob.gte = yearsAgo(filters.maxAge + 1);
   if (dob.lte || dob.gte) where.dateOfBirth = dob;
+
+  // Height range. Heights are stored as strings, so resolve the range to the
+  // set of in-range canonical height labels and match by membership. An
+  // inverted/empty range yields [] -> matches nothing (drives the empty state).
+  if (filters.minHeight || filters.maxHeight) {
+    where.height = { in: heightsInRange(filters.minHeight, filters.maxHeight) };
+  }
 
   const profiles = await prisma.profile.findMany({
     where,
