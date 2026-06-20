@@ -175,6 +175,24 @@ export async function getProfileForViewer(
   });
   if (!profile) return null;
 
+  // Log a daily-unique profile view (skip self-views). The @@unique on
+  // (viewer, profile, date) makes this idempotent per day via upsert.
+  if (viewerId !== ownerUserId) {
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+    await prisma.profileViewLog.upsert({
+      where: {
+        viewerId_viewedProfileId_date: {
+          viewerId,
+          viewedProfileId: profile.id,
+          date: today,
+        },
+      },
+      create: { viewerId, viewedProfileId: profile.id, date: today },
+      update: {},
+    });
+  }
+
   const viewer =
     viewerId === ownerUserId
       ? profile.user

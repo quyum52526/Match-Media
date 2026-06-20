@@ -15,6 +15,22 @@
     "subtitle": "Privacy-first matrimonial platform — সারাদেশজুড়ে বিশ্বস্ত matchmaking",
     "viewSample": "Sample Profile দেখুন"
   },
+  "Dashboard": {
+    "greeting": "স্বাগতম",
+    "greetingName": "স্বাগতম, {name}",
+    "subtitle": "আপনার Profile-এর সর্বশেষ অবস্থা এখানে",
+    "stats": {
+      "views": "Profile view",
+      "photoRequests": "Photo request",
+      "interests": "নতুন Interest",
+      "matches": "Match"
+    },
+    "cta": {
+      "title": "আপনার Match খুঁজুন",
+      "body": "সারা বাংলাদেশের verified profile browse করুন",
+      "action": "Match browse করুন"
+    }
+  },
   "Browse": {
     "title": "Profile Browse করুন",
     "subtitle": "Request পাঠানোর আগ পর্যন্ত Photo blurred থাকবে",

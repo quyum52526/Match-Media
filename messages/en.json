@@ -15,6 +15,22 @@
     "subtitle": "Privacy-first, nationwide matrimonial platform",
     "viewSample": "View sample Profile"
   },
+  "Dashboard": {
+    "greeting": "Welcome back",
+    "greetingName": "Welcome back, {name}",
+    "subtitle": "Here's what's happening with your profile",
+    "stats": {
+      "views": "Profile views",
+      "photoRequests": "Photo requests",
+      "interests": "New interests",
+      "matches": "Matches"
+    },
+    "cta": {
+      "title": "Find your match",
+      "body": "Browse verified profiles from across Bangladesh",
+      "action": "Browse matches"
+    }
+  },
   "Browse": {
     "title": "Browse profiles",
     "subtitle": "Photos stay blurred until you send a Request",

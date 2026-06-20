@@ -1,6 +1,10 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/Button";
+import { Dashboard } from "@/components/dashboard/Dashboard";
+import { getViewerId } from "@/lib/session";
+import { getDashboardStats } from "@/lib/data/dashboard";
+import { getProfileCompletion } from "@/lib/data/profileCompletion";
 
 export default async function Home({
   params,
@@ -9,6 +13,17 @@ export default async function Home({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  // Signed-in users get a personalized dashboard; visitors get the landing page.
+  const viewerId = await getViewerId();
+  if (viewerId) {
+    const [stats, completion] = await Promise.all([
+      getDashboardStats(viewerId),
+      getProfileCompletion(viewerId),
+    ]);
+    return <Dashboard stats={stats} completion={completion} />;
+  }
+
   const t = await getTranslations("Home");
 
   return (
