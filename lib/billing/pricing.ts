@@ -78,6 +78,18 @@ export function addDays(start: Date, durationDays: number): Date {
   return end;
 }
 
+/**
+ * Format poisha as a Taka amount with English digits + grouping (no decimals
+ * for whole Taka). 120000 -> "1,200"; 90000 -> "900". Numerals stay English in
+ * both locales per the app's i18n rule — pair with a localized "৳"/"BDT" label.
+ */
+export function formatTaka(poisha: number): string {
+  const taka = poisha / 100;
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: Number.isInteger(taka) ? 0 : 2,
+  }).format(taka);
+}
+
 /** Format an invoice number as MM-YYYYMMDD-#### (seq is the day's 1-based count). */
 export function formatInvoiceNo(date: Date, seq: number): string {
   const y = date.getFullYear();

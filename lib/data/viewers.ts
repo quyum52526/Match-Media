@@ -1,5 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
+import { isProActive } from "@/lib/billing";
 import { personProfileSelect, toRequestPerson } from "./person";
 import type { RequestPerson } from "@/components/requests/types";
 
@@ -37,10 +38,11 @@ export interface ProfileViewers {
 
 /**
  * Who recently viewed the current user's profile, newest first, one entry per
- * viewer. Gender-based gating: female owners see all viewers immediately, while
- * other owners only see a viewer's identity 24h after that viewer's FIRST view
- * (so a revealed viewer stays revealed even if they look again). `total` is the
- * exact distinct-viewer count regardless of `limit`.
+ * viewer. Gating: Pro members (any gender) and free female owners see all
+ * viewers immediately; free male/other owners only see a viewer's identity 24h
+ * after that viewer's FIRST view (so a revealed viewer stays revealed even if
+ * they look again). `total` is the exact distinct-viewer count regardless of
+ * `limit`.
  */
 export async function getProfileViewers(
   viewerId: string,
@@ -48,10 +50,14 @@ export async function getProfileViewers(
 ): Promise<ProfileViewers> {
   const where = { viewedProfile: { userId: viewerId } };
 
-  const [owner, groups] = await Promise.all([
+  const [owner, ownerUser, groups] = await Promise.all([
     prisma.profile.findUnique({
       where: { userId: viewerId },
       select: { gender: true },
+    }),
+    prisma.user.findUnique({
+      where: { id: viewerId },
+      select: { isPro: true, proExpiresAt: true },
     }),
     // One group per viewer: first view (gates the reveal) + latest view (display).
     prisma.profileViewLog.groupBy({
@@ -63,8 +69,10 @@ export async function getProfileViewers(
     }),
   ]);
 
-  // Female owners get the feature fully unlocked; others are time-gated.
-  const gated = owner?.gender !== "Female";
+  // Pro members see every viewer instantly (a Pro perk). Among free users,
+  // female owners keep the feature fully unlocked; free male/other owners are
+  // time-gated to the 24h delayed reveal.
+  const gated = !isProActive(ownerUser) && owner?.gender !== "Female";
 
   const total = groups.length;
   const slice = limit ? groups.slice(0, limit) : groups;

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getViewerId } from "@/lib/session";
+import { checkDailyLimit, incrementDailyUsage } from "@/lib/billing";
 
 // Dynamic-route literals so revalidation covers every locale param.
 const BROWSE = "/[locale]/browse";
@@ -19,16 +20,39 @@ const PROFILE = "/[locale]/profiles/[id]";
 
 // --- Photo access -----------------------------------------------------------
 
-/** Viewer requests access to an owner's blurred photo. */
+/**
+ * Viewer requests access to an owner's blurred photo. Free users are capped at
+ * FREE_DAILY_LIMIT *new* requests per day; re-sending to someone already
+ * requested doesn't count against the cap (it just resets that request).
+ */
 export async function requestPhotoAccess(ownerId: string): Promise<void> {
   const viewerId = await getViewerId();
   if (!viewerId || !ownerId || ownerId === viewerId) return;
+
+  const existing = await prisma.photoAccessRequest.findUnique({
+    where: { viewerId_ownerId: { viewerId, ownerId } },
+  });
+
+  // Enforce the free-tier daily cap only for brand-new requests.
+  if (!existing) {
+    const viewer = await prisma.user.findUnique({
+      where: { id: viewerId },
+      select: { isPro: true, proExpiresAt: true },
+    });
+    const check = await checkDailyLimit(
+      { id: viewerId, isPro: viewer?.isPro, proExpiresAt: viewer?.proExpiresAt },
+      "PHOTO_REQUEST",
+    );
+    if (!check.allowed) return; // daily limit reached — silently no-op
+  }
 
   await prisma.photoAccessRequest.upsert({
     where: { viewerId_ownerId: { viewerId, ownerId } },
     update: { status: "PENDING", requestedAt: new Date(), respondedAt: null },
     create: { viewerId, ownerId, status: "PENDING" },
   });
+
+  if (!existing) await incrementDailyUsage(viewerId, "PHOTO_REQUEST");
 
   revalidatePath(BROWSE, "page");
   revalidatePath(REQUESTS, "page");
@@ -103,18 +127,6 @@ export async function respondToInterest(
   revalidatePath(PROFILE, "page");
 }
 
-// --- Membership --------------------------------------------------------------
-
-/** Upgrade the current viewer to Pro (one half of the contact-reveal gate). */
-export async function upgradeToPro(): Promise<void> {
-  const viewerId = await getViewerId();
-  if (!viewerId) return;
-
-  await prisma.user.update({
-    where: { id: viewerId },
-    data: { isPro: true },
-  });
-
-  revalidatePath(PROFILE, "page");
-  revalidatePath(BROWSE, "page");
-}
+// Membership upgrades now go through the billing flow (/pro -> checkout ->
+// gateway -> IPN -> activateOrder). The old instant-flip stub was removed; see
+// lib/actions/billing.ts.

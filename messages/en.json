@@ -267,6 +267,53 @@
       }
     }
   },
+  "Pro": {
+    "title": "Go Pro",
+    "subtitle": "Unlock unlimited browsing, instant ‘Who viewed me’ reveals, and priority placement in search.",
+    "activeUntil": "Your Pro membership is active until {date}",
+    "bestValue": "Best value",
+    "promoApplied": "{code} applied",
+    "choose": "Choose plan",
+    "processing": "Processing…",
+    "perks": {
+      "unlimited": "Unlimited profile views and photo requests",
+      "reveal": "Instant ‘Who viewed me’ — no 24-hour wait",
+      "priority": "Priority ranking in search and browse"
+    },
+    "viewLimit": {
+      "title": "Daily limit reached",
+      "body": "Free members can view up to {limit} profiles per day. Upgrade to Pro for unlimited browsing.",
+      "cta": "Go Pro"
+    },
+    "checkout": {
+      "title": "Checkout",
+      "invoice": "Invoice",
+      "days": "{n} days",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "total": "Total",
+      "pay": "Pay now",
+      "redirecting": "Redirecting…",
+      "alreadyPaid": "Paid — view membership",
+      "failed": "Payment was not completed. Please try again.",
+      "back": "Back to plans"
+    },
+    "pay": {
+      "sandbox": "Sandbox gateway",
+      "title": "Complete your payment",
+      "amount": "Amount",
+      "succeed": "Simulate successful payment",
+      "processing": "Processing…",
+      "fail": "Cancel / simulate failure"
+    },
+    "success": {
+      "title": "Welcome to Pro!",
+      "body": "Your Pro membership is now active.",
+      "bodyPaid": "Your {plan} is active — ৳{amount} paid.",
+      "validUntil": "Valid until {date}",
+      "cta": "Go to dashboard"
+    }
+  },
   "LocaleSwitcher": {
     "label": "Language"
   }

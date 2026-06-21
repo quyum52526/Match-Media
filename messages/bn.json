@@ -267,6 +267,53 @@
       }
     }
   },
+  "Pro": {
+    "title": "Pro নিন",
+    "subtitle": "Unlimited browsing, সাথে সাথে ‘কে দেখেছে’ reveal, এবং search-এ priority placement আনলক করুন।",
+    "activeUntil": "আপনার Pro membership {date} পর্যন্ত active",
+    "bestValue": "সেরা মূল্য",
+    "promoApplied": "{code} প্রয়োগ হয়েছে",
+    "choose": "Plan বেছে নিন",
+    "processing": "Processing…",
+    "perks": {
+      "unlimited": "Unlimited profile view এবং photo request",
+      "reveal": "সাথে সাথে ‘কে দেখেছে’ — 24 ঘণ্টা অপেক্ষা নেই",
+      "priority": "Search ও browse-এ priority ranking"
+    },
+    "viewLimit": {
+      "title": "আজকের limit শেষ",
+      "body": "Free member-রা দিনে সর্বোচ্চ {limit} টি profile দেখতে পারেন। Unlimited browsing-এর জন্য Pro নিন।",
+      "cta": "Pro নিন"
+    },
+    "checkout": {
+      "title": "Checkout",
+      "invoice": "Invoice",
+      "days": "{n} দিন",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "total": "মোট",
+      "pay": "এখন pay করুন",
+      "redirecting": "Redirect হচ্ছে…",
+      "alreadyPaid": "Paid — membership দেখুন",
+      "failed": "Payment সম্পন্ন হয়নি। আবার চেষ্টা করুন।",
+      "back": "Plan-এ ফিরে যান"
+    },
+    "pay": {
+      "sandbox": "Sandbox gateway",
+      "title": "Payment সম্পন্ন করুন",
+      "amount": "পরিমাণ",
+      "succeed": "Successful payment simulate করুন",
+      "processing": "Processing…",
+      "fail": "Cancel / failure simulate করুন"
+    },
+    "success": {
+      "title": "Pro-তে স্বাগতম!",
+      "body": "আপনার Pro membership এখন active।",
+      "bodyPaid": "আপনার {plan} active — ৳{amount} paid।",
+      "validUntil": "{date} পর্যন্ত valid",
+      "cta": "Dashboard-এ যান"
+    }
+  },
   "LocaleSwitcher": {
     "label": "ভাষা"
   }

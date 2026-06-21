@@ -2,6 +2,8 @@ import "server-only";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { calcAge } from "@/lib/utils";
+import { isProActive } from "@/lib/billing";
+import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
 import { heightsInRange } from "@/lib/constants/profileOptions";
 import type {
   ProfileDetailView,
@@ -162,6 +164,63 @@ export async function getBrowseProfiles(
  * Otherwise the field is omitted entirely, so it is never serialized to the
  * client. Just being Pro never bypasses the other person's consent.
  */
+export interface ProfileViewAccess {
+  allowed: boolean;
+  unlimited: boolean;
+  used: number;
+  limit: number;
+}
+
+/**
+ * Free-tier gate for opening a profile: max FREE_DAILY_LIMIT *distinct* profiles
+ * per UTC day. Pro viewers (and viewing your own profile) are unlimited, and
+ * re-opening a profile already seen today never counts again — the existing
+ * daily-unique ProfileViewLog is reused as the counter, so this stays in lockstep
+ * with the view log. Call this BEFORE getProfileForViewer (which logs the view).
+ */
+export async function getProfileViewAccess(
+  viewerId: string,
+  ownerUserId: string,
+): Promise<ProfileViewAccess> {
+  const unlimited = { allowed: true, unlimited: true, used: 0, limit: FREE_DAILY_LIMIT };
+  if (viewerId === ownerUserId) return unlimited;
+
+  const viewer = await prisma.user.findUnique({
+    where: { id: viewerId },
+    select: { isPro: true, proExpiresAt: true },
+  });
+  if (isProActive(viewer)) return unlimited;
+
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+
+  // Already viewed this profile today? Then re-opening is free.
+  const owner = await prisma.profile.findUnique({
+    where: { userId: ownerUserId },
+    select: { id: true },
+  });
+  if (owner) {
+    const existing = await prisma.profileViewLog.findUnique({
+      where: {
+        viewerId_viewedProfileId_date: {
+          viewerId,
+          viewedProfileId: owner.id,
+          date: today,
+        },
+      },
+    });
+    if (existing) return { allowed: true, unlimited: false, used: 0, limit: FREE_DAILY_LIMIT };
+  }
+
+  const used = await prisma.profileViewLog.count({ where: { viewerId, date: today } });
+  return {
+    allowed: used < FREE_DAILY_LIMIT,
+    unlimited: false,
+    used,
+    limit: FREE_DAILY_LIMIT,
+  };
+}
+
 export async function getProfileForViewer(
   ownerUserId: string,
   viewerId: string,
@@ -219,7 +278,7 @@ export async function getProfileForViewer(
     }),
   ]);
 
-  const viewerIsPro = viewer?.isPro ?? false;
+  const viewerIsPro = isProActive(viewer);
   const interestAccepted = Boolean(acceptedInterest);
   const contactAuthorized = viewerIsPro && interestAccepted;
 
@@ -246,7 +305,7 @@ export async function getProfileForViewer(
     bio: profile.bio ?? "",
     completionScore: profile.completionScore,
     isVerified: profile.isVerified,
-    isPro: profile.user.isPro,
+    isPro: isProActive(profile.user),
     primaryImagePrivacy: (primary?.privacy as ImagePrivacy) ?? "BLURRED",
     details: {
       height: profile.height ?? "",

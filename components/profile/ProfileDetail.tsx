@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import {
   requestPhotoAccess as requestPhotoAccessAction,
   sendInterest as sendInterestAction,
-  upgradeToPro as upgradeToProAction,
 } from "@/lib/actions/funnel";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -45,6 +45,7 @@ interface ProfileDetailProps {
 export function ProfileDetail({ data }: ProfileDetailProps) {
   const t = useTranslations("Profile");
   const locale = useLocale();
+  const router = useRouter();
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -80,9 +81,8 @@ export function ProfileDetail({ data }: ProfileDetailProps) {
   }
 
   function upgradeToPro() {
-    startTransition(async () => {
-      await upgradeToProAction();
-    });
+    // Send the viewer to the billing flow (plans -> checkout -> gateway).
+    router.push(locale === "en" ? "/en/pro" : "/pro");
   }
 
   return (

@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { signIn, signOut } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { calcAge } from "@/lib/utils";
+import { grantSignupSubscription } from "@/lib/billing";
 
 /**
  * Credentials login. Returns "INVALID" on bad credentials so the form can show
@@ -66,7 +67,7 @@ export async function register(
 
   // --- Create user + minimal profile ---
   try {
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email,
         passwordHash: bcrypt.hashSync(password, 10),
@@ -80,6 +81,14 @@ export async function register(
         },
       },
     });
+
+    // Signup hook: auto-apply the 100%-off promo -> instant 3-month Pro.
+    // Never block registration if the grant can't be provisioned.
+    try {
+      await grantSignupSubscription(user.id);
+    } catch (grantError) {
+      console.error("signup grant failed", grantError);
+    }
   } catch (error) {
     // Unique-constraint race (P2002) -> treat as duplicate email.
     if (
