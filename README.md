@@ -47,8 +47,8 @@ cp .env.example .env        # Windows PowerShell: Copy-Item .env.example .env
 # 3. Create the database schema + initial migration
 npx prisma migrate dev --name init
 
-# 4. Seed the single AppSettings row
-#    (subscriptionModeActive=false, visibilityFloorPercent=30)
+# 4. Seed the single AppSettings row (visibilityFloorPercent=30)
+#    plus the billing catalog (plans + promo coupons)
 npx prisma db seed
 
 # 5. Start the dev server

@@ -28,7 +28,7 @@ async function main() {
   const existingSettings = await prisma.appSettings.findFirst();
   if (!existingSettings) {
     await prisma.appSettings.create({
-      data: { subscriptionModeActive: false, visibilityFloorPercent: 30 },
+      data: { visibilityFloorPercent: 30 },
     });
   }
 

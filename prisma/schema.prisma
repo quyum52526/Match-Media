@@ -262,7 +262,6 @@ model ServiceRequest {
 
 model AppSettings {
   id                     String   @id @default(cuid())
-  subscriptionModeActive Boolean  @default(false)
   visibilityFloorPercent Int      @default(30)
   updatedAt              DateTime @updatedAt
 }
