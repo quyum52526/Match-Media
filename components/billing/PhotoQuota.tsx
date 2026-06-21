@@ -58,31 +58,44 @@ export function usePhotoQuota(): QuotaCtx | null {
  * remain, or a clear limit-reached message with an upgrade nudge at zero. Pro
  * (unlimited) renders nothing.
  */
+const STYLES = {
+  inline: {
+    ok: "text-xs font-medium text-charcoal/55",
+    limit:
+      "flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-xl border border-gold/40 bg-gold/5 px-3 py-2 text-xs text-charcoal/70",
+  },
+  banner: {
+    ok: "mb-4 rounded-xl border border-charcoal/10 bg-ivory/60 px-3 py-2 text-xs font-medium text-charcoal/60",
+    limit:
+      "mb-4 flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-xl border border-gold/40 bg-gold/5 px-3 py-2 text-xs text-charcoal/70",
+  },
+} as const;
+
 export function QuotaNote({
   quota,
-  className,
+  namespace = "Profile.photo.quota",
+  variant = "inline",
 }: {
   quota: PhotoQuota;
-  className?: string;
+  /** Which `*.quota` message namespace to pull copy from. */
+  namespace?: string;
+  variant?: "inline" | "banner";
 }) {
-  const t = useTranslations("Profile.photo.quota");
+  const t = useTranslations(namespace);
   if (quota.unlimited) return null;
+
+  const styles = STYLES[variant];
 
   if (quota.remaining > 0) {
     return (
-      <p className={className ?? "text-xs font-medium text-charcoal/55"}>
+      <div className={styles.ok}>
         {t("remaining", { n: String(quota.remaining), limit: String(quota.limit) })}
-      </p>
+      </div>
     );
   }
 
   return (
-    <div
-      className={
-        className ??
-        "flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-xl border border-gold/40 bg-gold/5 px-3 py-2 text-xs text-charcoal/70"
-      }
-    >
+    <div className={styles.limit}>
       <span className="font-semibold text-charcoal">{t("limitReachedTitle")}</span>
       <span>{t("limitReached", { limit: String(quota.limit) })}</span>
       <Link
@@ -96,15 +109,9 @@ export function QuotaNote({
   );
 }
 
-/** Browse-grid banner: reads the live quota from context. */
+/** Browse-grid photo-request banner: reads the live quota from context. */
 export function QuotaBanner() {
   const ctx = usePhotoQuota();
   if (!ctx) return null;
-  return <QuotaNote quota={ctx.quota} className={bannerClass(ctx.quota.remaining)} />;
-}
-
-function bannerClass(remaining: number): string {
-  return remaining > 0
-    ? "mb-4 rounded-xl border border-charcoal/10 bg-ivory/60 px-3 py-2 text-xs font-medium text-charcoal/60"
-    : "mb-4 flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-xl border border-gold/40 bg-gold/5 px-3 py-2 text-xs text-charcoal/70";
+  return <QuotaNote quota={ctx.quota} variant="banner" />;
 }

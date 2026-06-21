@@ -83,6 +83,12 @@
       "title": "No profiles match your filters",
       "hint": "Try broadening your search criteria.",
       "clear": "Clear all filters"
+    },
+    "viewQuota": {
+      "remaining": "{n} of {limit} free profile views left today",
+      "limitReachedTitle": "Daily limit reached.",
+      "limitReached": "You've viewed all {limit} profiles allowed today.",
+      "upgrade": "Upgrade to Pro for unlimited"
     }
   },
   "Actions": {

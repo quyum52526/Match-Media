@@ -83,6 +83,12 @@
       "title": "আপনার filter-এ কোনো profile মেলেনি",
       "hint": "Search criteria একটু বিস্তৃত করে দেখুন।",
       "clear": "সব filter clear করুন"
+    },
+    "viewQuota": {
+      "remaining": "আজ {limit} টির মধ্যে {n} টি free profile view বাকি",
+      "limitReachedTitle": "আজকের limit শেষ।",
+      "limitReached": "আজকের অনুমোদিত {limit} টি profile-ই দেখা হয়ে গেছে।",
+      "upgrade": "Unlimited-এর জন্য Pro নিন"
     }
   },
   "Actions": {

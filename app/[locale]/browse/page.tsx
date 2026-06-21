@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { SearchIcon } from "@/components/ui/icons";
 import { getBrowseProfiles, type SearchFilters } from "@/lib/data/profiles";
 import { getProfileCompletion } from "@/lib/data/profileCompletion";
-import { getPhotoRequestQuota } from "@/lib/data/billing";
+import { getPhotoRequestQuota, getProfileViewQuota } from "@/lib/data/billing";
+import { QuotaNote } from "@/components/billing/PhotoQuota";
 import { requireViewerId } from "@/lib/session";
 
 export const metadata = {
@@ -54,10 +55,11 @@ export default async function BrowsePage({
   };
   const hasFilters = Object.values(filters).some((v) => v !== undefined);
 
-  const [profiles, completion, quota] = await Promise.all([
+  const [profiles, completion, quota, viewQuota] = await Promise.all([
     getBrowseProfiles(viewerId, filters),
     getProfileCompletion(viewerId),
     getPhotoRequestQuota(viewerId),
+    getProfileViewQuota(viewerId),
   ]);
 
   return (
@@ -66,6 +68,8 @@ export default async function BrowsePage({
         <h1 className="text-2xl font-bold text-charcoal">{t("title")}</h1>
         <p className="mt-1 text-sm text-charcoal/60">{t("subtitle")}</p>
       </header>
+
+      <QuotaNote quota={viewQuota} namespace="Browse.viewQuota" variant="banner" />
 
       {completion.score < 100 && (
         <div className="mb-6">

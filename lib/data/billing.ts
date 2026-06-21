@@ -92,6 +92,31 @@ export async function getPhotoRequestQuota(viewerId: string): Promise<PhotoQuota
   };
 }
 
+/**
+ * The viewer's remaining profile-VIEW quota for today (Pro = unlimited). Counts
+ * distinct profiles already viewed today via ProfileViewLog, matching
+ * getProfileViewAccess's counter so the hint and the paywall never disagree.
+ */
+export async function getProfileViewQuota(viewerId: string): Promise<PhotoQuota> {
+  const user = await prisma.user.findUnique({
+    where: { id: viewerId },
+    select: { isPro: true, proExpiresAt: true },
+  });
+  if (isProActive(user)) {
+    return { unlimited: true, remaining: FREE_DAILY_LIMIT, limit: FREE_DAILY_LIMIT };
+  }
+
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  const used = await prisma.profileViewLog.count({ where: { viewerId, date: today } });
+
+  return {
+    unlimited: false,
+    remaining: Math.max(0, FREE_DAILY_LIMIT - used),
+    limit: FREE_DAILY_LIMIT,
+  };
+}
+
 /** Fetch an order that belongs to the viewer (404-safe ownership check). */
 export async function getOrderForViewer(orderId: string, viewerId: string) {
   const order = await prisma.order.findUnique({ where: { id: orderId } });
