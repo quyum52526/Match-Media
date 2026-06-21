@@ -7,6 +7,8 @@ import {
   requestPhotoAccess as requestPhotoAccessAction,
   sendInterest as sendInterestAction,
 } from "@/lib/actions/funnel";
+import { QuotaNote } from "@/components/billing/PhotoQuota";
+import type { PhotoQuota } from "@/lib/data/billing";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardBody, CardTitle } from "@/components/ui/Card";
@@ -29,6 +31,7 @@ import type { ProfileDetailView, ViewerState } from "./types";
 
 interface ProfileDetailProps {
   data: ProfileDetailView;
+  quota: PhotoQuota;
 }
 
 /**
@@ -42,15 +45,23 @@ interface ProfileDetailProps {
  * values (gender, district, profession, bio, ...) are not translated here —
  * they come from the DB and render as stored regardless of locale.
  */
-export function ProfileDetail({ data }: ProfileDetailProps) {
+export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps) {
   const t = useTranslations("Profile");
   const locale = useLocale();
   const router = useRouter();
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [quota, setQuota] = useState(initialQuota);
 
   // UI is driven by server state; mutations + revalidatePath refresh `data`.
   const viewer = data.viewer;
+
+  // The daily cap only blocks brand-new requests (no prior row for this owner).
+  const isNewRequest = viewer.photoAccess === "NONE";
+  const photoLimitReached =
+    !quota.unlimited && isNewRequest && quota.remaining <= 0;
+  const photoRevealed =
+    data.primaryImagePrivacy === "PUBLIC" || viewer.photoAccess === "APPROVED";
 
   // Freemium: completion is derived purely from which data fields are present.
   const completion = computeCompletion([
@@ -69,8 +80,12 @@ export function ProfileDetail({ data }: ProfileDetailProps) {
   ]);
 
   function requestPhotoAccess() {
+    if (photoLimitReached) return;
     startTransition(async () => {
-      await requestPhotoAccessAction(data.id);
+      const result = await requestPhotoAccessAction(data.id);
+      if (!result.unlimited) {
+        setQuota((q) => ({ ...q, remaining: result.remaining }));
+      }
     });
   }
 
@@ -96,7 +111,11 @@ export function ProfileDetail({ data }: ProfileDetailProps) {
             name={data.displayName}
             onRequest={requestPhotoAccess}
             pending={isPending}
+            requestDisabled={photoLimitReached}
           />
+
+          {/* Quota feedback — only while the photo is still gated */}
+          {!photoRevealed && <QuotaNote quota={quota} />}
 
           <InterestAction
             state={viewer.interest}

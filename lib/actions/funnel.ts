@@ -4,6 +4,20 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getViewerId } from "@/lib/session";
 import { checkDailyLimit, incrementDailyUsage } from "@/lib/billing";
+import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
+
+/** Outcome of a photo-access request, so the UI can show quota feedback. */
+export interface PhotoRequestResult {
+  /** A request now exists (newly created or already present). */
+  ok: boolean;
+  /** Blocked because the free-tier daily cap was already reached. */
+  limitReached: boolean;
+  /** Viewer has unlimited (Pro) requests. */
+  unlimited: boolean;
+  /** New requests left today after this call (free tier). */
+  remaining: number;
+  limit: number;
+}
 
 // Dynamic-route literals so revalidation covers every locale param.
 const BROWSE = "/[locale]/browse";
@@ -25,25 +39,37 @@ const PROFILE = "/[locale]/profiles/[id]";
  * FREE_DAILY_LIMIT *new* requests per day; re-sending to someone already
  * requested doesn't count against the cap (it just resets that request).
  */
-export async function requestPhotoAccess(ownerId: string): Promise<void> {
+export async function requestPhotoAccess(
+  ownerId: string,
+): Promise<PhotoRequestResult> {
+  const blocked: PhotoRequestResult = {
+    ok: false,
+    limitReached: false,
+    unlimited: false,
+    remaining: 0,
+    limit: FREE_DAILY_LIMIT,
+  };
+
   const viewerId = await getViewerId();
-  if (!viewerId || !ownerId || ownerId === viewerId) return;
+  if (!viewerId || !ownerId || ownerId === viewerId) return blocked;
 
   const existing = await prisma.photoAccessRequest.findUnique({
     where: { viewerId_ownerId: { viewerId, ownerId } },
   });
 
-  // Enforce the free-tier daily cap only for brand-new requests.
-  if (!existing) {
-    const viewer = await prisma.user.findUnique({
-      where: { id: viewerId },
-      select: { isPro: true, proExpiresAt: true },
-    });
-    const check = await checkDailyLimit(
-      { id: viewerId, isPro: viewer?.isPro, proExpiresAt: viewer?.proExpiresAt },
-      "PHOTO_REQUEST",
-    );
-    if (!check.allowed) return; // daily limit reached — silently no-op
+  const viewer = await prisma.user.findUnique({
+    where: { id: viewerId },
+    select: { isPro: true, proExpiresAt: true },
+  });
+  const check = await checkDailyLimit(
+    { id: viewerId, isPro: viewer?.isPro, proExpiresAt: viewer?.proExpiresAt },
+    "PHOTO_REQUEST",
+  );
+
+  // The free-tier daily cap applies only to brand-new requests; re-sending to
+  // someone already requested just resets that request and never counts.
+  if (!existing && !check.allowed) {
+    return { ...blocked, limitReached: true, unlimited: check.unlimited };
   }
 
   await prisma.photoAccessRequest.upsert({
@@ -52,11 +78,23 @@ export async function requestPhotoAccess(ownerId: string): Promise<void> {
     create: { viewerId, ownerId, status: "PENDING" },
   });
 
-  if (!existing) await incrementDailyUsage(viewerId, "PHOTO_REQUEST");
+  let remaining = check.unlimited ? FREE_DAILY_LIMIT : check.remaining;
+  if (!existing) {
+    await incrementDailyUsage(viewerId, "PHOTO_REQUEST");
+    if (!check.unlimited) remaining = Math.max(0, check.remaining - 1);
+  }
 
   revalidatePath(BROWSE, "page");
   revalidatePath(REQUESTS, "page");
   revalidatePath(PROFILE, "page");
+
+  return {
+    ok: true,
+    limitReached: false,
+    unlimited: check.unlimited,
+    remaining,
+    limit: FREE_DAILY_LIMIT,
+  };
 }
 
 /** Owner approves or denies a photo-access request they received. */

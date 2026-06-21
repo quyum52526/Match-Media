@@ -5,6 +5,7 @@ import { ProfileDetail } from "@/components/profile/ProfileDetail";
 import { Button } from "@/components/ui/Button";
 import { LockIcon, StarIcon } from "@/components/ui/icons";
 import { getProfileForViewer, getProfileViewAccess } from "@/lib/data/profiles";
+import { getPhotoRequestQuota } from "@/lib/data/billing";
 import { requireViewerId } from "@/lib/session";
 
 export const metadata = {
@@ -47,8 +48,11 @@ export default async function ProfilePage({
     );
   }
 
-  const profile = await getProfileForViewer(id, viewerId);
+  const [profile, quota] = await Promise.all([
+    getProfileForViewer(id, viewerId),
+    getPhotoRequestQuota(viewerId),
+  ]);
   if (!profile) notFound();
 
-  return <ProfileDetail data={profile} />;
+  return <ProfileDetail data={profile} quota={quota} />;
 }

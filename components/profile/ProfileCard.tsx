@@ -12,6 +12,7 @@ import {
   StarIcon,
 } from "@/components/ui/icons";
 import { requestPhotoAccess as requestPhotoAccessAction } from "@/lib/actions/funnel";
+import { usePhotoQuota } from "@/components/billing/PhotoQuota";
 import { localize } from "@/lib/constants/labels";
 import type { ProfileSummary, PhotoAccessState } from "./types";
 
@@ -27,14 +28,25 @@ export function ProfileCard({ profile }: ProfileCardProps) {
   const t = useTranslations("Profile");
   const locale = useLocale();
   const [isSubmitting, startTransition] = useTransition();
+  const quotaCtx = usePhotoQuota();
 
   // Photo-access state comes from the server; the action + revalidate refresh it.
   const revealed = isRevealed(profile, profile.photoAccess);
   const pending = profile.photoAccess === "PENDING";
 
+  // A brand-new request (no prior row) is the only kind the daily cap blocks.
+  const isNewRequest = profile.photoAccess === "NONE";
+  const blockedByLimit =
+    !!quotaCtx &&
+    !quotaCtx.quota.unlimited &&
+    isNewRequest &&
+    quotaCtx.quota.remaining <= 0;
+
   function requestPhoto() {
+    if (blockedByLimit) return;
     startTransition(async () => {
-      await requestPhotoAccessAction(profile.id);
+      const result = await requestPhotoAccessAction(profile.id);
+      quotaCtx?.applyResult(result);
     });
   }
 
@@ -125,9 +137,14 @@ export function ProfileCard({ profile }: ProfileCardProps) {
             size="sm"
             className="flex-1"
             onClick={requestPhoto}
-            disabled={pending || revealed || isSubmitting}
+            disabled={pending || revealed || isSubmitting || blockedByLimit}
+            title={blockedByLimit ? t("photo.quota.limitReachedTitle") : undefined}
           >
-            {pending ? t("card.requested") : t("card.request")}
+            {pending
+              ? t("card.requested")
+              : blockedByLimit
+                ? t("photo.quota.cardButton")
+                : t("card.request")}
           </Button>
           <Link href={`/profiles/${profile.id}`} className="flex-1">
             <Button variant="outline" size="sm" fullWidth>

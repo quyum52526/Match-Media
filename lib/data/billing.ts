@@ -1,7 +1,8 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
-import { computeDiscount, isProActive } from "@/lib/billing";
+import { computeDiscount, isProActive, checkDailyLimit } from "@/lib/billing";
 import { resolveTriggeredCoupon } from "@/lib/billing/coupons";
+import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
 
 /** A plan as shown on the /pro page, with any auto-applied promo resolved. */
 export interface CheckoutPlan {
@@ -64,6 +65,30 @@ export async function getViewerProStatus(viewerId: string): Promise<ViewerProSta
   return {
     isPro: isProActive(user),
     proExpiresAt: user?.proExpiresAt ?? null,
+  };
+}
+
+export interface PhotoQuota {
+  unlimited: boolean;
+  /** New photo requests left today (free tier); equals `limit` for Pro. */
+  remaining: number;
+  limit: number;
+}
+
+/** The viewer's remaining photo-request quota for today (Pro = unlimited). */
+export async function getPhotoRequestQuota(viewerId: string): Promise<PhotoQuota> {
+  const user = await prisma.user.findUnique({
+    where: { id: viewerId },
+    select: { isPro: true, proExpiresAt: true },
+  });
+  const check = await checkDailyLimit(
+    { id: viewerId, isPro: user?.isPro, proExpiresAt: user?.proExpiresAt },
+    "PHOTO_REQUEST",
+  );
+  return {
+    unlimited: check.unlimited,
+    remaining: check.unlimited ? FREE_DAILY_LIMIT : check.remaining,
+    limit: FREE_DAILY_LIMIT,
   };
 }
 

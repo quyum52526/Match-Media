@@ -131,7 +131,14 @@
       "revoked": "Photo access was revoked",
       "requestAgain": "Send Request again",
       "granted": "You have photo access",
-      "alt": "{name}'s photo"
+      "alt": "{name}'s photo",
+      "quota": {
+        "remaining": "{n} of {limit} free photo requests left today",
+        "limitReachedTitle": "Daily limit reached.",
+        "limitReached": "You've used all {limit} free photo requests for today.",
+        "upgrade": "Upgrade to Pro for unlimited",
+        "cardButton": "Limit reached"
+      }
     },
     "contact": {
       "title": "Contact information",

@@ -131,7 +131,14 @@
       "revoked": "Photo দেখার অনুমতি প্রত্যাহার করা হয়েছে",
       "requestAgain": "আবার Request পাঠান",
       "granted": "Photo access পেয়েছেন",
-      "alt": "{name} এর Photo"
+      "alt": "{name} এর Photo",
+      "quota": {
+        "remaining": "আজ {limit} টির মধ্যে {n} টি free photo request বাকি",
+        "limitReachedTitle": "আজকের limit শেষ।",
+        "limitReached": "আজকের {limit} টি free photo request-ই ব্যবহার হয়ে গেছে।",
+        "upgrade": "Unlimited-এর জন্য Pro নিন",
+        "cardButton": "Limit শেষ"
+      }
     },
     "contact": {
       "title": "Contact তথ্য",

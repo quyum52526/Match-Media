@@ -12,6 +12,8 @@ interface BlurredImageProps {
   name: string;
   onRequest?: () => void;
   pending?: boolean;
+  /** Blocked by the free-tier daily request cap. */
+  requestDisabled?: boolean;
 }
 
 /** Has the viewer earned a clear look at the photo? */
@@ -26,6 +28,7 @@ export function BlurredImage({
   name,
   onRequest,
   pending,
+  requestDisabled,
 }: BlurredImageProps) {
   const t = useTranslations("Profile.photo");
   const revealed = isRevealed(privacy, state);
@@ -92,9 +95,9 @@ export function BlurredImage({
                 size="sm"
                 variant="primary"
                 onClick={onRequest}
-                disabled={pending}
+                disabled={pending || requestDisabled}
               >
-                {t("request")}
+                {requestDisabled ? t("quota.cardButton") : t("request")}
               </Button>
             </>
           )}

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { SearchIcon } from "@/components/ui/icons";
 import { getBrowseProfiles, type SearchFilters } from "@/lib/data/profiles";
 import { getProfileCompletion } from "@/lib/data/profileCompletion";
+import { getPhotoRequestQuota } from "@/lib/data/billing";
 import { requireViewerId } from "@/lib/session";
 
 export const metadata = {
@@ -53,9 +54,10 @@ export default async function BrowsePage({
   };
   const hasFilters = Object.values(filters).some((v) => v !== undefined);
 
-  const [profiles, completion] = await Promise.all([
+  const [profiles, completion, quota] = await Promise.all([
     getBrowseProfiles(viewerId, filters),
     getProfileCompletion(viewerId),
+    getPhotoRequestQuota(viewerId),
   ]);
 
   return (
@@ -83,7 +85,7 @@ export default async function BrowsePage({
       </p>
 
       {profiles.length > 0 ? (
-        <ProfileGrid profiles={profiles} />
+        <ProfileGrid profiles={profiles} quota={quota} />
       ) : hasFilters ? (
         <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-charcoal/15 bg-white py-14 text-center">
           <span className="flex h-12 w-12 items-center justify-center rounded-full bg-charcoal/5 text-charcoal/40">
