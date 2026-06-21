@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { seedBillingCatalog } from "./seedCatalog";
 
 const prisma = new PrismaClient();
 
@@ -30,6 +31,9 @@ async function main() {
       data: { subscriptionModeActive: false, visibilityFloorPercent: 30 },
     });
   }
+
+  // --- Billing catalog (plans + promo coupons) — idempotent upserts ---
+  await seedBillingCatalog(prisma);
 
   // --- Clean slate (FK-safe order) ---
   await prisma.interest.deleteMany();

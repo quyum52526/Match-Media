@@ -48,20 +48,65 @@ enum ServiceStatus {
   VERIFIED
 }
 
+// --- Billing / subscription -------------------------------------------------
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+  EXPIRED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  INITIATED
+  SUCCESS
+  FAILED
+  CANCELLED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+// PERCENT: discountValue is 0–100. FIXED: discountValue is an amount in poisha.
+enum DiscountType {
+  PERCENT
+  FIXED
+}
+
+// Lets the backend auto-discover the coupon to apply at a lifecycle moment.
+enum CouponTrigger {
+  NONE
+  SIGNUP
+  RENEWAL
+}
+
+enum UsageAction {
+  PROFILE_VIEW
+  PHOTO_REQUEST
+}
+
 // ---------------------------------------------------------------------------
 // Core identity
 // ---------------------------------------------------------------------------
 
 model User {
-  id               String   @id @default(cuid())
-  role             Role     @default(GENERAL)
-  email            String   @unique
+  id               String    @id @default(cuid())
+  role             Role      @default(GENERAL)
+  email            String    @unique
   passwordHash     String
-  mobile           String?  @unique
-  isMobileVerified Boolean  @default(false)
+  mobile           String?   @unique
+  isMobileVerified Boolean   @default(false)
   // Pro (paid) membership — drives the VIP badge and contact-reveal gate.
-  isPro            Boolean  @default(false)
-  createdAt        DateTime @default(now())
+  // `isPro` is the denormalized fast-path flag; `proExpiresAt` is the source of
+  // truth that isProActive() checks so access lapses the moment it passes.
+  isPro            Boolean   @default(false)
+  proExpiresAt     DateTime?
+  createdAt        DateTime  @default(now())
 
   // 1:1 — the user's own profile
   profile Profile?
@@ -86,6 +131,12 @@ model User {
 
   // Profile view activity (as the viewer)
   profileViews ProfileViewLog[] @relation("ViewsMade")
+
+  // Billing / subscription
+  orders            Order[]            @relation("UserOrders")
+  subscriptions     Subscription[]     @relation("UserSubscriptions")
+  couponRedemptions CouponRedemption[] @relation("UserRedemptions")
+  dailyUsage        DailyUsage[]       @relation("UserUsage")
 }
 
 model Profile {
@@ -106,8 +157,8 @@ model Profile {
   bio           String?
 
   // Extended attributes (shown in the "View Full Details" modal)
-  height        String?
-  weight        String?
+  height         String?
+  weight         String?
   childrenStatus String?
   familyDetails  String?
 
@@ -131,14 +182,14 @@ model Profile {
 }
 
 model ProfileImage {
-  id        String       @id @default(cuid())
-  profileId String
-  profile   Profile      @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  privacy   ImagePrivacy @default(BLURRED)
+  id          String       @id @default(cuid())
+  profileId   String
+  profile     Profile      @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  privacy     ImagePrivacy @default(BLURRED)
   originalKey String
   blurredKey  String
-  isPrimary   Boolean    @default(false)
-  createdAt   DateTime   @default(now())
+  isPrimary   Boolean      @default(false)
+  createdAt   DateTime     @default(now())
 
   @@index([profileId])
 }
@@ -228,4 +279,138 @@ model ProfileViewLog {
   // One row per viewer/profile/day -> enables daily-unique view counting
   @@unique([viewerId, viewedProfileId, date])
   @@index([viewedProfileId, date])
+}
+
+// ---------------------------------------------------------------------------
+// Billing: plans, coupons, orders, payments, subscriptions
+// ---------------------------------------------------------------------------
+
+// DB-stored plan catalog (no hardcoded prices). Money is integer poisha.
+model Plan {
+  id           String   @id @default(cuid())
+  code         String   @unique // "PRO_1M" | "PRO_3M" | "PRO_12M"
+  name         String
+  durationDays Int
+  priceAmount  Int // poisha (e.g. 120000 = 1200 BDT)
+  currency     String   @default("BDT")
+  isActive     Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  orders Order[]
+}
+
+// Dynamic discount engine. SIGNUP/RENEWAL triggers let the backend auto-apply.
+model Coupon {
+  id             String        @id @default(cuid())
+  code           String        @unique
+  description    String?
+  discountType   DiscountType
+  discountValue  Int // PERCENT: 0-100 | FIXED: poisha
+  trigger        CouponTrigger @default(NONE)
+  appliesToPlan  String? // null = any plan, else Plan.code
+  grantsPlanCode String? // SIGNUP coupon: which plan it provisions
+  maxRedemptions Int? // global cap (null = unlimited)
+  redeemedCount  Int           @default(0)
+  perUserLimit   Int?          @default(1)
+  validFrom      DateTime?
+  validUntil     DateTime?
+  isActive       Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+
+  redemptions CouponRedemption[]
+  orders      Order[]
+}
+
+model CouponRedemption {
+  id        String   @id @default(cuid())
+  couponId  String
+  coupon    Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation("UserRedemptions", fields: [userId], references: [id], onDelete: Cascade)
+  orderId   String   @unique
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  // Enforces perUserLimit=1 (the common case) at the DB level.
+  @@unique([couponId, userId])
+  @@index([userId])
+}
+
+model Order {
+  id        String @id @default(cuid())
+  invoiceNo String @unique // MM-YYYYMMDD-####
+  userId    String
+  user      User   @relation("UserOrders", fields: [userId], references: [id], onDelete: Cascade)
+
+  // Snapshot of the plan at purchase time so later price changes never
+  // rewrite billing history.
+  planId       String?
+  plan         Plan?   @relation(fields: [planId], references: [id], onDelete: SetNull)
+  planCode     String
+  planName     String
+  durationDays Int
+
+  baseAmount     Int // poisha, pre-discount
+  discountAmount Int    @default(0) // poisha
+  finalAmount    Int // poisha, charged (0 => skip gateway)
+  currency       String @default("BDT")
+
+  couponId   String?
+  coupon     Coupon? @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  couponCode String? // snapshot
+
+  status    OrderStatus @default(PENDING)
+  gateway   String?
+  paidAt    DateTime?
+  createdAt DateTime    @default(now())
+
+  payments     Payment[]
+  subscription Subscription?
+  redemption   CouponRedemption?
+
+  @@index([userId, status])
+}
+
+model Payment {
+  id           String        @id @default(cuid())
+  orderId      String
+  order        Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  gateway      String
+  gatewayTxnId String?
+  status       PaymentStatus @default(INITIATED)
+  amount       Int // poisha
+  rawPayload   Json?
+  createdAt    DateTime      @default(now())
+
+  @@index([orderId])
+}
+
+model Subscription {
+  id        String             @id @default(cuid())
+  userId    String
+  user      User               @relation("UserSubscriptions", fields: [userId], references: [id], onDelete: Cascade)
+  orderId   String             @unique
+  order     Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  planCode  String
+  startsAt  DateTime
+  endsAt    DateTime
+  status    SubscriptionStatus @default(ACTIVE)
+  createdAt DateTime           @default(now())
+
+  @@index([userId, endsAt])
+  @@index([status, endsAt]) // cron sweep: ACTIVE rows past endsAt
+}
+
+// Free-tier daily caps. One row per (user, day, action); upsert+increment.
+model DailyUsage {
+  id     String      @id @default(cuid())
+  userId String
+  user   User        @relation("UserUsage", fields: [userId], references: [id], onDelete: Cascade)
+  date   DateTime    @db.Date
+  action UsageAction
+  count  Int         @default(0)
+
+  @@unique([userId, date, action])
+  @@index([userId, date])
 }
