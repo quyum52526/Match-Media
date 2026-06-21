@@ -4,3 +4,4 @@ export * from "./coupons";
 export * from "./orders";
 export * from "./usage";
 export * from "./gateway";
+export * from "./expiry";
