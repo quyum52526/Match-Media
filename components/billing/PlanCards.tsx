@@ -70,11 +70,15 @@ export function PlanCards({
                 variant={featured ? "gold" : "outline"}
                 className="mt-5"
                 fullWidth
-                disabled={pending || alreadyPro}
+                disabled={pending}
                 onClick={() => choose(plan.code)}
               >
                 <StarIcon width={16} height={16} />
-                {pending && chosen === plan.code ? t("processing") : t("choose")}
+                {pending && chosen === plan.code
+                  ? t("processing")
+                  : alreadyPro
+                    ? t("renew")
+                    : t("choose")}
               </Button>
             </CardBody>
           </Card>

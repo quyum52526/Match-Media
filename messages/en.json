@@ -29,6 +29,20 @@
       "title": "Find your match",
       "body": "Browse verified profiles from across Bangladesh",
       "action": "Browse matches"
+    },
+    "pro": {
+      "statusPro": "Pro Member",
+      "statusFree": "Free Plan",
+      "badgePro": "PRO",
+      "badgeFree": "FREE",
+      "activeUntil": "Active until {date}",
+      "daysLeft": "{n} days left",
+      "lifetime": "Lifetime membership",
+      "expiredOn": "Your Pro membership expired on {date}",
+      "freeHint": "Upgrade for unlimited access and instant ‘Who viewed me’",
+      "upgrade": "Upgrade to Pro",
+      "renew": "Renew",
+      "renewNow": "Renew now"
     }
   },
   "Viewers": {
@@ -274,6 +288,7 @@
     "bestValue": "Best value",
     "promoApplied": "{code} applied",
     "choose": "Choose plan",
+    "renew": "Renew",
     "processing": "Processing…",
     "perks": {
       "unlimited": "Unlimited profile views and photo requests",

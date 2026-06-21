@@ -29,6 +29,20 @@
       "title": "আপনার Match খুঁজুন",
       "body": "সারা বাংলাদেশের verified profile browse করুন",
       "action": "Match browse করুন"
+    },
+    "pro": {
+      "statusPro": "Pro Member",
+      "statusFree": "Free Plan",
+      "badgePro": "PRO",
+      "badgeFree": "FREE",
+      "activeUntil": "{date} পর্যন্ত active",
+      "daysLeft": "{n} দিন বাকি",
+      "lifetime": "Lifetime membership",
+      "expiredOn": "আপনার Pro membership {date} তারিখে শেষ হয়েছে",
+      "freeHint": "Unlimited access এবং সাথে সাথে ‘কে দেখেছে’-এর জন্য upgrade করুন",
+      "upgrade": "Pro নিন",
+      "renew": "Renew করুন",
+      "renewNow": "এখনই renew করুন"
     }
   },
   "Viewers": {
@@ -274,6 +288,7 @@
     "bestValue": "সেরা মূল্য",
     "promoApplied": "{code} প্রয়োগ হয়েছে",
     "choose": "Plan বেছে নিন",
+    "renew": "Renew করুন",
     "processing": "Processing…",
     "perks": {
       "unlimited": "Unlimited profile view এবং photo request",

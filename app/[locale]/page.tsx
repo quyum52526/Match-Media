@@ -6,6 +6,7 @@ import { getViewerId } from "@/lib/session";
 import { getDashboardStats } from "@/lib/data/dashboard";
 import { getProfileCompletion } from "@/lib/data/profileCompletion";
 import { getProfileViewers } from "@/lib/data/viewers";
+import { getViewerProStatus } from "@/lib/data/billing";
 
 // Viewer cards shown directly on the dashboard before the "See all" link.
 const DASHBOARD_VIEWERS = 6;
@@ -21,13 +22,19 @@ export default async function Home({
   // Signed-in users get a personalized dashboard; visitors get the landing page.
   const viewerId = await getViewerId();
   if (viewerId) {
-    const [stats, completion, viewers] = await Promise.all([
+    const [stats, completion, viewers, proStatus] = await Promise.all([
       getDashboardStats(viewerId),
       getProfileCompletion(viewerId),
       getProfileViewers(viewerId, DASHBOARD_VIEWERS),
+      getViewerProStatus(viewerId),
     ]);
     return (
-      <Dashboard stats={stats} completion={completion} viewers={viewers} />
+      <Dashboard
+        stats={stats}
+        completion={completion}
+        viewers={viewers}
+        proStatus={proStatus}
+      />
     );
   }
 

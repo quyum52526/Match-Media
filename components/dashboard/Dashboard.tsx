@@ -5,25 +5,33 @@ import { Card, CardBody } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ProfileCompletionBanner } from "@/components/profile/ProfileCompletionBanner";
 import { WhoViewedMe } from "@/components/profile/WhoViewedMe";
+import { Badge } from "@/components/ui/Badge";
 import {
   EyeIcon,
   InboxIcon,
   HeartIcon,
   RingIcon,
   SearchIcon,
+  StarIcon,
 } from "@/components/ui/icons";
 import type { DashboardStats } from "@/lib/data/dashboard";
 import type { ProfileCompletion } from "@/lib/data/profileCompletion";
 import type { ProfileViewers } from "@/lib/data/viewers";
+import type { ViewerProStatus } from "@/lib/data/billing";
+
+/** Renew CTA turns urgent (gold) when fewer than this many days remain. */
+const RENEW_SOON_DAYS = 14;
 
 export async function Dashboard({
   stats,
   completion,
   viewers,
+  proStatus,
 }: {
   stats: DashboardStats;
   completion: ProfileCompletion;
   viewers: ProfileViewers;
+  proStatus: ViewerProStatus;
 }) {
   const t = await getTranslations("Dashboard");
   const v = await getTranslations("Viewers");
@@ -40,6 +48,10 @@ export async function Dashboard({
         </h1>
         <p className="mt-1 text-sm text-charcoal/60">{t("subtitle")}</p>
       </header>
+
+      <div className="mb-6">
+        <ProStatusCard proStatus={proStatus} t={t} />
+      </div>
 
       {completion.score < 100 && (
         <div className="mb-6">
@@ -160,5 +172,107 @@ function StatCard({
     </Link>
   ) : (
     card
+  );
+}
+
+type Translate = (key: string, values?: Record<string, string>) => string;
+
+/**
+ * Membership status banner: shows whether the viewer is Pro (with expiry +
+ * days remaining) or Free (or lapsed), and a clear upgrade/renew CTA. The renew
+ * CTA turns gold (urgent) when Pro is expired or within RENEW_SOON_DAYS.
+ */
+function ProStatusCard({
+  proStatus,
+  t,
+}: {
+  proStatus: ViewerProStatus;
+  t: Translate;
+}) {
+  const expiresAt = proStatus.proExpiresAt;
+  const state: "ACTIVE" | "EXPIRED" | "FREE" = proStatus.isPro
+    ? "ACTIVE"
+    : expiresAt
+      ? "EXPIRED"
+      : "FREE";
+
+  const dateStr = expiresAt
+    ? expiresAt.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    : null;
+
+  const daysLeft =
+    state === "ACTIVE" && expiresAt
+      ? Math.max(0, Math.ceil((expiresAt.getTime() - Date.now()) / 86_400_000))
+      : null;
+  const soon = daysLeft !== null && daysLeft <= RENEW_SOON_DAYS;
+
+  // Per-state presentation.
+  const isPro = state === "ACTIVE";
+  const urgent = state === "EXPIRED" || soon || state === "FREE";
+
+  const accent = isPro
+    ? "border-gold/30 bg-gold/[0.04]"
+    : state === "EXPIRED"
+      ? "border-gold/40 bg-gold/[0.06]"
+      : "border-charcoal/10";
+
+  const detail =
+    state === "ACTIVE"
+      ? dateStr
+        ? `${t("pro.activeUntil", { date: dateStr })}${
+            daysLeft !== null ? ` · ${t("pro.daysLeft", { n: String(daysLeft) })}` : ""
+          }`
+        : t("pro.lifetime")
+      : state === "EXPIRED" && dateStr
+        ? t("pro.expiredOn", { date: dateStr })
+        : t("pro.freeHint");
+
+  const ctaLabel =
+    state === "ACTIVE"
+      ? t("pro.renew")
+      : state === "EXPIRED"
+        ? t("pro.renewNow")
+        : t("pro.upgrade");
+
+  return (
+    <Card className={accent}>
+      <CardBody className="flex flex-col items-start gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+        <div className="flex items-center gap-3">
+          <span
+            className={
+              isPro
+                ? "flex h-10 w-10 items-center justify-center rounded-xl bg-gold/15 text-gold"
+                : "flex h-10 w-10 items-center justify-center rounded-xl bg-charcoal/5 text-charcoal/50"
+            }
+          >
+            <StarIcon width={20} height={20} />
+          </span>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-base font-semibold text-charcoal">
+                {isPro ? t("pro.statusPro") : t("pro.statusFree")}
+              </span>
+              <Badge
+                variant={isPro ? "gold" : "neutral"}
+                className={isPro ? "bg-gold text-white" : undefined}
+              >
+                {isPro ? t("pro.badgePro") : t("pro.badgeFree")}
+              </Badge>
+            </div>
+            <p className="mt-0.5 text-sm text-charcoal/60">{detail}</p>
+          </div>
+        </div>
+        <Link href="/pro" className="shrink-0 self-stretch sm:self-auto">
+          <Button variant={urgent ? "gold" : "outline"} fullWidth>
+            <StarIcon width={16} height={16} />
+            {ctaLabel}
+          </Button>
+        </Link>
+      </CardBody>
+    </Card>
   );
 }
