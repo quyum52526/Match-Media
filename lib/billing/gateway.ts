@@ -3,11 +3,16 @@
 // and registering it. For now a MockGateway lets the whole flow run end to end.
 
 import type { Order } from "@prisma/client";
+import { SSLCommerzGateway } from "./gateways/sslcommerz";
 
 export interface CreateSessionInput {
   order: Order;
   /** Absolute or app-relative URL to return the user to after payment. */
   returnUrl: string;
+  /** Absolute app origin, used to build a gateway's callback URLs. */
+  appUrl?: string;
+  /** Active locale, so the gateway can return the user to the right path. */
+  locale?: string;
 }
 
 export interface CreateSessionResult {
@@ -62,10 +67,14 @@ class MockGateway implements PaymentGateway {
 
 const GATEWAYS: Record<string, PaymentGateway> = {
   mock: new MockGateway(),
+  sslcommerz: new SSLCommerzGateway(),
 };
 
-/** The active default gateway (swap via env when a real one is added). */
-export const DEFAULT_GATEWAY = "mock";
+/**
+ * The active gateway. Defaults to SSLCommerz (live BD gateway); set
+ * PAYMENT_GATEWAY=mock for local development without real payments.
+ */
+export const DEFAULT_GATEWAY = process.env.PAYMENT_GATEWAY ?? "sslcommerz";
 
 export function getGateway(name: string = DEFAULT_GATEWAY): PaymentGateway {
   const gw = GATEWAYS[name];

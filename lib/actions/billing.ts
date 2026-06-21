@@ -40,8 +40,16 @@ export async function initiatePayment(orderId: string, locale: string): Promise<
   const session = await gateway.createSession({
     order,
     returnUrl: localePath(locale, `/pro/checkout/${order.id}`),
+    appUrl: process.env.APP_URL,
+    locale,
   });
-  redirect(localePath(locale, session.redirectUrl));
+
+  // An external gateway returns an absolute URL — redirect straight to it; an
+  // in-app gateway (mock) returns an app-relative path that needs the locale.
+  const dest = /^https?:\/\//.test(session.redirectUrl)
+    ? session.redirectUrl
+    : localePath(locale, session.redirectUrl);
+  redirect(dest);
 }
 
 /**
