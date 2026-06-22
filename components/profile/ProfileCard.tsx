@@ -52,15 +52,28 @@ export function ProfileCard({ profile }: ProfileCardProps) {
 
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-charcoal/10 bg-white shadow-sm transition-shadow hover:shadow-md">
-      {/* Blurred photo (default privacy state) */}
+      {/* Photo — real image when available, decorative gradient otherwise.
+          When gated, the server already supplied the pre-blurred teaser; the
+          CSS blur is harmless defense-in-depth. */}
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-charcoal/5">
-        <div
-          className={
-            "h-full w-full bg-gradient-to-br from-trustGreen/30 via-verifyGreen/20 to-gold/20" +
-            (revealed ? "" : " blur-2xl scale-110")
-          }
-          aria-hidden
-        />
+        {profile.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={profile.imageUrl}
+            alt=""
+            className={
+              "h-full w-full object-cover" + (revealed ? "" : " blur-2xl scale-110")
+            }
+          />
+        ) : (
+          <div
+            className={
+              "h-full w-full bg-gradient-to-br from-trustGreen/30 via-verifyGreen/20 to-gold/20" +
+              (revealed ? "" : " blur-2xl scale-110")
+            }
+            aria-hidden
+          />
+        )}
 
         {!revealed && (
           <div className="absolute inset-0 flex items-center justify-center bg-charcoal/20">

@@ -1,7 +1,10 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ProfileEditForm } from "@/components/profile/ProfileEditForm";
+import { PhotoManager } from "@/components/profile/PhotoManager";
 import { Card, CardBody } from "@/components/ui/Card";
 import { getEditableProfile } from "@/lib/data/profiles";
+import { getOwnPhotos } from "@/lib/data/photos";
+import { MAX_PHOTOS } from "@/lib/storage/images";
 import { requireViewerId } from "@/lib/session";
 
 export const metadata = {
@@ -22,6 +25,10 @@ export default async function ProfileEditPage({
   const t = await getTranslations("ProfileEdit");
 
   const initial = await getEditableProfile(viewerId);
+  // A Profile row requires gender (non-null), so an empty gender means the user
+  // hasn't created one yet — photos hang off Profile, so defer the uploader.
+  const hasProfile = initial.gender !== "";
+  const photos = hasProfile ? await getOwnPhotos(viewerId) : [];
   const isWelcome = welcome === "1";
 
   return (
@@ -36,6 +43,18 @@ export default async function ProfileEditPage({
         <Card className="mb-6 border-trustGreen/20 bg-trustGreen/[0.04]">
           <CardBody>
             <p className="text-sm text-charcoal/80">{t("welcome.body")}</p>
+          </CardBody>
+        </Card>
+      )}
+
+      {hasProfile ? (
+        <div className="mb-6">
+          <PhotoManager photos={photos} maxPhotos={MAX_PHOTOS} />
+        </div>
+      ) : (
+        <Card className="mb-6 border-charcoal/10">
+          <CardBody>
+            <p className="text-sm text-charcoal/70">{t("photos.needProfile")}</p>
           </CardBody>
         </Card>
       )}

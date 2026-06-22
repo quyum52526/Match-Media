@@ -78,6 +78,12 @@ export interface ProfileSummary {
   /** Owner has a Pro membership -> shows the golden VIP badge on the card. */
   isPro: boolean;
   primaryImagePrivacy: ImagePrivacy;
+  /**
+   * Signed URL for the primary photo, viewer-appropriate: the ORIGINAL when the
+   * viewer is allowed to see it (PUBLIC photo or APPROVED access), otherwise the
+   * pre-blurred teaser. Absent when the profile has no photo.
+   */
+  imageUrl?: string;
   /** The current viewer's photo-access state for this profile. */
   photoAccess: PhotoAccessState;
 }
@@ -103,6 +109,11 @@ export interface ProfileDetailView {
   /** Display name of the referring MEDIA partner, if any. */
   referredByMedia?: string;
   primaryImagePrivacy: ImagePrivacy;
+  /**
+   * Signed URL for the primary photo, viewer-appropriate (original when the
+   * viewer may see it, otherwise the pre-blurred teaser). Absent when no photo.
+   */
+  imageUrl?: string;
   details: ProfileFullDetails;
   viewer: ViewerState;
   /** Revealed only to Pro viewers. */

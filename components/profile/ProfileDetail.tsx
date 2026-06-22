@@ -108,6 +108,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
           <BlurredImage
             privacy={data.primaryImagePrivacy}
             state={viewer.photoAccess}
+            src={data.imageUrl}
             name={data.displayName}
             onRequest={requestPhotoAccess}
             pending={isPending}

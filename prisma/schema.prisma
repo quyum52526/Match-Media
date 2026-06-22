@@ -189,6 +189,8 @@ model ProfileImage {
   originalKey String
   blurredKey  String
   isPrimary   Boolean      @default(false)
+  // Stable display order within a profile's gallery (primary aside).
+  sortOrder   Int          @default(0)
   createdAt   DateTime     @default(now())
 
   @@index([profileId])

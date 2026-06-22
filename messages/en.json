@@ -255,6 +255,35 @@
       "MISSING": "Gender and date of birth are required",
       "AGE": "You must be at least 18 years old",
       "UNAUTH": "Please log in again"
+    },
+    "photos": {
+      "title": "Photos",
+      "subtitle": "Add a profile photo and gallery. Photos stay blurred until you approve a request, unless you make them public.",
+      "count": "{count} of {max} photos",
+      "add": "Add a photo",
+      "addFirst": "Add your first photo",
+      "uploading": "Uploading…",
+      "primaryBadge": "Primary",
+      "publicBadge": "Public",
+      "blurredBadge": "Blurred",
+      "makePrimary": "Set as primary",
+      "makePublic": "Make public",
+      "makeBlurred": "Make blurred",
+      "delete": "Delete",
+      "limitNote": "Photo limit reached — delete one to add another.",
+      "savedHint": "Saved",
+      "privacyHint": "Your primary photo is the thumbnail others see. Blurred photos are revealed only after you approve a photo request.",
+      "needProfile": "Save your basic details first, then you can add photos.",
+      "errors": {
+        "TYPE": "Use a JPG, PNG, or WebP image.",
+        "SIZE": "Image is too large (max 5 MB).",
+        "EMPTY": "Please choose an image to upload.",
+        "DECODE": "That image couldn't be read. Try another file.",
+        "UPLOAD": "Upload failed. Please try again.",
+        "LIMIT": "You've reached the photo limit.",
+        "FORBIDDEN": "You can only manage your own photos.",
+        "NO_PROFILE": "Save your basic details first, then add photos."
+      }
     }
   },
   "Auth": {
