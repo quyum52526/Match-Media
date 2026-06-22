@@ -9,6 +9,7 @@
     "requests": "Requests",
     "interests": "Interests",
     "editProfile": "My Profile",
+    "messages": "Messages",
     "admin": "Admin"
   },
   "Home": {
@@ -104,6 +105,7 @@
     "nameHidden": "Name hidden",
     "verified": "Verified",
     "vip": "Premium Verified",
+    "message": "Message",
     "ageLine": "<n>{age}</n> yrs · {gender} · {upazila}, {district}",
     "mediaPartner": "Media: {name}",
     "keyFacts": "Key information",
@@ -356,6 +358,17 @@
       "filterUnverified": "Unverified",
       "filterAll": "All"
     }
+  },
+  "Messages": {
+    "title": "Messages",
+    "empty": "No conversations yet",
+    "emptyHint": "When you and a match accept each other, you can chat here.",
+    "youPrefix": "You:",
+    "noMessagesYet": "No messages yet",
+    "threadEmpty": "Say hello to start the conversation.",
+    "composerPlaceholder": "Write a message…",
+    "send": "Send",
+    "notMatched": "You can no longer message this person."
   },
   "Auth": {
     "title": "Log in",

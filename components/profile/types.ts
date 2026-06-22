@@ -41,6 +41,8 @@ export interface ViewerState {
   interest: InterestState;
   /** Whether the current viewer has a Pro (paid) subscription. */
   isPro: boolean;
+  /** Mutual ACCEPTED interest (either direction) — unlocks in-app messaging. */
+  isMatched: boolean;
 }
 
 export interface ProfileContact {

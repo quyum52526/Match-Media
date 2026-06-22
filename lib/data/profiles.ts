@@ -310,6 +310,9 @@ export async function getProfileForViewer(
     photoAccess: (photoReq?.status as PhotoAccessState) ?? "NONE",
     interest: (sentInterest?.status as InterestState) ?? "NONE",
     isPro: viewerIsPro,
+    // Mutual consent (either direction) — same signal that authorizes contact,
+    // here used to unlock in-app messaging (no Pro requirement).
+    isMatched: interestAccepted,
   };
 
   const primary = profile.images[0];

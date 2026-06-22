@@ -7,6 +7,7 @@ import {
   requestPhotoAccess as requestPhotoAccessAction,
   sendInterest as sendInterestAction,
 } from "@/lib/actions/funnel";
+import { startConversation } from "@/lib/actions/messages";
 import { QuotaNote } from "@/components/billing/PhotoQuota";
 import type { PhotoQuota } from "@/lib/data/billing";
 import { Button } from "@/components/ui/Button";
@@ -23,6 +24,7 @@ import {
   BriefcaseIcon,
   GraduationIcon,
   RingIcon,
+  ChatIcon,
 } from "@/components/ui/icons";
 import { computeCompletion } from "@/lib/utils";
 import { localize } from "@/lib/constants/labels";
@@ -101,6 +103,13 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
     router.push(locale === "en" ? "/en/pro" : "/pro");
   }
 
+  function openConversation() {
+    startTransition(async () => {
+      const id = await startConversation(data.id);
+      if (id) router.push(`${locale === "en" ? "/en" : ""}/messages/${id}`);
+    });
+  }
+
   return (
     <main className="mx-auto max-w-5xl px-4 py-6 sm:py-10">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[360px,1fr]">
@@ -124,6 +133,19 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
             onExpress={expressInterest}
             pending={isPending}
           />
+
+          {/* Matched users can chat in-app (free, no Pro required). */}
+          {viewer.isMatched && (
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={openConversation}
+              disabled={isPending}
+            >
+              <ChatIcon width={18} height={18} />
+              {t("message")}
+            </Button>
+          )}
 
           <CompletionMeter score={completion} />
         </div>

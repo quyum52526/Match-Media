@@ -114,6 +114,16 @@ enum ReportReason {
   OTHER
 }
 
+// --- Messaging --------------------------------------------------------------
+
+// TEXT now. SYSTEM/CALL_EVENT are reserved so future call invites / missed-call
+// notices can log inline into the same thread (WebRTC-ready, no schema change).
+enum MessageType {
+  TEXT
+  SYSTEM
+  CALL_EVENT
+}
+
 // ---------------------------------------------------------------------------
 // Core identity
 // ---------------------------------------------------------------------------
@@ -165,6 +175,11 @@ model User {
   // Trust & safety
   reportsMade     Report[] @relation("ReportsMade")
   reportsReceived Report[] @relation("ReportsReceived")
+
+  // Messaging
+  conversationsA Conversation[] @relation("ConvA")
+  conversationsB Conversation[] @relation("ConvB")
+  messagesSent   Message[]      @relation("MsgSender")
 }
 
 model Profile {
@@ -469,4 +484,41 @@ model Report {
 
   @@index([status, createdAt])
   @@index([reportedUserId])
+}
+
+// --- Messaging: 1:1 conversations between matched users ---------------------
+
+// Exactly two participants, stored as a CANONICAL pair (userAId < userBId) so
+// the @@unique guarantees one conversation per pair regardless of who started
+// it. Conversation is also the natural future home for a CallSession (WebRTC).
+model Conversation {
+  id            String   @id @default(cuid())
+  userAId       String
+  userA         User     @relation("ConvA", fields: [userAId], references: [id], onDelete: Cascade)
+  userBId       String
+  userB         User     @relation("ConvB", fields: [userBId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  // Bumped on every send so the inbox can order by most-recent activity.
+  lastMessageAt DateTime @default(now())
+
+  messages Message[]
+
+  @@unique([userAId, userBId])
+  @@index([userAId, lastMessageAt])
+  @@index([userBId, lastMessageAt])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation("MsgSender", fields: [senderId], references: [id], onDelete: Cascade)
+  body           String
+  type           MessageType  @default(TEXT)
+  // Set when the recipient has seen it — drives unread counts / read receipts.
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
 }

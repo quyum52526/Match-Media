@@ -9,6 +9,7 @@
     "requests": "Requests",
     "interests": "Interests",
     "editProfile": "My Profile",
+    "messages": "Messages",
     "admin": "Admin"
   },
   "Home": {
@@ -104,6 +105,7 @@
     "nameHidden": "নাম গোপন",
     "verified": "Verified",
     "vip": "Premium Verified",
+    "message": "মেসেজ",
     "ageLine": "<n>{age}</n> বছর · {gender} · {upazila}, {district}",
     "mediaPartner": "Media: {name}",
     "keyFacts": "মৌলিক তথ্য",
@@ -356,6 +358,17 @@
       "filterUnverified": "যাচাই-না-করা",
       "filterAll": "সব"
     }
+  },
+  "Messages": {
+    "title": "Messages",
+    "empty": "এখনও কোনো কথোপকথন নেই",
+    "emptyHint": "আপনি ও একজন ম্যাচ একে অপরকে গ্রহণ করলে এখানে চ্যাট করতে পারবেন।",
+    "youPrefix": "আপনি:",
+    "noMessagesYet": "এখনও কোনো মেসেজ নেই",
+    "threadEmpty": "কথোপকথন শুরু করতে সালাম দিন।",
+    "composerPlaceholder": "একটি মেসেজ লিখুন…",
+    "send": "পাঠান",
+    "notMatched": "আপনি আর এই ব্যক্তিকে মেসেজ করতে পারবেন না।"
   },
   "Auth": {
     "title": "Login করুন",

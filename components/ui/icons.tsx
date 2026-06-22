@@ -31,6 +31,14 @@ export function ShieldCheckIcon(props: IconProps) {
   );
 }
 
+export function ChatIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l.8-5.5A8 8 0 1 1 21 12Z" />
+    </svg>
+  );
+}
+
 export function FlagIcon(props: IconProps) {
   return (
     <svg {...base} {...props}>
