@@ -27,6 +27,7 @@ import {
 import { computeCompletion } from "@/lib/utils";
 import { localize } from "@/lib/constants/labels";
 import { BlurredImage } from "./BlurredImage";
+import { ReportButton } from "./ReportButton";
 import type { ProfileDetailView, ViewerState } from "./types";
 
 interface ProfileDetailProps {
@@ -233,6 +234,11 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
             onUpgrade={upgradeToPro}
             pending={isPending}
           />
+
+          {/* Trust & safety: report this profile */}
+          <div className="flex justify-end pt-1">
+            <ReportButton reportedUserId={data.id} />
+          </div>
         </div>
       </div>
 

@@ -8,7 +8,8 @@
     "browse": "Browse",
     "requests": "Requests",
     "interests": "Interests",
-    "editProfile": "My Profile"
+    "editProfile": "My Profile",
+    "admin": "Admin"
   },
   "Home": {
     "title": "MatchMedia",
@@ -274,6 +275,11 @@
       "savedHint": "সংরক্ষিত",
       "privacyHint": "আপনার প্রধান ছবিটি অন্যরা থাম্বনেইল হিসেবে দেখে। ঝাপসা ছবি কেবল আপনি ছবির অনুরোধ অনুমোদন করার পরই দেখা যায়।",
       "needProfile": "আগে আপনার মূল তথ্য সংরক্ষণ করুন, তারপর ছবি যোগ করতে পারবেন।",
+      "moderationNote": "নতুন ছবি অন্যদের কাছে দৃশ্যমান হওয়ার আগে আমাদের টিম পর্যালোচনা করে।",
+      "status": {
+        "PENDING": "পর্যালোচনাধীন",
+        "REJECTED": "প্রত্যাখ্যাত"
+      },
       "errors": {
         "TYPE": "JPG, PNG বা WebP ছবি ব্যবহার করুন।",
         "SIZE": "ছবিটি অনেক বড় (সর্বোচ্চ ৫ MB)।",
@@ -284,6 +290,71 @@
         "FORBIDDEN": "আপনি কেবল নিজের ছবি পরিচালনা করতে পারেন।",
         "NO_PROFILE": "আগে আপনার মূল তথ্য সংরক্ষণ করুন, তারপর ছবি যোগ করুন।"
       }
+    }
+  },
+  "Report": {
+    "button": "রিপোর্ট",
+    "title": "এই প্রোফাইল রিপোর্ট করুন",
+    "intro": "কী সমস্যা আমাদের জানান। আমরা প্রতিটি রিপোর্ট পর্যালোচনা করি।",
+    "reasonLabel": "কারণ",
+    "reasons": {
+      "INAPPROPRIATE_PHOTO": "অনুপযুক্ত ছবি",
+      "FAKE_PROFILE": "ভুয়া প্রোফাইল",
+      "HARASSMENT": "হয়রানি",
+      "SPAM": "স্প্যাম বা প্রতারণা",
+      "OTHER": "অন্য কিছু"
+    },
+    "noteLabel": "বিস্তারিত (ঐচ্ছিক)",
+    "notePlaceholder": "পর্যালোচনায় সাহায্য করে এমন বিবরণ যোগ করুন।",
+    "cancel": "বাতিল",
+    "submit": "রিপোর্ট জমা দিন",
+    "submitted": "রিপোর্ট জমা হয়েছে"
+  },
+  "Admin": {
+    "title": "Admin",
+    "subtitle": "কনটেন্ট মডারেট করুন, রিপোর্ট সামলান, এবং ট্রাস্ট পরিচালনা করুন।",
+    "nav": {
+      "overview": "Overview",
+      "photos": "ছবি",
+      "reports": "রিপোর্ট",
+      "verification": "যাচাই"
+    },
+    "overview": {
+      "pendingPhotos": "পর্যালোচনাধীন ছবি",
+      "openReports": "খোলা রিপোর্ট",
+      "unverifiedProfiles": "যাচাই-না-করা প্রোফাইল"
+    },
+    "photos": {
+      "empty": "পর্যালোচনার জন্য কোনো ছবি নেই।",
+      "uploadedOn": "আপলোড {date}",
+      "approve": "অনুমোদন",
+      "reject": "প্রত্যাখ্যান",
+      "confirmReject": "নিশ্চিত করুন",
+      "cancel": "বাতিল",
+      "rejectReasonPlaceholder": "কারণ (ব্যবহারকারীকে দেখানো হবে)"
+    },
+    "reports": {
+      "empty": "কোনো খোলা রিপোর্ট নেই।",
+      "reasons": {
+        "INAPPROPRIATE_PHOTO": "অনুপযুক্ত ছবি",
+        "FAKE_PROFILE": "ভুয়া প্রোফাইল",
+        "HARASSMENT": "হয়রানি",
+        "SPAM": "স্প্যাম বা প্রতারণা",
+        "OTHER": "অন্যান্য"
+      },
+      "meta": "রিপোর্ট করেছেন {reporter} · {date}",
+      "viewProfile": "প্রোফাইল দেখুন",
+      "resolve": "সমাধান",
+      "dismiss": "বাতিল"
+    },
+    "verification": {
+      "empty": "দেখানোর মতো কোনো প্রোফাইল নেই।",
+      "verified": "যাচাইকৃত",
+      "grant": "ব্যাজ দিন",
+      "revoke": "প্রত্যাহার",
+      "viewProfile": "প্রোফাইল দেখুন",
+      "filterUnverified": "যাচাই-না-করা",
+      "filterAll": "সব"
     }
   },
   "Auth": {

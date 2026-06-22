@@ -1,7 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { signUrls } from "@/lib/storage/supabase";
-import type { ImagePrivacy } from "@/components/profile/types";
+import type { ImagePrivacy, ModerationStatus } from "@/components/profile/types";
 
 /** A profile owner's own photo, shaped for the management UI. */
 export interface OwnPhoto {
@@ -10,6 +10,9 @@ export interface OwnPhoto {
   url: string;
   privacy: ImagePrivacy;
   isPrimary: boolean;
+  /** Pre-moderation state; the owner sees pending/rejected even pre-approval. */
+  moderationStatus: ModerationStatus;
+  rejectionReason: string | null;
 }
 
 /**
@@ -32,6 +35,8 @@ export async function getOwnPhotos(viewerId: string): Promise<OwnPhoto[]> {
       originalKey: true,
       privacy: true,
       isPrimary: true,
+      moderationStatus: true,
+      rejectionReason: true,
     },
   });
   if (images.length === 0) return [];
@@ -47,6 +52,8 @@ export async function getOwnPhotos(viewerId: string): Promise<OwnPhoto[]> {
         url,
         privacy: i.privacy as ImagePrivacy,
         isPrimary: i.isPrimary,
+        moderationStatus: i.moderationStatus as ModerationStatus,
+        rejectionReason: i.rejectionReason,
       } satisfies OwnPhoto;
     })
     .filter((p): p is OwnPhoto => p !== null);

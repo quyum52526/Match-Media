@@ -8,7 +8,8 @@
     "browse": "Browse",
     "requests": "Requests",
     "interests": "Interests",
-    "editProfile": "My Profile"
+    "editProfile": "My Profile",
+    "admin": "Admin"
   },
   "Home": {
     "title": "MatchMedia",
@@ -274,6 +275,11 @@
       "savedHint": "Saved",
       "privacyHint": "Your primary photo is the thumbnail others see. Blurred photos are revealed only after you approve a photo request.",
       "needProfile": "Save your basic details first, then you can add photos.",
+      "moderationNote": "New photos are reviewed by our team before they're visible to others.",
+      "status": {
+        "PENDING": "Pending review",
+        "REJECTED": "Rejected"
+      },
       "errors": {
         "TYPE": "Use a JPG, PNG, or WebP image.",
         "SIZE": "Image is too large (max 5 MB).",
@@ -284,6 +290,71 @@
         "FORBIDDEN": "You can only manage your own photos.",
         "NO_PROFILE": "Save your basic details first, then add photos."
       }
+    }
+  },
+  "Report": {
+    "button": "Report",
+    "title": "Report this profile",
+    "intro": "Tell us what's wrong. Our team reviews every report.",
+    "reasonLabel": "Reason",
+    "reasons": {
+      "INAPPROPRIATE_PHOTO": "Inappropriate photo",
+      "FAKE_PROFILE": "Fake profile",
+      "HARASSMENT": "Harassment",
+      "SPAM": "Spam or scam",
+      "OTHER": "Something else"
+    },
+    "noteLabel": "Details (optional)",
+    "notePlaceholder": "Add any details that help us review this.",
+    "cancel": "Cancel",
+    "submit": "Submit report",
+    "submitted": "Report submitted"
+  },
+  "Admin": {
+    "title": "Admin",
+    "subtitle": "Moderate content, handle reports, and manage trust.",
+    "nav": {
+      "overview": "Overview",
+      "photos": "Photos",
+      "reports": "Reports",
+      "verification": "Verification"
+    },
+    "overview": {
+      "pendingPhotos": "Photos pending review",
+      "openReports": "Open reports",
+      "unverifiedProfiles": "Unverified profiles"
+    },
+    "photos": {
+      "empty": "No photos waiting for review.",
+      "uploadedOn": "Uploaded {date}",
+      "approve": "Approve",
+      "reject": "Reject",
+      "confirmReject": "Confirm",
+      "cancel": "Cancel",
+      "rejectReasonPlaceholder": "Reason (shown to the user)"
+    },
+    "reports": {
+      "empty": "No open reports.",
+      "reasons": {
+        "INAPPROPRIATE_PHOTO": "Inappropriate photo",
+        "FAKE_PROFILE": "Fake profile",
+        "HARASSMENT": "Harassment",
+        "SPAM": "Spam or scam",
+        "OTHER": "Other"
+      },
+      "meta": "Reported by {reporter} · {date}",
+      "viewProfile": "View profile",
+      "resolve": "Resolve",
+      "dismiss": "Dismiss"
+    },
+    "verification": {
+      "empty": "No profiles to show.",
+      "verified": "Verified",
+      "grant": "Grant badge",
+      "revoke": "Revoke",
+      "viewProfile": "View profile",
+      "filterUnverified": "Unverified",
+      "filterAll": "All"
     }
   },
   "Auth": {

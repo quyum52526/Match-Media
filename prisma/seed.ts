@@ -57,6 +57,17 @@ async function main() {
     },
   });
 
+  // --- Admin (moderation / verification / reports dashboard) ---
+  await prisma.user.create({
+    data: {
+      id: "admin",
+      email: "admin@matchmedia.com.bd",
+      passwordHash: PW,
+      role: "ADMIN",
+      isMobileVerified: true,
+    },
+  });
+
   // --- Browse/detail profiles (ids match the previous mock) ---
   await prisma.user.create({
     data: {

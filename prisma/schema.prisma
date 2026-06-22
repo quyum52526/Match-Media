@@ -29,6 +29,14 @@ enum ImagePrivacy {
   PUBLIC
 }
 
+// Pre-moderation lifecycle for uploaded photos. New photos are PENDING and are
+// shown to no one but the owner until an admin APPROVES them.
+enum ModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum PhotoAccessStatus {
   PENDING
   APPROVED
@@ -90,6 +98,22 @@ enum UsageAction {
   PHOTO_REQUEST
 }
 
+// --- Trust & safety: user reports ------------------------------------------
+
+enum ReportStatus {
+  OPEN
+  RESOLVED
+  DISMISSED
+}
+
+enum ReportReason {
+  INAPPROPRIATE_PHOTO
+  FAKE_PROFILE
+  HARASSMENT
+  SPAM
+  OTHER
+}
+
 // ---------------------------------------------------------------------------
 // Core identity
 // ---------------------------------------------------------------------------
@@ -137,6 +161,10 @@ model User {
   subscriptions     Subscription[]     @relation("UserSubscriptions")
   couponRedemptions CouponRedemption[] @relation("UserRedemptions")
   dailyUsage        DailyUsage[]       @relation("UserUsage")
+
+  // Trust & safety
+  reportsMade     Report[] @relation("ReportsMade")
+  reportsReceived Report[] @relation("ReportsReceived")
 }
 
 model Profile {
@@ -191,9 +219,16 @@ model ProfileImage {
   isPrimary   Boolean      @default(false)
   // Stable display order within a profile's gallery (primary aside).
   sortOrder   Int          @default(0)
+  // Pre-moderation: PENDING until an admin reviews. Only APPROVED photos are
+  // ever served to other viewers (enforced in lib/data/profiles.ts).
+  moderationStatus ModerationStatus @default(PENDING)
+  reviewedAt       DateTime?
+  reviewedById     String? // admin User id (audit only; no FK relation)
+  rejectionReason  String?
   createdAt   DateTime     @default(now())
 
   @@index([profileId])
+  @@index([moderationStatus])
 }
 
 // ---------------------------------------------------------------------------
@@ -414,4 +449,24 @@ model DailyUsage {
 
   @@unique([userId, date, action])
   @@index([userId, date])
+}
+
+// User-submitted reports surfaced in the admin moderation queue. Targets a User
+// (the profile owner); `imageId` optionally pins the report to a specific photo.
+model Report {
+  id             String       @id @default(cuid())
+  reporterId     String
+  reporter       User         @relation("ReportsMade", fields: [reporterId], references: [id], onDelete: Cascade)
+  reportedUserId String
+  reportedUser   User         @relation("ReportsReceived", fields: [reportedUserId], references: [id], onDelete: Cascade)
+  imageId        String? // optional: a specific ProfileImage being reported
+  reason         ReportReason
+  note           String?
+  status         ReportStatus @default(OPEN)
+  resolvedById   String? // admin User id (audit only; no FK relation)
+  resolvedAt     DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@index([status, createdAt])
+  @@index([reportedUserId])
 }

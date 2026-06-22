@@ -10,6 +10,20 @@
 // Mirrors schema `ImagePrivacy`
 export type ImagePrivacy = "BLURRED" | "PUBLIC";
 
+// Mirrors schema `ModerationStatus`
+export type ModerationStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+// Mirrors schema `ReportStatus`
+export type ReportStatus = "OPEN" | "RESOLVED" | "DISMISSED";
+
+// Mirrors schema `ReportReason`
+export type ReportReason =
+  | "INAPPROPRIATE_PHOTO"
+  | "FAKE_PROFILE"
+  | "HARASSMENT"
+  | "SPAM"
+  | "OTHER";
+
 // Mirrors schema `PhotoAccessStatus`, plus a "NONE" UI state (not yet requested)
 export type PhotoAccessState =
   | "NONE"

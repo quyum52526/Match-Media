@@ -126,7 +126,9 @@ export async function getBrowseProfiles(
     orderBy: { createdAt: "asc" },
     include: {
       user: { select: { isPro: true } },
-      images: { where: { isPrimary: true }, take: 1 },
+      // Only an APPROVED primary photo is ever shown to other viewers
+      // (pre-moderation: PENDING/REJECTED photos never leave the server).
+      images: { where: { isPrimary: true, moderationStatus: "APPROVED" }, take: 1 },
     },
   });
 
@@ -250,7 +252,8 @@ export async function getProfileForViewer(
     where: { userId: ownerUserId },
     include: {
       user: true,
-      images: { where: { isPrimary: true }, take: 1 },
+      // Pre-moderation: only an APPROVED primary photo is served to viewers.
+      images: { where: { isPrimary: true, moderationStatus: "APPROVED" }, take: 1 },
     },
   });
   if (!profile) return null;

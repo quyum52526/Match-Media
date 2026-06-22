@@ -31,6 +31,15 @@ export function ShieldCheckIcon(props: IconProps) {
   );
 }
 
+export function FlagIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M5 21V4" />
+      <path d="M5 4h11l-2 3 2 3H5" />
+    </svg>
+  );
+}
+
 export function HeartIcon(props: IconProps) {
   return (
     <svg {...base} {...props}>

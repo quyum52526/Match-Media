@@ -12,7 +12,7 @@ import {
 } from "@/lib/actions/photos";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardTitle } from "@/components/ui/Card";
-import { StarIcon, LockIcon, CheckIcon } from "@/components/ui/icons";
+import { StarIcon, LockIcon, CheckIcon, ClockIcon } from "@/components/ui/icons";
 import type { OwnPhoto } from "@/lib/data/photos";
 
 // Client-side pre-checks mirror the server limits in lib/storage/images.ts.
@@ -93,6 +93,17 @@ export function PhotoManager({
                       {t("primaryBadge")}
                     </span>
                   )}
+                  {photo.moderationStatus === "PENDING" && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-gold px-2 py-0.5 text-[11px] font-medium text-white">
+                      <ClockIcon width={10} height={10} />
+                      {t("status.PENDING")}
+                    </span>
+                  )}
+                  {photo.moderationStatus === "REJECTED" && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-red-600 px-2 py-0.5 text-[11px] font-medium text-white">
+                      {t("status.REJECTED")}
+                    </span>
+                  )}
                   <span className="inline-flex items-center gap-1 rounded-full bg-charcoal/70 px-2 py-0.5 text-[11px] font-medium text-white">
                     {photo.privacy === "PUBLIC" ? (
                       t("publicBadge")
@@ -141,6 +152,12 @@ export function PhotoManager({
                     {t("delete")}
                   </button>
                 </div>
+
+                {photo.moderationStatus === "REJECTED" && photo.rejectionReason && (
+                  <p className="px-2 pb-2 text-[11px] text-red-600">
+                    {photo.rejectionReason}
+                  </p>
+                )}
               </li>
             ))}
           </ul>

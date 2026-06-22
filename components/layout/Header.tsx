@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { logout } from "@/lib/actions/auth";
+import { getViewerRole } from "@/lib/session";
 import { Button } from "@/components/ui/Button";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 
@@ -10,6 +11,8 @@ export async function Header() {
   const nav = await getTranslations("Nav");
   const authT = await getTranslations("Auth");
   const session = await auth();
+  // Cosmetic only — the /admin routes are gated server-side by requireAdmin.
+  const isAdmin = session ? (await getViewerRole()) === "ADMIN" : false;
 
   return (
     <header className="sticky top-0 z-40 border-b border-charcoal/10 bg-ivory/80 backdrop-blur">
@@ -48,6 +51,14 @@ export async function Header() {
               >
                 {nav("editProfile")}
               </Link>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="text-sm font-semibold text-trustGreen transition-colors hover:text-trustGreen/80"
+                >
+                  {nav("admin")}
+                </Link>
+              )}
             </nav>
           )}
         </div>
