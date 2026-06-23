@@ -30,6 +30,18 @@
       "any": "যেকোনো",
       "anyAge": "যেকোনো বয়স",
       "search": "খুঁজুন"
+    },
+    "showcase": {
+      "vip": "প্রিমিয়াম সদস্য",
+      "vipSub": "ভেরিফায়েড VIP প্রোফাইল",
+      "new": "নতুন প্রোফাইল",
+      "newSub": "সম্প্রতি যুক্ত হয়েছেন",
+      "professionals": "ভেরিফায়েড পেশাজীবী",
+      "professionalsSub": "ডাক্তার, ইঞ্জিনিয়ার ও আরও",
+      "premium": "প্রিমিয়াম",
+      "mobileVerified": "মোবাইল-ভেরিফায়েড",
+      "member": "MatchMedia সদস্য",
+      "photoPrivate": "ছবি গোপন"
     }
   },
   "Dashboard": {

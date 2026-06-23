@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { HomeHero } from "@/components/home/HomeHero";
+import { ProfileShowcase } from "@/components/home/ProfileShowcase";
 import { Dashboard } from "@/components/dashboard/Dashboard";
 import { getViewerId } from "@/lib/session";
 import { getDashboardStats } from "@/lib/data/dashboard";
@@ -37,10 +38,11 @@ export default async function Home({
     );
   }
 
-  // Signed-out visitors: the public landing hero + quick-filter search.
+  // Signed-out visitors: the public landing hero + quick-filter + showcase grids.
   return (
     <main>
       <HomeHero />
+      <ProfileShowcase />
     </main>
   );
 }

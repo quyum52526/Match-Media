@@ -30,6 +30,18 @@
       "any": "Anyone",
       "anyAge": "Any age",
       "search": "Search"
+    },
+    "showcase": {
+      "vip": "Premium Members",
+      "vipSub": "Verified VIP profiles",
+      "new": "New Profiles",
+      "newSub": "Recently joined",
+      "professionals": "Verified Professionals",
+      "professionalsSub": "Doctors, engineers & more",
+      "premium": "Premium",
+      "mobileVerified": "Mobile-verified",
+      "member": "MatchMedia Member",
+      "photoPrivate": "Photo private"
     }
   },
   "Dashboard": {
