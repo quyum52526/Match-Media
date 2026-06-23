@@ -10,6 +10,7 @@
     "interests": "Interests",
     "editProfile": "My Profile",
     "messages": "Messages",
+    "notifications": "Notifications",
     "admin": "Admin"
   },
   "Home": {
@@ -368,7 +369,10 @@
     "threadEmpty": "কথোপকথন শুরু করতে সালাম দিন।",
     "composerPlaceholder": "একটি মেসেজ লিখুন…",
     "send": "পাঠান",
-    "notMatched": "আপনি আর এই ব্যক্তিকে মেসেজ করতে পারবেন না।"
+    "notMatched": "আপনি আর এই ব্যক্তিকে মেসেজ করতে পারবেন না।",
+    "sendFailed": "পাঠানো যায়নি। আবার চেষ্টা করুন।",
+    "verifyToSend": "মেসেজ পাঠাতে আপনার মোবাইল নম্বর যাচাই করুন।",
+    "verifyLink": "এখনই যাচাই করুন"
   },
   "Auth": {
     "title": "Login করুন",
@@ -386,6 +390,8 @@
       "fullName": "Full name",
       "optional": "ঐচ্ছিক",
       "email": "Email",
+      "mobile": "মোবাইল নম্বর",
+      "mobileHint": "বাংলাদেশি নম্বর — একটি code দিয়ে যাচাই করতে হবে।",
       "password": "Password",
       "passwordHint": "কমপক্ষে 8 অক্ষর",
       "gender": "Gender",
@@ -403,6 +409,7 @@
         "WEAK": "Password কমপক্ষে 8 অক্ষরের হতে হবে",
         "EXISTS": "এই Email দিয়ে account আগে থেকেই আছে",
         "AGE": "বয়স কমপক্ষে 18 হতে হবে",
+        "MOBILE": "সঠিক বাংলাদেশি মোবাইল নম্বর দিন",
         "INVALID": "Account তৈরি হয়েছে, কিন্তু sign-in হয়নি। Login করুন।"
       }
     }
@@ -453,6 +460,49 @@
       "bodyPaid": "আপনার {plan} active — ৳{amount} paid।",
       "validUntil": "{date} পর্যন্ত valid",
       "cta": "Dashboard-এ যান"
+    }
+  },
+  "VerifyMobile": {
+    "title": "আপনার মোবাইল যাচাই করুন",
+    "subtitle": "নম্বর নিশ্চিত করতে আমরা SMS-এ একটি 6-সংখ্যার code পাঠাব।",
+    "numberLabel": "মোবাইল নম্বর",
+    "sendCode": "Code পাঠান",
+    "sending": "পাঠানো হচ্ছে…",
+    "sentTo": "<b>{number}</b> নম্বরে একটি code পাঠানো হয়েছে।",
+    "sent": "Code পাঠানো হয়েছে। আপনার SMS দেখুন।",
+    "codeLabel": "Verification code",
+    "verify": "যাচাই করুন",
+    "verifying": "যাচাই হচ্ছে…",
+    "resend": "আবার code পাঠান",
+    "resendIn": "{s}s পরে আবার পাঠান",
+    "banner": {
+      "message": "মেসেজিং ও contact reveal আনলক করতে আপনার মোবাইল নম্বর যাচাই করুন।",
+      "cta": "এখনই যাচাই করুন"
+    },
+    "errors": {
+      "UNAUTH": "আবার Login করুন।",
+      "INVALID_NUMBER": "সঠিক বাংলাদেশি মোবাইল নম্বর দিন।",
+      "RATE_LIMITED": "আরেকটি code চাওয়ার আগে একটু অপেক্ষা করুন।",
+      "ALREADY": "আপনার নম্বর আগেই যাচাই করা হয়েছে।",
+      "NO_CODE": "কোনো active code নেই। নতুন একটি চান।",
+      "EXPIRED": "Code-টির মেয়াদ শেষ। নতুন একটি চান।",
+      "TOO_MANY": "অনেকবার চেষ্টা হয়েছে। নতুন code চান।",
+      "INVALID": "Code-টি ভুল। আবার চেষ্টা করুন।"
+    }
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "empty": "এখনও কোনো notification নেই",
+    "types": {
+      "PHOTO_REQUEST": "কেউ আপনার ছবি দেখার অনুরোধ করেছে",
+      "PHOTO_ACCESS_GRANTED": "আপনার photo-access অনুরোধ অনুমোদিত হয়েছে",
+      "INTEREST_RECEIVED": "কেউ আপনার প্রতি Interest জানিয়েছে",
+      "INTEREST_ACCEPTED": "আপনার Interest গৃহীত হয়েছে — এটি একটি match!",
+      "NEW_MESSAGE": "আপনার একটি নতুন মেসেজ আছে",
+      "PHOTO_APPROVED": "আপনার ছবি অনুমোদিত হয়েছে",
+      "PHOTO_REJECTED": "আপনার ছবি অনুমোদিত হয়নি",
+      "VERIFIED_BADGE": "আপনি Verified ব্যাজ পেয়েছেন",
+      "REPORT_RESOLVED": "আপনার করা একটি রিপোর্ট পর্যালোচনা করা হয়েছে"
     }
   },
   "LocaleSwitcher": {

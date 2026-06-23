@@ -55,6 +55,25 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-1">
+        <label htmlFor="mobile" className="text-sm font-medium text-charcoal">
+          {t("mobile")}{" "}
+          <span className="font-normal text-charcoal/40">
+            ({t("optional")})
+          </span>
+        </label>
+        <input
+          id="mobile"
+          name="mobile"
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          placeholder="01XXXXXXXXX"
+          className={`${inputClass} font-sans`}
+        />
+        <p className="font-sans text-xs text-charcoal/50">{t("mobileHint")}</p>
+      </div>
+
+      <div className="space-y-1">
         <label htmlFor="password" className="text-sm font-medium text-charcoal">
           {t("password")}
           <Req />

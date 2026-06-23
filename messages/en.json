@@ -10,6 +10,7 @@
     "interests": "Interests",
     "editProfile": "My Profile",
     "messages": "Messages",
+    "notifications": "Notifications",
     "admin": "Admin"
   },
   "Home": {
@@ -368,7 +369,10 @@
     "threadEmpty": "Say hello to start the conversation.",
     "composerPlaceholder": "Write a message…",
     "send": "Send",
-    "notMatched": "You can no longer message this person."
+    "notMatched": "You can no longer message this person.",
+    "sendFailed": "Couldn't send. Please try again.",
+    "verifyToSend": "Verify your mobile number to send messages.",
+    "verifyLink": "Verify now"
   },
   "Auth": {
     "title": "Log in",
@@ -386,6 +390,8 @@
       "fullName": "Full name",
       "optional": "optional",
       "email": "Email",
+      "mobile": "Mobile number",
+      "mobileHint": "Bangladeshi number — you'll verify it with a code.",
       "password": "Password",
       "passwordHint": "At least 8 characters",
       "gender": "Gender",
@@ -403,6 +409,7 @@
         "WEAK": "Password must be at least 8 characters",
         "EXISTS": "An account with this email already exists",
         "AGE": "You must be at least 18 years old",
+        "MOBILE": "Enter a valid Bangladeshi mobile number",
         "INVALID": "Account created, but sign-in failed. Please log in."
       }
     }
@@ -453,6 +460,49 @@
       "bodyPaid": "Your {plan} is active — ৳{amount} paid.",
       "validUntil": "Valid until {date}",
       "cta": "Go to dashboard"
+    }
+  },
+  "VerifyMobile": {
+    "title": "Verify your mobile",
+    "subtitle": "We'll send a 6-digit code by SMS to confirm your number.",
+    "numberLabel": "Mobile number",
+    "sendCode": "Send code",
+    "sending": "Sending…",
+    "sentTo": "We sent a code to <b>{number}</b>.",
+    "sent": "Code sent. Check your SMS.",
+    "codeLabel": "Verification code",
+    "verify": "Verify",
+    "verifying": "Verifying…",
+    "resend": "Resend code",
+    "resendIn": "Resend in {s}s",
+    "banner": {
+      "message": "Verify your mobile number to unlock messaging and contact reveal.",
+      "cta": "Verify now"
+    },
+    "errors": {
+      "UNAUTH": "Please log in again.",
+      "INVALID_NUMBER": "Enter a valid Bangladeshi mobile number.",
+      "RATE_LIMITED": "Please wait a moment before requesting another code.",
+      "ALREADY": "Your number is already verified.",
+      "NO_CODE": "No active code. Request a new one.",
+      "EXPIRED": "That code expired. Request a new one.",
+      "TOO_MANY": "Too many attempts. Request a new code.",
+      "INVALID": "That code is incorrect. Try again."
+    }
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "empty": "No notifications yet",
+    "types": {
+      "PHOTO_REQUEST": "Someone requested access to your photo",
+      "PHOTO_ACCESS_GRANTED": "Your photo-access request was approved",
+      "INTEREST_RECEIVED": "Someone expressed interest in you",
+      "INTEREST_ACCEPTED": "Your interest was accepted — it's a match!",
+      "NEW_MESSAGE": "You have a new message",
+      "PHOTO_APPROVED": "Your photo was approved",
+      "PHOTO_REJECTED": "Your photo was not approved",
+      "VERIFIED_BADGE": "You earned the Verified badge",
+      "REPORT_RESOLVED": "A report you filed was reviewed"
     }
   },
   "LocaleSwitcher": {

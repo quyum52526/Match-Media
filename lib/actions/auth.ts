@@ -4,7 +4,7 @@ import { AuthError } from "next-auth";
 import bcrypt from "bcryptjs";
 import { signIn, signOut } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { calcAge } from "@/lib/utils";
+import { calcAge, normalizeBdMobile } from "@/lib/utils";
 import { grantSignupSubscription } from "@/lib/billing";
 
 /**
@@ -49,6 +49,7 @@ export async function register(
   const fullName = String(formData.get("fullName") ?? "").trim();
   const gender = String(formData.get("gender") ?? "");
   const dob = String(formData.get("dateOfBirth") ?? "");
+  const mobileRaw = String(formData.get("mobile") ?? "").trim();
   const locale = String(formData.get("locale") ?? "bn");
 
   // --- Validation ---
@@ -61,6 +62,14 @@ export async function register(
   if (Number.isNaN(birthDate.getTime())) return "MISSING";
   if (calcAge(birthDate) < 18) return "AGE";
 
+  // Mobile is optional at registration, but if given it must be a valid BD
+  // number (it'll be OTP-verified on the next screen).
+  let mobile: string | null = null;
+  if (mobileRaw) {
+    mobile = normalizeBdMobile(mobileRaw);
+    if (!mobile) return "MOBILE";
+  }
+
   // --- Email uniqueness ---
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) return "EXISTS";
@@ -70,6 +79,7 @@ export async function register(
     const user = await prisma.user.create({
       data: {
         email,
+        mobile,
         passwordHash: bcrypt.hashSync(password, 10),
         profile: {
           create: {
@@ -103,12 +113,11 @@ export async function register(
   }
 
   // --- Auto sign-in (throws a redirect on success) ---
-  // New users land on the edit form (?welcome=1) to finish their profile.
-  // 'bn' is the default, unprefixed locale; 'en' is path-prefixed.
-  const onboarding =
-    locale === "en"
-      ? "/en/profile/edit?welcome=1"
-      : "/profile/edit?welcome=1";
+  // New users with a mobile go straight to verification; everyone else lands on
+  // the edit form (?welcome=1) to finish their profile (the verify-mobile banner
+  // nudges them later). 'bn' is the default, unprefixed locale; 'en' is prefixed.
+  const dest = mobile ? "/verify-mobile?welcome=1" : "/profile/edit?welcome=1";
+  const onboarding = locale === "en" ? `/en${dest}` : dest;
   try {
     await signIn("credentials", { email, password, redirectTo: onboarding });
   } catch (error) {

@@ -304,7 +304,10 @@ export async function getProfileForViewer(
 
   const viewerIsPro = isProActive(viewer);
   const interestAccepted = Boolean(acceptedInterest);
-  const contactAuthorized = viewerIsPro && interestAccepted;
+  // Trust soft-gate: contact is revealed only to a Pro viewer who is also
+  // mobile-verified AND has a mutual accepted interest.
+  const contactAuthorized =
+    viewerIsPro && interestAccepted && Boolean(viewer?.isMobileVerified);
 
   const viewerState: ViewerState = {
     photoAccess: (photoReq?.status as PhotoAccessState) ?? "NONE",

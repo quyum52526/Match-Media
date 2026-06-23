@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getViewerId } from "@/lib/session";
 import { checkDailyLimit, incrementDailyUsage } from "@/lib/billing";
 import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
+import { notify } from "@/lib/notifications/dispatch";
 
 /** Outcome of a photo-access request, so the UI can show quota feedback. */
 export interface PhotoRequestResult {
@@ -82,6 +83,13 @@ export async function requestPhotoAccess(
   if (!existing) {
     await incrementDailyUsage(viewerId, "PHOTO_REQUEST");
     if (!check.unlimited) remaining = Math.max(0, check.remaining - 1);
+    // Notify the owner only on a brand-new request (re-sends stay quiet).
+    await notify({
+      userId: ownerId,
+      type: "PHOTO_REQUEST",
+      actorId: viewerId,
+      link: "/requests",
+    });
   }
 
   revalidatePath(BROWSE, "page");
@@ -107,7 +115,7 @@ export async function respondToPhotoRequest(
 
   const request = await prisma.photoAccessRequest.findUnique({
     where: { id: requestId },
-    select: { ownerId: true },
+    select: { ownerId: true, viewerId: true },
   });
   // Only the owner of the request may respond.
   if (!request || request.ownerId !== viewerId) return;
@@ -116,6 +124,17 @@ export async function respondToPhotoRequest(
     where: { id: requestId },
     data: { status: decision, respondedAt: new Date() },
   });
+
+  // Tell the requester their access was granted (the owner is `viewerId`, so the
+  // requester opens the owner's profile to see the now-revealed photo).
+  if (decision === "APPROVED") {
+    await notify({
+      userId: request.viewerId,
+      type: "PHOTO_ACCESS_GRANTED",
+      actorId: viewerId,
+      link: `/profiles/${viewerId}`,
+    });
+  }
 
   revalidatePath(REQUESTS, "page");
   revalidatePath(BROWSE, "page");
@@ -128,11 +147,26 @@ export async function sendInterest(receiverId: string): Promise<void> {
   const senderId = await getViewerId();
   if (!senderId || !receiverId || receiverId === senderId) return;
 
+  const existing = await prisma.interest.findUnique({
+    where: { senderId_receiverId: { senderId, receiverId } },
+    select: { id: true },
+  });
+
   await prisma.interest.upsert({
     where: { senderId_receiverId: { senderId, receiverId } },
     update: { status: "SENT" },
     create: { senderId, receiverId, status: "SENT" },
   });
+
+  // Notify the receiver only the first time interest is sent (not on re-sends).
+  if (!existing) {
+    await notify({
+      userId: receiverId,
+      type: "INTEREST_RECEIVED",
+      actorId: senderId,
+      link: "/interests",
+    });
+  }
 
   revalidatePath(PROFILE, "page");
 }
@@ -151,7 +185,7 @@ export async function respondToInterest(
 
   const interest = await prisma.interest.findUnique({
     where: { id: interestId },
-    select: { receiverId: true },
+    select: { receiverId: true, senderId: true },
   });
   // Only the receiver of the interest may respond (consent stays with them).
   if (!interest || interest.receiverId !== viewerId) return;
@@ -160,6 +194,16 @@ export async function respondToInterest(
     where: { id: interestId },
     data: { status: decision },
   });
+
+  // An acceptance is a new match — tell the original sender (they can now message).
+  if (decision === "ACCEPTED") {
+    await notify({
+      userId: interest.senderId,
+      type: "INTEREST_ACCEPTED",
+      actorId: viewerId,
+      link: "/messages",
+    });
+  }
 
   revalidatePath(INTERESTS, "page");
   revalidatePath(PROFILE, "page");

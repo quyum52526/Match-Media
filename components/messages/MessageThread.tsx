@@ -16,6 +16,7 @@ export function MessageThread({ data }: { data: ConversationView }) {
   const t = useTranslations("Messages");
   const router = useRouter();
   const [body, setBody] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -40,10 +41,12 @@ export function MessageThread({ data }: { data: ConversationView }) {
     const text = body.trim();
     if (!text) return;
     setBody("");
+    setError(null);
     startTransition(async () => {
       const res = await sendMessage(data.otherUserId, text);
       if (!res.ok) {
         setBody(text); // restore on failure so the user doesn't lose it
+        setError(res.error === "NOT_VERIFIED" ? "notVerified" : "sendFailed");
         return;
       }
       router.refresh();
@@ -101,23 +104,39 @@ export function MessageThread({ data }: { data: ConversationView }) {
 
       {/* Composer */}
       {data.canSend ? (
-        <div className="flex items-end gap-2 border-t border-charcoal/10 bg-white p-3">
-          <textarea
-            rows={1}
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                submit();
-              }
-            }}
-            placeholder={t("composerPlaceholder")}
-            className="max-h-32 flex-1 resize-none rounded-xl border border-charcoal/15 bg-white px-3 py-2 text-sm text-charcoal outline-none focus:border-trustGreen focus:ring-2 focus:ring-trustGreen/30"
-          />
-          <Button onClick={submit} disabled={pending || !body.trim()}>
-            {t("send")}
-          </Button>
+        <div className="border-t border-charcoal/10 bg-white">
+          {error && (
+            <p className="px-3 pt-2 text-xs font-medium text-red-600">
+              {error === "notVerified" ? (
+                <>
+                  {t("verifyToSend")}{" "}
+                  <Link href="/verify-mobile" className="underline">
+                    {t("verifyLink")}
+                  </Link>
+                </>
+              ) : (
+                t("sendFailed")
+              )}
+            </p>
+          )}
+          <div className="flex items-end gap-2 p-3">
+            <textarea
+              rows={1}
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  submit();
+                }
+              }}
+              placeholder={t("composerPlaceholder")}
+              className="max-h-32 flex-1 resize-none rounded-xl border border-charcoal/15 bg-white px-3 py-2 text-sm text-charcoal outline-none focus:border-trustGreen focus:ring-2 focus:ring-trustGreen/30"
+            />
+            <Button onClick={submit} disabled={pending || !body.trim()}>
+              {t("send")}
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="border-t border-charcoal/10 bg-white p-4 text-center text-sm text-charcoal/50">

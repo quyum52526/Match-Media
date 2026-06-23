@@ -5,6 +5,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { Header } from "@/components/layout/Header";
+import { MobileVerifyBanner } from "@/components/auth/MobileVerifyBanner";
 import "../globals.css";
 
 // Latin / numerals
@@ -55,6 +56,7 @@ export default async function LocaleLayout({
       <body className={`${bodyFont} bg-ivory text-charcoal antialiased`}>
         <NextIntlClientProvider>
           <Header />
+          <MobileVerifyBanner />
           {children}
         </NextIntlClientProvider>
       </body>

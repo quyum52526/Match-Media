@@ -124,6 +124,21 @@ enum MessageType {
   CALL_EVENT
 }
 
+// --- Notifications ----------------------------------------------------------
+
+// The kind of in-app notification, so the UI can pick an icon + localized copy.
+enum NotificationType {
+  PHOTO_REQUEST // someone requested access to your photo
+  PHOTO_ACCESS_GRANTED // an owner approved your photo-access request
+  INTEREST_RECEIVED // someone expressed interest in you
+  INTEREST_ACCEPTED // your interest was accepted (it's a match)
+  NEW_MESSAGE // a matched user sent you a message
+  PHOTO_APPROVED // admin approved your uploaded photo
+  PHOTO_REJECTED // admin rejected your uploaded photo
+  VERIFIED_BADGE // admin granted your Verified trust badge
+  REPORT_RESOLVED // a report you filed was actioned
+}
+
 // ---------------------------------------------------------------------------
 // Core identity
 // ---------------------------------------------------------------------------
@@ -180,6 +195,12 @@ model User {
   conversationsA Conversation[] @relation("ConvA")
   conversationsB Conversation[] @relation("ConvB")
   messagesSent   Message[]      @relation("MsgSender")
+
+  // Trust: mobile one-time-password challenges
+  mobileOtps MobileOtp[] @relation("UserOtps")
+
+  // In-app notifications (as recipient)
+  notifications Notification[] @relation("UserNotifications")
 }
 
 model Profile {
@@ -521,4 +542,45 @@ model Message {
   createdAt      DateTime     @default(now())
 
   @@index([conversationId, createdAt])
+}
+
+// --- Trust: mobile OTP ------------------------------------------------------
+
+// One-time-password challenge for verifying a user's mobile number. The code is
+// only ever stored as a bcrypt hash; `attempts` caps brute-force and `lastSentAt`
+// drives the resend cooldown. A fresh row is created on each send; verification
+// stamps `consumedAt` so a code can't be reused.
+model MobileOtp {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation("UserOtps", fields: [userId], references: [id], onDelete: Cascade)
+  mobile    String
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int       @default(0)
+  consumedAt DateTime?
+  lastSentAt DateTime  @default(now())
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// --- In-app notifications ---------------------------------------------------
+
+// A single notification for a recipient (`userId`). `actorId` records who
+// triggered it (audit only, no FK so a deleted actor never cascades). `link` is
+// the in-app route opened on click; `readAt` drives the unread badge. The
+// dispatcher (lib/notifications/dispatch.ts) is the only writer.
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  actorId   String? // who triggered it (audit only; no FK relation)
+  link      String? // in-app route to open on click
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
 }

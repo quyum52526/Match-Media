@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { assertAdmin } from "@/lib/session";
+import { notify } from "@/lib/notifications/dispatch";
 
 // Dynamic-route literals so revalidation covers every locale param.
 const ADMIN = "/[locale]/admin";
@@ -23,7 +24,7 @@ export async function approvePhoto(imageId: string): Promise<AdminResult> {
   const adminId = await assertAdmin();
   if (!adminId) return err("FORBIDDEN");
 
-  await prisma.profileImage.update({
+  const image = await prisma.profileImage.update({
     where: { id: imageId },
     data: {
       moderationStatus: "APPROVED",
@@ -31,6 +32,14 @@ export async function approvePhoto(imageId: string): Promise<AdminResult> {
       reviewedById: adminId,
       rejectionReason: null,
     },
+    select: { profile: { select: { userId: true } } },
+  });
+
+  await notify({
+    userId: image.profile.userId,
+    type: "PHOTO_APPROVED",
+    actorId: adminId,
+    link: "/profile/edit",
   });
 
   revalidatePath(ADMIN, "page");
@@ -49,7 +58,7 @@ export async function rejectPhoto(
   const adminId = await assertAdmin();
   if (!adminId) return err("FORBIDDEN");
 
-  await prisma.profileImage.update({
+  const image = await prisma.profileImage.update({
     where: { id: imageId },
     data: {
       moderationStatus: "REJECTED",
@@ -57,6 +66,14 @@ export async function rejectPhoto(
       reviewedById: adminId,
       rejectionReason: reason?.trim() || null,
     },
+    select: { profile: { select: { userId: true } } },
+  });
+
+  await notify({
+    userId: image.profile.userId,
+    type: "PHOTO_REJECTED",
+    actorId: adminId,
+    link: "/profile/edit",
   });
 
   revalidatePath(ADMIN, "page");
@@ -80,6 +97,16 @@ export async function setVerified(
     data: { isVerified: value },
   });
 
+  // Tell the user when their badge is granted (not on revoke).
+  if (value) {
+    await notify({
+      userId,
+      type: "VERIFIED_BADGE",
+      actorId: adminId,
+      link: "/profile/edit",
+    });
+  }
+
   revalidatePath(ADMIN, "page");
   revalidatePath(ADMIN_VERIFY, "page");
   revalidatePath(BROWSE, "page");
@@ -95,9 +122,17 @@ export async function resolveReport(
   const adminId = await assertAdmin();
   if (!adminId) return err("FORBIDDEN");
 
-  await prisma.report.update({
+  const report = await prisma.report.update({
     where: { id: reportId },
     data: { status: decision, resolvedById: adminId, resolvedAt: new Date() },
+    select: { reporterId: true },
+  });
+
+  // Let the reporter know their report was actioned (no link — informational).
+  await notify({
+    userId: report.reporterId,
+    type: "REPORT_RESOLVED",
+    actorId: adminId,
   });
 
   revalidatePath(ADMIN, "page");

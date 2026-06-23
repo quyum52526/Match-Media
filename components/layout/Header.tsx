@@ -4,7 +4,9 @@ import { auth } from "@/auth";
 import { logout } from "@/lib/actions/auth";
 import { getViewerId, getViewerRole } from "@/lib/session";
 import { getUnreadCount } from "@/lib/data/messages";
+import { getUnreadNotificationCount } from "@/lib/data/notifications";
 import { Button } from "@/components/ui/Button";
+import { BellIcon } from "@/components/ui/icons";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 
 export async function Header() {
@@ -16,6 +18,9 @@ export async function Header() {
   const isAdmin = session ? (await getViewerRole()) === "ADMIN" : false;
   const viewerId = session ? await getViewerId() : null;
   const unread = viewerId ? await getUnreadCount(viewerId) : 0;
+  const unreadNotifications = viewerId
+    ? await getUnreadNotificationCount(viewerId)
+    : 0;
 
   return (
     <header className="sticky top-0 z-40 border-b border-charcoal/10 bg-ivory/80 backdrop-blur">
@@ -56,6 +61,19 @@ export async function Header() {
                 {unread > 0 && (
                   <span className="absolute -right-3 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-trustGreen px-1 font-sans text-[10px] font-semibold text-white">
                     {unread}
+                  </span>
+                )}
+              </Link>
+              <Link
+                href="/notifications"
+                aria-label={nav("notifications")}
+                title={nav("notifications")}
+                className="relative text-charcoal/70 transition-colors hover:text-charcoal"
+              >
+                <BellIcon width={20} height={20} />
+                {unreadNotifications > 0 && (
+                  <span className="absolute -right-2 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-trustGreen px-1 font-sans text-[10px] font-semibold text-white">
+                    {unreadNotifications}
                   </span>
                 )}
               </Link>
