@@ -31,17 +31,17 @@ export default async function ProSuccessPage({
 
   return (
     <main className="mx-auto flex max-w-lg flex-col items-center px-4 py-16 text-center">
-      <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-trustGreen/10 text-trustGreen">
+      <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
         <CheckIcon width={30} height={30} />
       </span>
-      <h1 className="text-2xl font-bold text-charcoal">{t("title")}</h1>
-      <p className="mt-2 text-sm text-charcoal/70">
+      <h1 className="text-2xl font-bold text-ink">{t("title")}</h1>
+      <p className="mt-2 text-sm text-ink/70">
         {order
           ? t("bodyPaid", { plan: order.planName, amount: formatTaka(order.finalAmount) })
           : t("body")}
       </p>
       {status.proExpiresAt && (
-        <p className="mt-3 rounded-full bg-trustGreen/10 px-3 py-1 text-xs font-medium text-trustGreen">
+        <p className="mt-3 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
           {t("validUntil", {
             date: status.proExpiresAt.toLocaleDateString("en-US", {
               year: "numeric",

@@ -19,9 +19,9 @@ export async function WhoViewedMe({ viewers }: { viewers: ViewerEntry[] }) {
 
   if (viewers.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-charcoal/15 bg-white py-12 text-center">
-        <EyeIcon width={28} height={28} className="text-charcoal/30" />
-        <p className="text-sm text-charcoal/50">{t("empty")}</p>
+      <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-hairline bg-white py-12 text-center">
+        <EyeIcon width={28} height={28} className="text-ink/30" />
+        <p className="text-sm text-ink/50">{t("empty")}</p>
       </div>
     );
   }
@@ -66,22 +66,22 @@ function LockedCard({
   unlocksLabel: string;
 }) {
   return (
-    <li className="flex items-center gap-3 rounded-2xl border border-charcoal/10 bg-white p-4">
-      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-charcoal/5">
+    <li className="flex items-center gap-3 rounded-2xl border border-ink/10 bg-white p-4">
+      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-ink/5">
         <div
-          className="h-full w-full scale-110 bg-gradient-to-br from-charcoal/25 via-charcoal/15 to-charcoal/25 blur-md"
+          className="h-full w-full scale-110 bg-gradient-to-br from-ink/25 via-ink/15 to-ink/25 blur-md"
           aria-hidden
         />
-        <span className="absolute inset-0 flex items-center justify-center text-charcoal/60">
+        <span className="absolute inset-0 flex items-center justify-center text-ink/60">
           <LockIcon width={16} height={16} />
         </span>
       </div>
 
       <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-charcoal/70">
+        <p className="truncate text-sm font-semibold text-ink/70">
           {title}
         </p>
-        <p className="mt-0.5 flex items-center gap-1 text-xs font-medium text-gold">
+        <p className="mt-0.5 flex items-center gap-1 text-xs font-medium text-accent">
           <LockIcon width={12} height={12} />
           {unlocksLabel}
         </p>
@@ -104,47 +104,47 @@ function RevealedCard({
     <li>
       <Link
         href={`/profiles/${person.id}`}
-        className="flex items-center gap-3 rounded-2xl border border-charcoal/10 bg-white p-4 transition-colors hover:border-charcoal/20"
+        className="flex items-center gap-3 rounded-2xl border border-ink/10 bg-white p-4 transition-colors hover:border-ink/20"
       >
         {/* Blurred mini thumbnail (privacy-first) */}
-        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-charcoal/5">
+        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-ink/5">
           <div
-            className="h-full w-full scale-110 bg-gradient-to-br from-trustGreen/30 via-verifyGreen/20 to-gold/20 blur-md"
+            className="h-full w-full scale-110 bg-gradient-to-br from-primary/30 via-success/20 to-accent/20 blur-md"
             aria-hidden
           />
-          <span className="absolute inset-0 flex items-center justify-center text-charcoal/70">
+          <span className="absolute inset-0 flex items-center justify-center text-ink/70">
             <LockIcon width={16} height={16} />
           </span>
         </div>
 
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
-            <span className="truncate text-sm font-semibold text-charcoal">
+            <span className="truncate text-sm font-semibold text-ink">
               {person.displayName}
             </span>
             {person.nameHidden && (
               <LockIcon
                 width={12}
                 height={12}
-                className="shrink-0 text-charcoal/40"
+                className="shrink-0 text-ink/40"
               />
             )}
             {person.isVerified && (
               <ShieldCheckIcon
                 width={14}
                 height={14}
-                className="shrink-0 text-verifyGreen"
+                className="shrink-0 text-success"
               />
             )}
           </div>
-          <p className="text-xs text-charcoal/60">
-            <span className="font-sans font-medium text-charcoal/80">
+          <p className="text-xs text-ink/60">
+            <span className="font-body font-medium text-ink/80">
               {person.age}
             </span>{" "}
             · {localize(person.upazila, locale)},{" "}
             {localize(person.district, locale)}
           </p>
-          <p className="mt-0.5 text-xs text-charcoal/40">{viewedLabel}</p>
+          <p className="mt-0.5 text-xs text-ink/40">{viewedLabel}</p>
         </div>
       </Link>
     </li>

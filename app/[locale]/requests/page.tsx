@@ -26,7 +26,7 @@ export default async function RequestsPage({
   return (
     <main className="mx-auto max-w-3xl px-4 py-6 sm:py-10">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold text-charcoal">{t("title")}</h1>
+        <h1 className="text-2xl font-bold text-ink">{t("title")}</h1>
       </header>
 
       <RequestInbox received={received} sent={sent} />

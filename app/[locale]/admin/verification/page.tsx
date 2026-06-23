@@ -34,8 +34,8 @@ export default async function AdminVerificationPage({
             className={cn(
               "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
               active === f.key
-                ? "bg-trustGreen text-white"
-                : "bg-charcoal/5 text-charcoal/60 hover:text-charcoal",
+                ? "bg-primary text-white"
+                : "bg-ink/5 text-ink/60 hover:text-ink",
             )}
           >
             {f.label}

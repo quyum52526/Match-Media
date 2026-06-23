@@ -29,16 +29,16 @@ export async function ProfileShowcase() {
   };
 
   return (
-    <section className="bg-ivory antialiased">
+    <section className="bg-canvas antialiased">
       <div className="mx-auto max-w-6xl space-y-10 px-4 py-12">
         {SHOWCASE.map((section) => (
           <div key={section.key}>
             <div className="mb-3 flex items-baseline justify-between gap-4">
               <div>
-                <h2 className="text-lg font-medium text-charcoal">
+                <h2 className="text-lg font-medium text-ink">
                   {titleFor[section.key].title}
                 </h2>
-                <p className="text-xs font-normal text-charcoal/50">
+                <p className="text-xs font-normal text-ink/50">
                   {titleFor[section.key].sub}
                 </p>
               </div>

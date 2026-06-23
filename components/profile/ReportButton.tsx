@@ -37,7 +37,7 @@ export function ReportButton({ reportedUserId }: { reportedUserId: string }) {
 
   if (done) {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-trustGreen">
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
         <CheckIcon width={14} height={14} />
         {t("submitted")}
       </span>
@@ -49,7 +49,7 @@ export function ReportButton({ reportedUserId }: { reportedUserId: string }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1 text-xs font-medium text-charcoal/45 transition-colors hover:text-red-600"
+        className="inline-flex items-center gap-1 text-xs font-medium text-ink/45 transition-colors hover:text-red-600"
       >
         <FlagIcon width={13} height={13} />
         {t("button")}
@@ -57,16 +57,16 @@ export function ReportButton({ reportedUserId }: { reportedUserId: string }) {
 
       <Modal open={open} onClose={() => setOpen(false)} title={t("title")}>
         <div className="space-y-4">
-          <p className="text-sm text-charcoal/60">{t("intro")}</p>
+          <p className="text-sm text-ink/60">{t("intro")}</p>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-charcoal">
+            <label className="text-sm font-medium text-ink">
               {t("reasonLabel")}
             </label>
             <select
               value={reason}
               onChange={(e) => setReason(e.target.value as ReportReason)}
-              className="h-11 w-full rounded-xl border border-charcoal/15 bg-white px-3 text-sm text-charcoal outline-none focus:border-trustGreen focus:ring-2 focus:ring-trustGreen/30"
+              className="h-11 w-full rounded-xl border border-hairline bg-white px-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
             >
               {REASONS.map((r) => (
                 <option key={r} value={r}>
@@ -77,7 +77,7 @@ export function ReportButton({ reportedUserId }: { reportedUserId: string }) {
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium text-charcoal">
+            <label className="text-sm font-medium text-ink">
               {t("noteLabel")}
             </label>
             <textarea
@@ -85,7 +85,7 @@ export function ReportButton({ reportedUserId }: { reportedUserId: string }) {
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder={t("notePlaceholder")}
-              className="w-full rounded-xl border border-charcoal/15 bg-white p-3 text-sm text-charcoal outline-none focus:border-trustGreen focus:ring-2 focus:ring-trustGreen/30"
+              className="w-full rounded-xl border border-hairline bg-white p-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
             />
           </div>
 

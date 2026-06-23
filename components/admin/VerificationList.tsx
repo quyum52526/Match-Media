@@ -30,9 +30,9 @@ export function VerificationList({
 
   if (profiles.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-charcoal/15 bg-white py-12 text-center">
-        <InboxIcon width={28} height={28} className="text-charcoal/30" />
-        <p className="text-sm text-charcoal/50">{t("empty")}</p>
+      <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-hairline bg-white py-12 text-center">
+        <InboxIcon width={28} height={28} className="text-ink/30" />
+        <p className="text-sm text-ink/50">{t("empty")}</p>
       </div>
     );
   }
@@ -42,11 +42,11 @@ export function VerificationList({
       {profiles.map((p) => (
         <li
           key={p.userId}
-          className="flex items-center justify-between gap-3 rounded-2xl border border-charcoal/10 bg-white p-4"
+          className="flex items-center justify-between gap-3 rounded-2xl border border-ink/10 bg-white p-4"
         >
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="truncate text-sm font-semibold text-charcoal">
+              <span className="truncate text-sm font-semibold text-ink">
                 {p.name}
               </span>
               {p.isVerified && (
@@ -55,13 +55,13 @@ export function VerificationList({
                 </Badge>
               )}
             </div>
-            <p className="truncate font-sans text-xs text-charcoal/50">{p.email}</p>
-            <p className="mt-0.5 text-xs text-charcoal/40">
-              <span className="font-sans">{p.age}</span>
+            <p className="truncate font-body text-xs text-ink/50">{p.email}</p>
+            <p className="mt-0.5 text-xs text-ink/40">
+              <span className="font-body">{p.age}</span>
               {p.district ? ` · ${localize(p.district, locale)}` : ""} ·{" "}
               <Link
                 href={`/profiles/${p.userId}`}
-                className="font-medium text-trustGreen hover:underline"
+                className="font-medium text-primary hover:underline"
               >
                 {t("viewProfile")}
               </Link>

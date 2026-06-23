@@ -164,13 +164,13 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
         <div className="space-y-6">
           <header className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-bold text-charcoal">
+              <h1 className="text-2xl font-bold text-ink">
                 {data.displayName}
               </h1>
               {data.isPro && (
                 <Badge
                   variant="gold"
-                  className="bg-gold text-white"
+                  className="bg-accent text-white"
                   icon={<StarIcon width={14} height={14} />}
                 >
                   {t("vip")}
@@ -191,14 +191,14 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
               )}
             </div>
 
-            <p className="text-sm text-charcoal/60">
+            <p className="text-sm text-ink/60">
               {t.rich("ageLine", {
                 age: String(data.age),
                 gender: localize(data.gender, locale),
                 upazila: localize(data.upazila, locale),
                 district: localize(data.district, locale),
                 n: (chunks) => (
-                  <span className="font-sans font-semibold text-charcoal/80">
+                  <span className="font-body font-semibold text-ink/80">
                     {chunks}
                   </span>
                 ),
@@ -239,7 +239,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
                 />
               </dl>
 
-              <div className="mt-5 border-t border-charcoal/10 pt-4">
+              <div className="mt-5 border-t border-ink/10 pt-4">
                 <Button
                   variant="outline"
                   size="sm"
@@ -255,7 +255,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
           <Card>
             <CardBody>
               <CardTitle>{t("about")}</CardTitle>
-              <p className="text-sm leading-7 text-charcoal/80">{data.bio}</p>
+              <p className="text-sm leading-7 text-ink/80">{data.bio}</p>
             </CardBody>
           </Card>
 
@@ -275,7 +275,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
         onClose={() => setDetailsOpen(false)}
         title={t("details.title")}
       >
-        <dl className="divide-y divide-charcoal/10">
+        <dl className="divide-y divide-ink/10">
           <DetailRow label={t("details.height")} value={data.details.height} />
           <DetailRow label={t("details.weight")} value={data.details.weight} />
           <DetailRow
@@ -307,10 +307,10 @@ function Fact({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="mt-0.5 text-trustGreen">{icon}</span>
+      <span className="mt-0.5 text-primary">{icon}</span>
       <div>
-        <dt className="text-xs text-charcoal/50">{label}</dt>
-        <dd className="text-sm font-medium text-charcoal">{value}</dd>
+        <dt className="text-xs text-ink/50">{label}</dt>
+        <dd className="text-sm font-medium text-ink">{value}</dd>
       </div>
     </div>
   );
@@ -319,8 +319,8 @@ function Fact({
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4 py-2.5">
-      <dt className="shrink-0 text-sm text-charcoal/50">{label}</dt>
-      <dd className="text-right text-sm font-medium text-charcoal">{value}</dd>
+      <dt className="shrink-0 text-sm text-ink/50">{label}</dt>
+      <dd className="text-right text-sm font-medium text-ink">{value}</dd>
     </div>
   );
 }
@@ -373,14 +373,14 @@ function CompletionMeter({ score }: { score: number }) {
     <Card>
       <CardBody className="!p-4">
         <div className="mb-2 flex items-center justify-between">
-          <span className="text-xs text-charcoal/60">{t("completion")}</span>
-          <span className="font-sans text-xs font-semibold text-trustGreen">
+          <span className="text-xs text-ink/60">{t("completion")}</span>
+          <span className="font-body text-xs font-semibold text-primary">
             {pct}%
           </span>
         </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-charcoal/10">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-ink/10">
           <div
-            className="h-full rounded-full bg-trustGreen transition-all"
+            className="h-full rounded-full bg-primary transition-all"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -400,12 +400,12 @@ function PrivacyNote() {
     <Card>
       <CardBody>
         <div className="flex items-start gap-3">
-          <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-trustGreen/10 text-trustGreen">
+          <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
             <ShieldCheckIcon width={18} height={18} />
           </span>
           <div>
-            <p className="text-sm font-semibold text-charcoal">{t("title")}</p>
-            <p className="mt-0.5 text-sm text-charcoal/60">{t("body")}</p>
+            <p className="text-sm font-semibold text-ink">{t("title")}</p>
+            <p className="mt-0.5 text-sm text-ink/60">{t("body")}</p>
           </div>
         </div>
       </CardBody>

@@ -25,9 +25,9 @@ export function ReportsQueue({ reports }: { reports: AdminReport[] }) {
 
   if (reports.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-charcoal/15 bg-white py-12 text-center">
-        <InboxIcon width={28} height={28} className="text-charcoal/30" />
-        <p className="text-sm text-charcoal/50">{t("empty")}</p>
+      <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-hairline bg-white py-12 text-center">
+        <InboxIcon width={28} height={28} className="text-ink/30" />
+        <p className="text-sm text-ink/50">{t("empty")}</p>
       </div>
     );
   }
@@ -37,7 +37,7 @@ export function ReportsQueue({ reports }: { reports: AdminReport[] }) {
       {reports.map((r) => (
         <li
           key={r.id}
-          className="flex flex-col gap-3 rounded-2xl border border-charcoal/10 bg-white p-4 sm:flex-row sm:items-start sm:justify-between"
+          className="flex flex-col gap-3 rounded-2xl border border-ink/10 bg-white p-4 sm:flex-row sm:items-start sm:justify-between"
         >
           <div className="flex min-w-0 gap-3">
             {r.imageUrl ? (
@@ -48,7 +48,7 @@ export function ReportsQueue({ reports }: { reports: AdminReport[] }) {
                 className="h-16 w-16 shrink-0 rounded-xl object-cover"
               />
             ) : (
-              <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-charcoal/5 text-charcoal/40">
+              <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-ink/5 text-ink/40">
                 <FlagIcon width={20} height={20} />
               </span>
             )}
@@ -56,16 +56,16 @@ export function ReportsQueue({ reports }: { reports: AdminReport[] }) {
               <div className="flex items-center gap-2">
                 <Badge variant="neutral">{t(`reasons.${r.reason}`)}</Badge>
               </div>
-              <p className="mt-1 truncate text-sm font-semibold text-charcoal">
+              <p className="mt-1 truncate text-sm font-semibold text-ink">
                 {r.reportedName}{" "}
-                <span className="font-sans font-normal text-charcoal/50">
+                <span className="font-body font-normal text-ink/50">
                   ({r.reportedEmail})
                 </span>
               </p>
               {r.note && (
-                <p className="mt-0.5 text-sm text-charcoal/70">“{r.note}”</p>
+                <p className="mt-0.5 text-sm text-ink/70">“{r.note}”</p>
               )}
-              <p className="mt-0.5 text-xs text-charcoal/40">
+              <p className="mt-0.5 text-xs text-ink/40">
                 {t("meta", {
                   reporter: r.reporterEmail,
                   date: formatDate(r.createdAt),
@@ -73,7 +73,7 @@ export function ReportsQueue({ reports }: { reports: AdminReport[] }) {
               </p>
               <Link
                 href={`/profiles/${r.reportedUserId}`}
-                className="mt-1 inline-block text-xs font-medium text-trustGreen hover:underline"
+                className="mt-1 inline-block text-xs font-medium text-primary hover:underline"
               >
                 {t("viewProfile")}
               </Link>

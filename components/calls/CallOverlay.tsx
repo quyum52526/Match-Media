@@ -64,15 +64,15 @@ export function CallOverlay({
   const showMute = call.phase === "active" || call.phase === "connecting";
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-charcoal/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/60 backdrop-blur-sm">
       <div className="w-[88%] max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl">
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-trustGreen/10 text-2xl font-bold text-trustGreen">
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-2xl font-bold text-primary">
           {initial}
         </div>
-        <h2 className="mt-4 text-lg font-bold text-charcoal">
+        <h2 className="mt-4 text-lg font-bold text-ink">
           {call.peerName || t("unknownCaller")}
         </h2>
-        <p className="mt-1 flex items-center justify-center gap-1.5 font-sans text-sm text-charcoal/60">
+        <p className="mt-1 flex items-center justify-center gap-1.5 font-body text-sm text-ink/60">
           <PhoneIcon width={14} height={14} />
           {status}
         </p>
@@ -98,7 +98,7 @@ export function CallOverlay({
                 type="button"
                 onClick={onAccept}
                 aria-label={t("accept")}
-                className="flex h-14 w-14 items-center justify-center rounded-full bg-trustGreen text-white transition-colors hover:bg-trustGreen/90"
+                className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white transition-colors hover:bg-primary/90"
               >
                 <PhoneIcon width={24} height={24} />
               </button>
@@ -113,8 +113,8 @@ export function CallOverlay({
                   className={
                     "flex h-12 w-12 items-center justify-center rounded-full transition-colors " +
                     (muted
-                      ? "bg-charcoal text-white"
-                      : "bg-charcoal/10 text-charcoal hover:bg-charcoal/20")
+                      ? "bg-ink text-white"
+                      : "bg-ink/10 text-ink hover:bg-ink/20")
                   }
                 >
                   {muted ? (

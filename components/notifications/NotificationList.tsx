@@ -46,25 +46,25 @@ function Row({
       className={
         "flex items-start gap-3 rounded-xl border px-4 py-3 transition-colors " +
         (n.read
-          ? "border-charcoal/10 bg-white"
-          : "border-trustGreen/30 bg-trustGreen/[0.05]")
+          ? "border-ink/10 bg-white"
+          : "border-primary/30 bg-primary/[0.05]")
       }
     >
       <span
         className={
-          "mt-0.5 shrink-0 " + (n.read ? "text-charcoal/40" : "text-trustGreen")
+          "mt-0.5 shrink-0 " + (n.read ? "text-ink/40" : "text-primary")
         }
       >
         <Icon width={20} height={20} />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-sm text-charcoal">{label}</p>
-        <p className="mt-0.5 font-sans text-xs text-charcoal/50">
+        <p className="text-sm text-ink">{label}</p>
+        <p className="mt-0.5 font-body text-xs text-ink/50">
           {formatDate(n.createdAt)}
         </p>
       </div>
       {!n.read && (
-        <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-trustGreen" />
+        <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
       )}
     </div>
   );
@@ -91,7 +91,7 @@ export function NotificationList({ items }: { items: NotificationView[] }) {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-xl border border-charcoal/10 bg-white px-4 py-16 text-center text-sm text-charcoal/50">
+      <div className="rounded-xl border border-ink/10 bg-white px-4 py-16 text-center text-sm text-ink/50">
         {t("empty")}
       </div>
     );

@@ -63,18 +63,18 @@ export function PhotoManager({
       <CardBody className="space-y-4">
         <div className="flex items-center justify-between gap-3">
           <CardTitle>{t("title")}</CardTitle>
-          <span className="font-sans text-xs text-charcoal/50">
+          <span className="font-body text-xs text-ink/50">
             {t("count", { count: photos.length, max: maxPhotos })}
           </span>
         </div>
-        <p className="text-sm text-charcoal/60">{t("subtitle")}</p>
+        <p className="text-sm text-ink/60">{t("subtitle")}</p>
 
         {photos.length > 0 && (
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {photos.map((photo) => (
               <li
                 key={photo.id}
-                className="group relative overflow-hidden rounded-xl border border-charcoal/10 bg-charcoal/5"
+                className="group relative overflow-hidden rounded-xl border border-ink/10 bg-ink/5"
               >
                 <div className="aspect-[3/4] w-full">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -88,13 +88,13 @@ export function PhotoManager({
                 {/* Status chips */}
                 <div className="absolute left-2 top-2 flex flex-wrap gap-1">
                   {photo.isPrimary && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-trustGreen px-2 py-0.5 text-[11px] font-medium text-white">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[11px] font-medium text-white">
                       <StarIcon width={11} height={11} />
                       {t("primaryBadge")}
                     </span>
                   )}
                   {photo.moderationStatus === "PENDING" && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-gold px-2 py-0.5 text-[11px] font-medium text-white">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-[11px] font-medium text-white">
                       <ClockIcon width={10} height={10} />
                       {t("status.PENDING")}
                     </span>
@@ -104,7 +104,7 @@ export function PhotoManager({
                       {t("status.REJECTED")}
                     </span>
                   )}
-                  <span className="inline-flex items-center gap-1 rounded-full bg-charcoal/70 px-2 py-0.5 text-[11px] font-medium text-white">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-ink/70 px-2 py-0.5 text-[11px] font-medium text-white">
                     {photo.privacy === "PUBLIC" ? (
                       t("publicBadge")
                     ) : (
@@ -123,7 +123,7 @@ export function PhotoManager({
                       type="button"
                       onClick={() => run(() => setPrimaryPhoto(photo.id))}
                       disabled={pending}
-                      className="rounded-lg bg-charcoal/5 px-2 py-1 text-[11px] font-medium text-charcoal hover:bg-charcoal/10 disabled:opacity-50"
+                      className="rounded-lg bg-ink/5 px-2 py-1 text-[11px] font-medium text-ink hover:bg-ink/10 disabled:opacity-50"
                     >
                       {t("makePrimary")}
                     </button>
@@ -139,7 +139,7 @@ export function PhotoManager({
                       )
                     }
                     disabled={pending}
-                    className="rounded-lg bg-charcoal/5 px-2 py-1 text-[11px] font-medium text-charcoal hover:bg-charcoal/10 disabled:opacity-50"
+                    className="rounded-lg bg-ink/5 px-2 py-1 text-[11px] font-medium text-ink hover:bg-ink/10 disabled:opacity-50"
                   >
                     {photo.privacy === "PUBLIC" ? t("makeBlurred") : t("makePublic")}
                   </button>
@@ -185,10 +185,10 @@ export function PhotoManager({
                 : t("add")}
           </Button>
           {atLimit && (
-            <span className="text-xs text-charcoal/50">{t("limitNote")}</span>
+            <span className="text-xs text-ink/50">{t("limitNote")}</span>
           )}
           {!pending && error === null && photos.length > 0 && (
-            <span className="inline-flex items-center gap-1 text-xs text-trustGreen">
+            <span className="inline-flex items-center gap-1 text-xs text-primary">
               <CheckIcon width={14} height={14} />
               {t("savedHint")}
             </span>
@@ -198,7 +198,7 @@ export function PhotoManager({
         {error && (
           <p className="text-sm font-medium text-red-600">{t(`errors.${error}`)}</p>
         )}
-        <p className="text-xs text-charcoal/45">{t("privacyHint")}</p>
+        <p className="text-xs text-ink/45">{t("privacyHint")}</p>
       </CardBody>
     </Card>
   );

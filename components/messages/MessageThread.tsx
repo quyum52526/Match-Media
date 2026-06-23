@@ -59,20 +59,20 @@ export function MessageThread({ data }: { data: ConversationView }) {
   return (
     <div className="flex h-[calc(100vh-3.5rem)] flex-col">
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-charcoal/10 bg-white px-4 py-3">
+      <div className="flex items-center gap-3 border-b border-ink/10 bg-white px-4 py-3">
         <Link
           href="/messages"
-          className="text-sm font-medium text-charcoal/60 hover:text-charcoal"
+          className="text-sm font-medium text-ink/60 hover:text-ink"
         >
           ←
         </Link>
         <Link
           href={`/profiles/${data.otherUserId}`}
-          className="flex items-center gap-1.5 text-sm font-semibold text-charcoal hover:underline"
+          className="flex items-center gap-1.5 text-sm font-semibold text-ink hover:underline"
         >
           {data.person.displayName}
           {data.person.isVerified && (
-            <ShieldCheckIcon width={14} height={14} className="text-verifyGreen" />
+            <ShieldCheckIcon width={14} height={14} className="text-success" />
           )}
         </Link>
         {/* Voice call — matched users only, when Realtime is configured. */}
@@ -82,7 +82,7 @@ export function MessageThread({ data }: { data: ConversationView }) {
             onClick={() => placeCall(data.otherUserId, data.person.displayName)}
             aria-label={t("call")}
             title={t("call")}
-            className="ml-auto flex h-9 w-9 items-center justify-center rounded-full text-trustGreen transition-colors hover:bg-trustGreen/10"
+            className="ml-auto flex h-9 w-9 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/10"
           >
             <PhoneIcon width={20} height={20} />
           </button>
@@ -90,9 +90,9 @@ export function MessageThread({ data }: { data: ConversationView }) {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 space-y-2 overflow-y-auto bg-ivory/40 p-4">
+      <div className="flex-1 space-y-2 overflow-y-auto bg-canvas/40 p-4">
         {data.messages.length === 0 ? (
-          <p className="py-10 text-center text-sm text-charcoal/40">
+          <p className="py-10 text-center text-sm text-ink/40">
             {t("threadEmpty")}
           </p>
         ) : (
@@ -108,8 +108,8 @@ export function MessageThread({ data }: { data: ConversationView }) {
                   className={
                     "max-w-[78%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2 text-sm " +
                     (m.mine
-                      ? "rounded-br-md bg-trustGreen text-white"
-                      : "rounded-bl-md bg-white text-charcoal border border-charcoal/10")
+                      ? "rounded-br-md bg-primary text-white"
+                      : "rounded-bl-md bg-white text-ink border border-ink/10")
                   }
                 >
                   {m.body}
@@ -123,7 +123,7 @@ export function MessageThread({ data }: { data: ConversationView }) {
 
       {/* Composer */}
       {data.canSend ? (
-        <div className="border-t border-charcoal/10 bg-white">
+        <div className="border-t border-ink/10 bg-white">
           {error && (
             <p className="px-3 pt-2 text-xs font-medium text-red-600">
               {error === "notVerified" ? (
@@ -150,7 +150,7 @@ export function MessageThread({ data }: { data: ConversationView }) {
                 }
               }}
               placeholder={t("composerPlaceholder")}
-              className="max-h-32 flex-1 resize-none rounded-xl border border-charcoal/15 bg-white px-3 py-2 text-sm text-charcoal outline-none focus:border-trustGreen focus:ring-2 focus:ring-trustGreen/30"
+              className="max-h-32 flex-1 resize-none rounded-xl border border-hairline bg-white px-3 py-2 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
             />
             <Button onClick={submit} disabled={pending || !body.trim()}>
               {t("send")}
@@ -158,7 +158,7 @@ export function MessageThread({ data }: { data: ConversationView }) {
           </div>
         </div>
       ) : (
-        <div className="border-t border-charcoal/10 bg-white p-4 text-center text-sm text-charcoal/50">
+        <div className="border-t border-ink/10 bg-white p-4 text-center text-sm text-ink/50">
           {t("notMatched")}
         </div>
       )}

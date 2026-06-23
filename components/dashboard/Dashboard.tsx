@@ -43,10 +43,10 @@ export async function Dashboard({
   return (
     <main className="mx-auto max-w-5xl px-4 py-8 sm:py-10">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold text-charcoal sm:text-3xl">
+        <h1 className="text-2xl font-bold text-ink sm:text-3xl">
           {greeting}
         </h1>
-        <p className="mt-1 text-sm text-charcoal/60">{t("subtitle")}</p>
+        <p className="mt-1 text-sm text-ink/60">{t("subtitle")}</p>
       </header>
 
       <div className="mb-6">
@@ -89,13 +89,13 @@ export async function Dashboard({
       </div>
 
       {/* Primary call to action */}
-      <Card className="border-trustGreen/20 bg-trustGreen/[0.04]">
+      <Card className="border-primary/20 bg-primary/[0.04]">
         <CardBody className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-base font-semibold text-charcoal">
+            <p className="text-base font-semibold text-ink">
               {t("cta.title")}
             </p>
-            <p className="mt-0.5 text-sm text-charcoal/60">{t("cta.body")}</p>
+            <p className="mt-0.5 text-sm text-ink/60">{t("cta.body")}</p>
           </div>
           <Link href="/browse" className="shrink-0">
             <Button size="lg">
@@ -109,13 +109,13 @@ export async function Dashboard({
       {/* Who viewed me */}
       <section className="mt-8">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="text-base font-semibold text-charcoal">
+          <h2 className="text-base font-semibold text-ink">
             {v("heading")}
           </h2>
           {viewers.total > viewers.viewers.length && (
             <Link
               href="/viewers"
-              className="shrink-0 text-sm font-medium text-trustGreen hover:underline"
+              className="shrink-0 text-sm font-medium text-primary hover:underline"
             >
               {v("seeAll", { n: String(viewers.total) })}
             </Link>
@@ -144,24 +144,24 @@ function StatCard({
     <Card
       className={
         highlight
-          ? "h-full ring-1 ring-trustGreen/30 transition-colors"
-          : "h-full transition-colors hover:border-charcoal/20"
+          ? "h-full ring-1 ring-primary/30 transition-colors"
+          : "h-full transition-colors hover:border-ink/20"
       }
     >
       <CardBody className="flex flex-col gap-2 p-4 sm:p-5">
         <span
           className={
             highlight
-              ? "flex h-9 w-9 items-center justify-center rounded-xl bg-trustGreen/10 text-trustGreen"
-              : "flex h-9 w-9 items-center justify-center rounded-xl bg-charcoal/5 text-charcoal/50"
+              ? "flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary"
+              : "flex h-9 w-9 items-center justify-center rounded-xl bg-ink/5 text-ink/50"
           }
         >
           {icon}
         </span>
-        <span className="font-sans text-2xl font-bold leading-none text-charcoal">
+        <span className="font-body text-2xl font-bold leading-none text-ink">
           {value}
         </span>
-        <span className="text-xs font-medium text-charcoal/60">{label}</span>
+        <span className="text-xs font-medium text-ink/60">{label}</span>
       </CardBody>
     </Card>
   );
@@ -215,10 +215,10 @@ function ProStatusCard({
   const urgent = state === "EXPIRED" || soon || state === "FREE";
 
   const accent = isPro
-    ? "border-gold/30 bg-gold/[0.04]"
+    ? "border-accent/30 bg-accent/[0.04]"
     : state === "EXPIRED"
-      ? "border-gold/40 bg-gold/[0.06]"
-      : "border-charcoal/10";
+      ? "border-accent/40 bg-accent/[0.06]"
+      : "border-ink/10";
 
   const detail =
     state === "ACTIVE"
@@ -245,25 +245,25 @@ function ProStatusCard({
           <span
             className={
               isPro
-                ? "flex h-10 w-10 items-center justify-center rounded-xl bg-gold/15 text-gold"
-                : "flex h-10 w-10 items-center justify-center rounded-xl bg-charcoal/5 text-charcoal/50"
+                ? "flex h-10 w-10 items-center justify-center rounded-xl bg-accent/15 text-accent"
+                : "flex h-10 w-10 items-center justify-center rounded-xl bg-ink/5 text-ink/50"
             }
           >
             <StarIcon width={20} height={20} />
           </span>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-base font-semibold text-charcoal">
+              <span className="text-base font-semibold text-ink">
                 {isPro ? t("pro.statusPro") : t("pro.statusFree")}
               </span>
               <Badge
                 variant={isPro ? "gold" : "neutral"}
-                className={isPro ? "bg-gold text-white" : undefined}
+                className={isPro ? "bg-accent text-white" : undefined}
               >
                 {isPro ? t("pro.badgePro") : t("pro.badgeFree")}
               </Badge>
             </div>
-            <p className="mt-0.5 text-sm text-charcoal/60">{detail}</p>
+            <p className="mt-0.5 text-sm text-ink/60">{detail}</p>
           </div>
         </div>
         <Link href="/pro" className="shrink-0 self-stretch sm:self-auto">

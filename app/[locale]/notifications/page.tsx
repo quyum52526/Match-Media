@@ -24,7 +24,7 @@ export default async function NotificationsPage({
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="mb-5 text-xl font-bold text-charcoal">{t("title")}</h1>
+      <h1 className="mb-5 text-xl font-bold text-ink">{t("title")}</h1>
       <NotificationList items={items} />
     </main>
   );

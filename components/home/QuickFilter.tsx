@@ -9,15 +9,14 @@ import { localize } from "@/lib/constants/labels";
 import { SearchIcon } from "@/components/ui/icons";
 
 /**
- * Homepage Quick-Filter — an Airbnb-style segmented search bar with Stripe-fast
- * (150ms, snappy) interactions, built only from Tailwind's built-in transitions.
- * The four fields map straight onto the /browse query params (gender / minAge +
- * maxAge / district / profession), so submitting just routes into the existing
- * browse page with the filters pre-applied.
+ * Homepage Quick-Filter — Brand v1.0. An Airbnb-style segmented search bar on a
+ * white surface with a hairline border + 14px radius, and a Garnet pill submit
+ * (hover → Garnet Dark + 0.98 scale). The four fields map straight onto the
+ * /browse query params, so submitting routes there with filters pre-applied.
+ * Tailwind built-in transitions only.
  */
 
-// Age presented as friendly bands; numerals are identical in both locales so the
-// labels are literal. An empty `max` means "and above".
+// Age presented as friendly bands; numerals are identical in both locales.
 const AGE_BANDS: ReadonlyArray<{ key: string; min: string; max: string; label: string }> = [
   { key: "18-25", min: "18", max: "25", label: "18–25" },
   { key: "26-30", min: "26", max: "30", label: "26–30" },
@@ -53,10 +52,10 @@ export function QuickFilter() {
 
   return (
     <div
-      className="mx-auto w-full max-w-3xl rounded-2xl border border-charcoal/10 bg-white p-2 shadow-sm transition-all duration-150 ease-in-out hover:shadow-md"
+      className="mx-auto w-full max-w-3xl rounded-card border border-hairline bg-surface p-2 font-body shadow-card transition-all duration-150 ease-in-out hover:shadow-md"
       role="search"
     >
-      <div className="flex flex-col gap-1 md:flex-row md:items-stretch md:gap-0 md:divide-x md:divide-charcoal/10">
+      <div className="flex flex-col gap-1 md:flex-row md:items-stretch md:gap-0 md:divide-x md:divide-hairline">
         {/* খুঁজছি — Looking for (maps to `gender`) */}
         <Field label={t("lookingFor")} value={gender} onChange={setGender}>
           <option value="">{t("any")}</option>
@@ -68,7 +67,7 @@ export function QuickFilter() {
         </Field>
 
         {/* বয়স — Age (maps to minAge/maxAge) */}
-        <Field label={t("age")} value={ageBand} onChange={setAgeBand} numeric>
+        <Field label={t("age")} value={ageBand} onChange={setAgeBand}>
           <option value="">{t("anyAge")}</option>
           {AGE_BANDS.map((b) => (
             <option key={b.key} value={b.key}>
@@ -97,14 +96,14 @@ export function QuickFilter() {
           ))}
         </Field>
 
-        {/* Trust-Green submit */}
+        {/* Garnet pill submit */}
         <div className="flex items-center md:pl-2">
           <button
             type="button"
             onClick={search}
             disabled={isPending}
             aria-label={t("search")}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-trustGreen px-6 text-sm font-medium text-white shadow-sm transition-all duration-150 ease-in-out hover:bg-trustGreen/90 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-trustGreen/40 active:scale-[0.98] disabled:opacity-70 md:w-auto"
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-pill bg-primary px-6 text-sm font-medium text-white shadow-card transition-all duration-150 ease-in-out hover:bg-primary-dark hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-[0.98] disabled:opacity-70 md:w-auto"
           >
             <SearchIcon width={18} height={18} />
             {t("search")}
@@ -116,26 +115,23 @@ export function QuickFilter() {
 }
 
 /**
- * One segment of the bar: a label + a borderless native <select> (kept for
- * accessibility) with a custom chevron. Hover gives a subtle, fast wash; focus
- * tints the label Trust Green — all via Tailwind transitions only.
+ * One segment of the bar: a label + a borderless native <select> with a custom
+ * chevron. Hover gives a subtle, fast wash; focus tints the label Garnet.
  */
 function Field({
   label,
   value,
   onChange,
   children,
-  numeric,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   children: React.ReactNode;
-  numeric?: boolean;
 }) {
   return (
-    <label className="group relative flex-1 cursor-pointer rounded-xl px-4 py-2 transition-all duration-150 ease-in-out hover:bg-charcoal/[0.03]">
-      <span className="block text-xs font-medium text-charcoal/50 transition-colors duration-150 ease-in-out group-focus-within:text-trustGreen">
+    <label className="group relative flex-1 cursor-pointer rounded-card px-4 py-2 transition-all duration-150 ease-in-out hover:bg-ink/[0.03]">
+      <span className="block text-xs font-medium text-muted transition-colors duration-150 ease-in-out group-focus-within:text-primary">
         {label}
       </span>
       <div className="relative">
@@ -143,9 +139,9 @@ function Field({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           aria-label={label}
-          className={`w-full cursor-pointer appearance-none truncate bg-transparent pr-6 text-sm font-medium text-charcoal outline-none ${
-            numeric ? "font-sans" : ""
-          } ${value === "" ? "text-charcoal/50" : ""}`}
+          className={`w-full cursor-pointer appearance-none truncate bg-transparent pr-6 text-sm font-medium outline-none ${
+            value === "" ? "text-muted" : "text-ink"
+          }`}
         >
           {children}
         </select>
@@ -153,7 +149,7 @@ function Field({
         <svg
           aria-hidden="true"
           viewBox="0 0 24 24"
-          className="pointer-events-none absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2 text-charcoal/40 transition-transform duration-150 ease-in-out group-focus-within:rotate-180"
+          className="pointer-events-none absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2 text-muted transition-transform duration-150 ease-in-out group-focus-within:rotate-180"
           fill="none"
           stroke="currentColor"
           strokeWidth={1.8}

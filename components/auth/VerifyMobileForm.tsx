@@ -7,7 +7,7 @@ import { sendMobileOtp, verifyMobileOtp } from "@/lib/actions/otp";
 import { Button } from "@/components/ui/Button";
 
 const inputClass =
-  "h-11 w-full rounded-xl border border-charcoal/15 bg-white px-3 text-sm text-charcoal outline-none focus:border-trustGreen focus:ring-2 focus:ring-trustGreen/30";
+  "h-11 w-full rounded-xl border border-hairline bg-white px-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30";
 
 const RESEND_SECONDS = 60;
 
@@ -86,7 +86,7 @@ export function VerifyMobileForm({ mobile }: { mobile: string | null }) {
     <div className="space-y-4">
       {phase === "collect" ? (
         <div className="space-y-1">
-          <label htmlFor="mobile" className="text-sm font-medium text-charcoal">
+          <label htmlFor="mobile" className="text-sm font-medium text-ink">
             {t("numberLabel")}
           </label>
           <input
@@ -97,7 +97,7 @@ export function VerifyMobileForm({ mobile }: { mobile: string | null }) {
             placeholder="01XXXXXXXXX"
             value={number}
             onChange={(e) => setNumber(e.target.value)}
-            className={`${inputClass} font-sans`}
+            className={`${inputClass} font-body`}
           />
           <Button
             type="button"
@@ -110,14 +110,14 @@ export function VerifyMobileForm({ mobile }: { mobile: string | null }) {
         </div>
       ) : (
         <div className="space-y-3">
-          <p className="text-sm text-charcoal/70">
+          <p className="text-sm text-ink/70">
             {t.rich("sentTo", {
               number: number,
-              b: (c) => <span className="font-sans font-semibold">{c}</span>,
+              b: (c) => <span className="font-body font-semibold">{c}</span>,
             })}
           </p>
           <div className="space-y-1">
-            <label htmlFor="code" className="text-sm font-medium text-charcoal">
+            <label htmlFor="code" className="text-sm font-medium text-ink">
               {t("codeLabel")}
             </label>
             <input
@@ -128,7 +128,7 @@ export function VerifyMobileForm({ mobile }: { mobile: string | null }) {
               maxLength={6}
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-              className={`${inputClass} font-sans tracking-[0.5em]`}
+              className={`${inputClass} font-body tracking-[0.5em]`}
             />
           </div>
           <Button
@@ -143,7 +143,7 @@ export function VerifyMobileForm({ mobile }: { mobile: string | null }) {
             type="button"
             disabled={pending || cooldown > 0}
             onClick={() => send()}
-            className="w-full text-center text-xs font-medium text-trustGreen disabled:text-charcoal/40"
+            className="w-full text-center text-xs font-medium text-primary disabled:text-ink/40"
           >
             {cooldown > 0 ? t("resendIn", { s: String(cooldown) }) : t("resend")}
           </button>
@@ -151,7 +151,7 @@ export function VerifyMobileForm({ mobile }: { mobile: string | null }) {
       )}
 
       {notice && (
-        <p className="text-sm font-medium text-trustGreen">{notice}</p>
+        <p className="text-sm font-medium text-primary">{notice}</p>
       )}
       {error && <p className="text-sm font-medium text-red-600">{error}</p>}
     </div>

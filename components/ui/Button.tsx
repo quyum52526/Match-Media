@@ -11,12 +11,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<Variant, string> = {
-  primary: "bg-trustGreen text-white hover:bg-trustGreen/90 focus-visible:ring-trustGreen",
-  secondary: "bg-charcoal text-ivory hover:bg-charcoal/90 focus-visible:ring-charcoal",
-  gold: "bg-gold text-white hover:bg-gold/90 focus-visible:ring-gold",
+  // Primary CTA: Garnet → Garnet Dark on hover (per Brand v1.0).
+  primary: "bg-primary text-white hover:bg-primary-dark focus-visible:ring-primary",
+  secondary: "bg-secondary text-canvas hover:bg-secondary/90 focus-visible:ring-secondary",
+  gold: "bg-accent text-white hover:bg-accent/90 focus-visible:ring-accent",
   outline:
-    "border border-trustGreen text-trustGreen bg-transparent hover:bg-trustGreen/5 focus-visible:ring-trustGreen",
-  ghost: "text-charcoal hover:bg-charcoal/5 focus-visible:ring-charcoal",
+    "border border-primary text-primary bg-transparent hover:bg-primary/5 focus-visible:ring-primary",
+  ghost: "text-ink hover:bg-ink/5 focus-visible:ring-ink",
 };
 
 const sizeClasses: Record<Size, string> = {
@@ -31,7 +32,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-colors",
+          "inline-flex items-center justify-center gap-2 rounded-pill font-medium transition-all duration-150 ease-in-out active:scale-[0.98]",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
           "disabled:pointer-events-none disabled:opacity-50",
           variantClasses[variant],

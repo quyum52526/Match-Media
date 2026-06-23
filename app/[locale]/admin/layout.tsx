@@ -32,16 +32,16 @@ export default async function AdminLayout({
   return (
     <main className="mx-auto max-w-5xl px-4 py-6 sm:py-10">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold text-charcoal">{t("title")}</h1>
-        <p className="mt-1 text-sm text-charcoal/60">{t("subtitle")}</p>
+        <h1 className="text-2xl font-bold text-ink">{t("title")}</h1>
+        <p className="mt-1 text-sm text-ink/60">{t("subtitle")}</p>
       </header>
 
-      <nav className="mb-6 flex flex-wrap gap-2 border-b border-charcoal/10 pb-3">
+      <nav className="mb-6 flex flex-wrap gap-2 border-b border-ink/10 pb-3">
         {tabs.map((tab) => (
           <Link
             key={tab.href}
             href={tab.href}
-            className="rounded-lg px-3 py-1.5 text-sm font-medium text-charcoal/70 transition-colors hover:bg-charcoal/5 hover:text-charcoal"
+            className="rounded-lg px-3 py-1.5 text-sm font-medium text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink"
           >
             {tab.label}
           </Link>

@@ -42,14 +42,14 @@ export function ProfileShowcaseCard({
       href="/profiles/demo"
       className="group block w-44 shrink-0 snap-start sm:w-48"
     >
-      <article className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-charcoal/5 transition-all duration-150 ease-in-out group-hover:-translate-y-1 group-hover:shadow-lg">
+      <article className="overflow-hidden rounded-card border border-hairline bg-surface shadow-card transition-all duration-150 ease-in-out group-hover:-translate-y-1 group-hover:shadow-md">
         {/* Privacy-default photo area */}
         <div className={`relative aspect-[4/5] overflow-hidden bg-gradient-to-br ${hue}`}>
           {/* Frosted layer blurs the surface behind it (privacy-default) */}
           <div className="absolute inset-0 bg-white/10 backdrop-blur-[6px]" />
 
           {/* Lock + hint */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-charcoal/70">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-ink/70">
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/50 shadow-sm">
               <LockIcon width={16} height={16} />
             </span>
@@ -58,7 +58,7 @@ export function ProfileShowcaseCard({
 
           {/* Premium badge (Muted Gold) */}
           {profile.isPremium && (
-            <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-gold px-2 py-0.5 text-[10px] font-medium text-white shadow-sm">
+            <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-[10px] font-medium text-white shadow-sm">
               <StarIcon width={11} height={11} />
               {labels.premium}
             </span>
@@ -68,7 +68,7 @@ export function ProfileShowcaseCard({
           {profile.isMobileVerified && (
             <span
               title={labels.mobileVerified}
-              className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-verifyGreen px-1.5 py-0.5 text-[10px] font-medium text-white shadow-sm"
+              className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-success px-1.5 py-0.5 text-[10px] font-medium text-white shadow-sm"
             >
               <ShieldCheckIcon width={11} height={11} />
               <span className="sr-only sm:not-sr-only">{labels.mobileVerified}</span>
@@ -78,13 +78,13 @@ export function ProfileShowcaseCard({
 
         {/* Identity */}
         <div className="space-y-1 p-3">
-          <p className="truncate text-sm font-medium text-charcoal">{displayName}</p>
-          <p className="text-xs text-charcoal/60">
-            <span className="font-sans">{profile.age}</span>
+          <p className="truncate text-sm font-medium text-ink">{displayName}</p>
+          <p className="text-xs text-ink/60">
+            <span className="font-body">{profile.age}</span>
             {" · "}
             {localize(profile.profession, locale)}
           </p>
-          <p className="flex items-center gap-1 text-xs text-charcoal/50">
+          <p className="flex items-center gap-1 text-xs text-ink/50">
             <MapPinIcon width={12} height={12} />
             <span className="truncate">{localize(profile.district, locale)}</span>
           </p>

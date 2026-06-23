@@ -29,8 +29,8 @@ export default async function AdminOverviewPage({
         <Link key={c.href} href={c.href}>
           <Card className="transition-shadow hover:shadow-md">
             <CardBody>
-              <p className="font-sans text-3xl font-bold text-charcoal">{c.value}</p>
-              <p className="mt-1 text-sm text-charcoal/60">{c.label}</p>
+              <p className="font-body text-3xl font-bold text-ink">{c.value}</p>
+              <p className="mt-1 text-sm text-ink/60">{c.label}</p>
             </CardBody>
           </Card>
         </Link>

@@ -60,14 +60,14 @@ export function usePhotoQuota(): QuotaCtx | null {
  */
 const STYLES = {
   inline: {
-    ok: "text-xs font-medium text-charcoal/55",
+    ok: "text-xs font-medium text-ink/55",
     limit:
-      "flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-xl border border-gold/40 bg-gold/5 px-3 py-2 text-xs text-charcoal/70",
+      "flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-xl border border-accent/40 bg-accent/5 px-3 py-2 text-xs text-ink/70",
   },
   banner: {
-    ok: "mb-4 rounded-xl border border-charcoal/10 bg-ivory/60 px-3 py-2 text-xs font-medium text-charcoal/60",
+    ok: "mb-4 rounded-xl border border-ink/10 bg-canvas/60 px-3 py-2 text-xs font-medium text-ink/60",
     limit:
-      "mb-4 flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-xl border border-gold/40 bg-gold/5 px-3 py-2 text-xs text-charcoal/70",
+      "mb-4 flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-xl border border-accent/40 bg-accent/5 px-3 py-2 text-xs text-ink/70",
   },
 } as const;
 
@@ -96,11 +96,11 @@ export function QuotaNote({
 
   return (
     <div className={styles.limit}>
-      <span className="font-semibold text-charcoal">{t("limitReachedTitle")}</span>
+      <span className="font-semibold text-ink">{t("limitReachedTitle")}</span>
       <span>{t("limitReached", { limit: String(quota.limit) })}</span>
       <Link
         href="/pro"
-        className="inline-flex items-center gap-1 font-semibold text-gold underline-offset-2 hover:underline"
+        className="inline-flex items-center gap-1 font-semibold text-accent underline-offset-2 hover:underline"
       >
         <StarIcon width={12} height={12} />
         {t("upgrade")}

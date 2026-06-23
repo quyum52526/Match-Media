@@ -6,7 +6,7 @@ import { register } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/Button";
 
 const inputClass =
-  "h-11 w-full rounded-xl border border-charcoal/15 bg-white px-3 text-sm text-charcoal outline-none focus:border-trustGreen focus:ring-2 focus:ring-trustGreen/30";
+  "h-11 w-full rounded-xl border border-hairline bg-white px-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30";
 
 /** Red asterisk marking a required field. */
 function Req() {
@@ -24,9 +24,9 @@ export function RegisterForm() {
       <input type="hidden" name="locale" value={locale} />
 
       <div className="space-y-1">
-        <label htmlFor="fullName" className="text-sm font-medium text-charcoal">
+        <label htmlFor="fullName" className="text-sm font-medium text-ink">
           {t("fullName")}{" "}
-          <span className="font-normal text-charcoal/40">
+          <span className="font-normal text-ink/40">
             ({t("optional")})
           </span>
         </label>
@@ -40,7 +40,7 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-1">
-        <label htmlFor="email" className="text-sm font-medium text-charcoal">
+        <label htmlFor="email" className="text-sm font-medium text-ink">
           {t("email")}
           <Req />
         </label>
@@ -55,9 +55,9 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-1">
-        <label htmlFor="mobile" className="text-sm font-medium text-charcoal">
+        <label htmlFor="mobile" className="text-sm font-medium text-ink">
           {t("mobile")}{" "}
-          <span className="font-normal text-charcoal/40">
+          <span className="font-normal text-ink/40">
             ({t("optional")})
           </span>
         </label>
@@ -68,13 +68,13 @@ export function RegisterForm() {
           inputMode="tel"
           autoComplete="tel"
           placeholder="01XXXXXXXXX"
-          className={`${inputClass} font-sans`}
+          className={`${inputClass} font-body`}
         />
-        <p className="font-sans text-xs text-charcoal/50">{t("mobileHint")}</p>
+        <p className="font-body text-xs text-ink/50">{t("mobileHint")}</p>
       </div>
 
       <div className="space-y-1">
-        <label htmlFor="password" className="text-sm font-medium text-charcoal">
+        <label htmlFor="password" className="text-sm font-medium text-ink">
           {t("password")}
           <Req />
         </label>
@@ -88,14 +88,14 @@ export function RegisterForm() {
           aria-describedby="password-hint"
           className={inputClass}
         />
-        <p id="password-hint" className="font-sans text-xs text-charcoal/50">
+        <p id="password-hint" className="font-body text-xs text-ink/50">
           {t("passwordHint")}
         </p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1">
-          <label htmlFor="gender" className="text-sm font-medium text-charcoal">
+          <label htmlFor="gender" className="text-sm font-medium text-ink">
             {t("gender")}
             <Req />
           </label>
@@ -118,7 +118,7 @@ export function RegisterForm() {
         <div className="space-y-1">
           <label
             htmlFor="dateOfBirth"
-            className="text-sm font-medium text-charcoal"
+            className="text-sm font-medium text-ink"
           >
             {t("dateOfBirth")}
             <Req />
@@ -128,7 +128,7 @@ export function RegisterForm() {
             name="dateOfBirth"
             type="date"
             required
-            className={`${inputClass} font-sans`}
+            className={`${inputClass} font-body`}
           />
         </div>
       </div>
@@ -141,7 +141,7 @@ export function RegisterForm() {
         {pending ? t("submitting") : t("submit")}
       </Button>
 
-      <p className="text-center text-xs text-charcoal/50">{t("privacyNote")}</p>
+      <p className="text-center text-xs text-ink/50">{t("privacyNote")}</p>
     </form>
   );
 }

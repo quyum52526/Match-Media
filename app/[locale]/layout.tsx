@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Inter, Hind_Siliguri } from "next/font/google";
+import {
+  Hind_Siliguri,
+  Fraunces,
+  Plus_Jakarta_Sans,
+  Noto_Serif_Bengali,
+} from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
@@ -9,18 +14,34 @@ import { MobileVerifyBanner } from "@/components/auth/MobileVerifyBanner";
 import { CallProviderMount } from "@/components/calls/CallProviderMount";
 import "../globals.css";
 
-// Latin / numerals
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-// Bengali (Hind Siliguri is not a variable font — declare explicit weights)
+// Bengali body (Hind Siliguri is not a variable font — declare explicit weights)
 const hindSiliguri = Hind_Siliguri({
   subsets: ["bengali"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-hind",
+  display: "swap",
+});
+
+// --- Brand v1.0 fonts ---
+// Headings (EN): Fraunces — an elegant serif for the premium, respectful tone.
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  display: "swap",
+});
+
+// Body (EN): Plus Jakarta Sans.
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+  display: "swap",
+});
+
+// Headings (BN): Noto Serif Bengali — the serif pairing for Bengali display text.
+const notoSerifBengali = Noto_Serif_Bengali({
+  subsets: ["bengali"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-noto-bengali",
   display: "swap",
 });
 
@@ -49,12 +70,15 @@ export default async function LocaleLayout({
   // Enable static rendering for this locale.
   setRequestLocale(locale);
 
-  // Default body font: Bengali (Hind Siliguri) for bn, Inter for en.
-  const bodyFont = locale === "bn" ? "font-bengali" : "font-sans";
+  // Brand v1.0 body font (Plus Jakarta Sans → Hind Siliguri fallback for Bengali).
+  const bodyFont = "font-body";
 
   return (
-    <html lang={locale} className={`${inter.variable} ${hindSiliguri.variable}`}>
-      <body className={`${bodyFont} bg-ivory text-charcoal antialiased`}>
+    <html
+      lang={locale}
+      className={`${hindSiliguri.variable} ${fraunces.variable} ${jakarta.variable} ${notoSerifBengali.variable}`}
+    >
+      <body className={`${bodyFont} bg-canvas text-ink antialiased`}>
         <NextIntlClientProvider>
           <CallProviderMount>
             <Header />

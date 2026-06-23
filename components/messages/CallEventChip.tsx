@@ -40,7 +40,7 @@ export function CallEventChip({ body, mine }: { body: string; mine: boolean }) {
           "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs " +
           (missed
             ? "bg-red-50 text-red-600"
-            : "bg-charcoal/5 text-charcoal/60")
+            : "bg-ink/5 text-ink/60")
         }
       >
         {missed ? (

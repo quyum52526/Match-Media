@@ -34,15 +34,15 @@ export default async function ProfileEditPage({
   return (
     <main className="mx-auto max-w-2xl px-4 py-6 sm:py-10">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold text-charcoal">
+        <h1 className="text-2xl font-bold text-ink">
           {isWelcome ? t("welcome.title") : t("title")}
         </h1>
       </header>
 
       {isWelcome && (
-        <Card className="mb-6 border-trustGreen/20 bg-trustGreen/[0.04]">
+        <Card className="mb-6 border-primary/20 bg-primary/[0.04]">
           <CardBody>
-            <p className="text-sm text-charcoal/80">{t("welcome.body")}</p>
+            <p className="text-sm text-ink/80">{t("welcome.body")}</p>
           </CardBody>
         </Card>
       )}
@@ -52,9 +52,9 @@ export default async function ProfileEditPage({
           <PhotoManager photos={photos} maxPhotos={MAX_PHOTOS} />
         </div>
       ) : (
-        <Card className="mb-6 border-charcoal/10">
+        <Card className="mb-6 border-ink/10">
           <CardBody>
-            <p className="text-sm text-charcoal/70">{t("photos.needProfile")}</p>
+            <p className="text-sm text-ink/70">{t("photos.needProfile")}</p>
           </CardBody>
         </Card>
       )}
