@@ -24,7 +24,11 @@ export async function getConversations(
       messages: { orderBy: { createdAt: "desc" }, take: 1 },
       _count: {
         select: {
-          messages: { where: { readAt: null, senderId: { not: viewerId } } },
+          // Only TEXT messages count as "unread" — call events are surfaced via
+          // notifications, not the messages badge.
+          messages: {
+            where: { readAt: null, senderId: { not: viewerId }, type: "TEXT" },
+          },
         },
       },
     },
@@ -40,6 +44,7 @@ export async function getConversations(
         id: c.id,
         person,
         lastPreview: last?.body ?? "",
+        lastType: (last?.type ?? "TEXT") as ConversationSummary["lastType"],
         lastMessageAt: c.lastMessageAt.toISOString(),
         unread: c._count.messages,
         lastFromMe: last ? last.senderId === viewerId : false,
@@ -79,6 +84,7 @@ export async function getConversation(
     messages: convo.messages.map((m) => ({
       id: m.id,
       body: m.body,
+      type: m.type as "TEXT" | "SYSTEM" | "CALL_EVENT",
       mine: m.senderId === viewerId,
       createdAt: m.createdAt.toISOString(),
     })),
@@ -92,6 +98,7 @@ export async function getUnreadCount(viewerId: string): Promise<number> {
     where: {
       readAt: null,
       senderId: { not: viewerId },
+      type: "TEXT", // call events are not "unread messages"
       conversation: { OR: [{ userAId: viewerId }, { userBId: viewerId }] },
     },
   });

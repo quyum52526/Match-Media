@@ -6,7 +6,9 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { sendMessage, markConversationRead } from "@/lib/actions/messages";
 import { Button } from "@/components/ui/Button";
-import { ShieldCheckIcon } from "@/components/ui/icons";
+import { ShieldCheckIcon, PhoneIcon } from "@/components/ui/icons";
+import { useCallControls } from "@/components/calls/CallProvider";
+import { CallEventChip } from "./CallEventChip";
 import type { ConversationView } from "./types";
 
 // How often the open thread re-fetches server state (near-real-time).
@@ -15,6 +17,7 @@ const POLL_MS = 5000;
 export function MessageThread({ data }: { data: ConversationView }) {
   const t = useTranslations("Messages");
   const router = useRouter();
+  const { placeCall, canCall } = useCallControls();
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -72,6 +75,18 @@ export function MessageThread({ data }: { data: ConversationView }) {
             <ShieldCheckIcon width={14} height={14} className="text-verifyGreen" />
           )}
         </Link>
+        {/* Voice call — matched users only, when Realtime is configured. */}
+        {data.canSend && canCall && (
+          <button
+            type="button"
+            onClick={() => placeCall(data.otherUserId, data.person.displayName)}
+            aria-label={t("call")}
+            title={t("call")}
+            className="ml-auto flex h-9 w-9 items-center justify-center rounded-full text-trustGreen transition-colors hover:bg-trustGreen/10"
+          >
+            <PhoneIcon width={20} height={20} />
+          </button>
+        )}
       </div>
 
       {/* Messages */}
@@ -81,23 +96,27 @@ export function MessageThread({ data }: { data: ConversationView }) {
             {t("threadEmpty")}
           </p>
         ) : (
-          data.messages.map((m) => (
-            <div
-              key={m.id}
-              className={m.mine ? "flex justify-end" : "flex justify-start"}
-            >
-              <span
-                className={
-                  "max-w-[78%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2 text-sm " +
-                  (m.mine
-                    ? "rounded-br-md bg-trustGreen text-white"
-                    : "rounded-bl-md bg-white text-charcoal border border-charcoal/10")
-                }
+          data.messages.map((m) =>
+            m.type === "CALL_EVENT" ? (
+              <CallEventChip key={m.id} body={m.body} mine={m.mine} />
+            ) : (
+              <div
+                key={m.id}
+                className={m.mine ? "flex justify-end" : "flex justify-start"}
               >
-                {m.body}
-              </span>
-            </div>
-          ))
+                <span
+                  className={
+                    "max-w-[78%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2 text-sm " +
+                    (m.mine
+                      ? "rounded-br-md bg-trustGreen text-white"
+                      : "rounded-bl-md bg-white text-charcoal border border-charcoal/10")
+                  }
+                >
+                  {m.body}
+                </span>
+              </div>
+            ),
+          )
         )}
         <div ref={bottomRef} />
       </div>

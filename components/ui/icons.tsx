@@ -153,6 +153,44 @@ export function BellIcon(props: IconProps) {
   );
 }
 
+export function PhoneIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 5.5 5.5l1.5-2 4 1.5v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4.5 5.7 2 2 0 0 1 6.5 3.5Z" />
+    </svg>
+  );
+}
+
+export function PhoneOffIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 5.5 5.5l1.5-2 4 1.5v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4.5 5.7 2 2 0 0 1 6.5 3.5Z" />
+      <path d="M3 3l18 18" />
+    </svg>
+  );
+}
+
+export function MicOffIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M9 9V6a3 3 0 0 1 6 0v3m0 3a3 3 0 0 1-5 2.2" />
+      <path d="M5 11a7 7 0 0 0 10.5 6M19 11a7 7 0 0 0-.3-2" />
+      <path d="M12 18v3" />
+      <path d="M3 3l18 18" />
+    </svg>
+  );
+}
+
+export function MicIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M5 11a7 7 0 0 0 14 0" />
+      <path d="M12 18v3" />
+    </svg>
+  );
+}
+
 export function RingIcon(props: IconProps) {
   return (
     <svg {...base} {...props}>

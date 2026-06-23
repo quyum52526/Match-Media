@@ -304,17 +304,13 @@ export async function getProfileForViewer(
 
   const viewerIsPro = isProActive(viewer);
   const interestAccepted = Boolean(acceptedInterest);
-  // Trust soft-gate: contact is revealed only to a Pro viewer who is also
-  // mobile-verified AND has a mutual accepted interest.
-  const contactAuthorized =
-    viewerIsPro && interestAccepted && Boolean(viewer?.isMobileVerified);
 
   const viewerState: ViewerState = {
     photoAccess: (photoReq?.status as PhotoAccessState) ?? "NONE",
     interest: (sentInterest?.status as InterestState) ?? "NONE",
     isPro: viewerIsPro,
-    // Mutual consent (either direction) — same signal that authorizes contact,
-    // here used to unlock in-app messaging (no Pro requirement).
+    // Mutual consent (either direction) — unlocks in-app messaging + voice calls
+    // (no Pro requirement). Contact details are NEVER revealed (privacy-first).
     isMatched: interestAccepted,
   };
 
@@ -355,14 +351,6 @@ export async function getProfileForViewer(
     },
     viewer: viewerState,
   };
-
-  // Only attach contact when authorized — never serialized otherwise.
-  if (contactAuthorized) {
-    view.contact = {
-      mobile: profile.user.mobile ?? "",
-      email: profile.user.email,
-    };
-  }
 
   return view;
 }

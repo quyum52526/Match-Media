@@ -107,6 +107,7 @@
     "verified": "Verified",
     "vip": "Premium Verified",
     "message": "মেসেজ",
+    "call": "কল",
     "ageLine": "<n>{age}</n> বছর · {gender} · {upazila}, {district}",
     "mediaPartner": "Media: {name}",
     "keyFacts": "মৌলিক তথ্য",
@@ -150,13 +151,9 @@
         "cardButton": "Limit শেষ"
       }
     },
-    "contact": {
-      "title": "Contact তথ্য",
-      "mobile": "Mobile",
-      "email": "Email",
-      "upgradePrompt": "Contact info দেখতে Pro Upgrade করুন",
-      "upgrade": "Upgrade to Pro",
-      "eligibilityNote": "Interest Accepted হলে Contact তথ্য দেখা যাবে"
+    "privacyNote": {
+      "title": "Contact তথ্য গোপন থাকে",
+      "body": "আপনার নিরাপত্তার জন্য ফোন নম্বর ও ইমেইল কখনো শেয়ার করা হয় না। Match হলে in-app messaging ও voice call-এর মাধ্যমে যোগাযোগ করুন।"
     },
     "card": {
       "request": "Request",
@@ -372,7 +369,26 @@
     "notMatched": "আপনি আর এই ব্যক্তিকে মেসেজ করতে পারবেন না।",
     "sendFailed": "পাঠানো যায়নি। আবার চেষ্টা করুন।",
     "verifyToSend": "মেসেজ পাঠাতে আপনার মোবাইল নম্বর যাচাই করুন।",
-    "verifyLink": "এখনই যাচাই করুন"
+    "verifyLink": "এখনই যাচাই করুন",
+    "call": "Voice call"
+  },
+  "Calls": {
+    "calling": "কল করা হচ্ছে…",
+    "incoming": "আসছে voice call",
+    "connecting": "সংযোগ হচ্ছে…",
+    "ended": "কল শেষ",
+    "unknownCaller": "অজানা",
+    "accept": "গ্রহণ করুন",
+    "decline": "প্রত্যাখ্যান",
+    "hangUp": "কল কাটুন",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "event": {
+      "ended": "Voice call · {duration}",
+      "missed": "মিসড voice call",
+      "noAnswer": "সাড়া পাওয়া যায়নি",
+      "declined": "কল প্রত্যাখ্যাত"
+    }
   },
   "Auth": {
     "title": "Login করুন",
@@ -499,6 +515,7 @@
       "INTEREST_RECEIVED": "কেউ আপনার প্রতি Interest জানিয়েছে",
       "INTEREST_ACCEPTED": "আপনার Interest গৃহীত হয়েছে — এটি একটি match!",
       "NEW_MESSAGE": "আপনার একটি নতুন মেসেজ আছে",
+      "MISSED_CALL": "আপনি একটি voice call মিস করেছেন",
       "PHOTO_APPROVED": "আপনার ছবি অনুমোদিত হয়েছে",
       "PHOTO_REJECTED": "আপনার ছবি অনুমোদিত হয়নি",
       "VERIFIED_BADGE": "আপনি Verified ব্যাজ পেয়েছেন",

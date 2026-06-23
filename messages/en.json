@@ -107,6 +107,7 @@
     "verified": "Verified",
     "vip": "Premium Verified",
     "message": "Message",
+    "call": "Call",
     "ageLine": "<n>{age}</n> yrs · {gender} · {upazila}, {district}",
     "mediaPartner": "Media: {name}",
     "keyFacts": "Key information",
@@ -150,13 +151,9 @@
         "cardButton": "Limit reached"
       }
     },
-    "contact": {
-      "title": "Contact information",
-      "mobile": "Mobile",
-      "email": "Email",
-      "upgradePrompt": "Upgrade to Pro to view contact info",
-      "upgrade": "Upgrade to Pro",
-      "eligibilityNote": "Contact unlocks after your Interest is accepted"
+    "privacyNote": {
+      "title": "Contact details stay private",
+      "body": "For your safety, phone numbers and emails are never shared. Connect through in-app messaging and voice calls once you match."
     },
     "card": {
       "request": "Request",
@@ -372,7 +369,26 @@
     "notMatched": "You can no longer message this person.",
     "sendFailed": "Couldn't send. Please try again.",
     "verifyToSend": "Verify your mobile number to send messages.",
-    "verifyLink": "Verify now"
+    "verifyLink": "Verify now",
+    "call": "Voice call"
+  },
+  "Calls": {
+    "calling": "Calling…",
+    "incoming": "Incoming voice call",
+    "connecting": "Connecting…",
+    "ended": "Call ended",
+    "unknownCaller": "Unknown",
+    "accept": "Accept",
+    "decline": "Decline",
+    "hangUp": "Hang up",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "event": {
+      "ended": "Voice call · {duration}",
+      "missed": "Missed voice call",
+      "noAnswer": "No answer",
+      "declined": "Call declined"
+    }
   },
   "Auth": {
     "title": "Log in",
@@ -499,6 +515,7 @@
       "INTEREST_RECEIVED": "Someone expressed interest in you",
       "INTEREST_ACCEPTED": "Your interest was accepted — it's a match!",
       "NEW_MESSAGE": "You have a new message",
+      "MISSED_CALL": "You missed a voice call",
       "PHOTO_APPROVED": "Your photo was approved",
       "PHOTO_REJECTED": "Your photo was not approved",
       "VERIFIED_BADGE": "You earned the Verified badge",

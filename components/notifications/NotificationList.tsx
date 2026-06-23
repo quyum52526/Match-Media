@@ -12,6 +12,7 @@ import {
   EyeIcon,
   FlagIcon,
   HeartIcon,
+  PhoneOffIcon,
   ShieldCheckIcon,
   XIcon,
 } from "@/components/ui/icons";
@@ -25,6 +26,7 @@ const ICONS: Record<NotificationType, typeof BellIcon> = {
   INTEREST_RECEIVED: HeartIcon,
   INTEREST_ACCEPTED: HeartIcon,
   NEW_MESSAGE: ChatIcon,
+  MISSED_CALL: PhoneOffIcon,
   PHOTO_APPROVED: CheckIcon,
   PHOTO_REJECTED: XIcon,
   VERIFIED_BADGE: ShieldCheckIcon,

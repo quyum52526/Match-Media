@@ -25,7 +25,9 @@ import {
   GraduationIcon,
   RingIcon,
   ChatIcon,
+  PhoneIcon,
 } from "@/components/ui/icons";
+import { useCallControls } from "@/components/calls/CallProvider";
 import { computeCompletion } from "@/lib/utils";
 import { localize } from "@/lib/constants/labels";
 import { BlurredImage } from "./BlurredImage";
@@ -52,6 +54,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
   const t = useTranslations("Profile");
   const locale = useLocale();
   const router = useRouter();
+  const { placeCall, canCall } = useCallControls();
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [quota, setQuota] = useState(initialQuota);
@@ -98,11 +101,6 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
     });
   }
 
-  function upgradeToPro() {
-    // Send the viewer to the billing flow (plans -> checkout -> gateway).
-    router.push(locale === "en" ? "/en/pro" : "/pro");
-  }
-
   function openConversation() {
     startTransition(async () => {
       const id = await startConversation(data.id);
@@ -134,17 +132,29 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
             pending={isPending}
           />
 
-          {/* Matched users can chat in-app (free, no Pro required). */}
+          {/* Matched users can chat + voice-call in-app (free, no Pro required). */}
           {viewer.isMatched && (
-            <Button
-              variant="secondary"
-              fullWidth
-              onClick={openConversation}
-              disabled={isPending}
-            >
-              <ChatIcon width={18} height={18} />
-              {t("message")}
-            </Button>
+            <>
+              <Button
+                variant="secondary"
+                fullWidth
+                onClick={openConversation}
+                disabled={isPending}
+              >
+                <ChatIcon width={18} height={18} />
+                {t("message")}
+              </Button>
+              {canCall && (
+                <Button
+                  variant="outline"
+                  fullWidth
+                  onClick={() => placeCall(data.id, data.displayName)}
+                >
+                  <PhoneIcon width={18} height={18} />
+                  {t("call")}
+                </Button>
+              )}
+            </>
           )}
 
           <CompletionMeter score={completion} />
@@ -249,13 +259,8 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
             </CardBody>
           </Card>
 
-          {/* Contact reveal — Pro gated */}
-          <ContactSection
-            viewer={viewer}
-            contact={data.contact}
-            onUpgrade={upgradeToPro}
-            pending={isPending}
-          />
+          {/* Privacy-first: phone & email are never shown. Connect in-app. */}
+          <PrivacyNote />
 
           {/* Trust & safety: report this profile */}
           <div className="flex justify-end pt-1">
@@ -384,78 +389,25 @@ function CompletionMeter({ score }: { score: number }) {
   );
 }
 
-function ContactSection({
-  viewer,
-  contact,
-  onUpgrade,
-  pending,
-}: {
-  viewer: ViewerState;
-  contact?: ProfileDetailView["contact"];
-  onUpgrade: () => void;
-  pending?: boolean;
-}) {
-  const t = useTranslations("Profile.contact");
-  // Privacy-first: BOTH gates must pass to reveal contact —
-  // (1) the viewer must be Pro, AND (2) interest must be mutually ACCEPTED.
-  const eligible = viewer.interest === "ACCEPTED";
-
-  let body: React.ReactNode;
-  if (!viewer.isPro) {
-    // Gate 1: Pro membership.
-    body = (
-      <div className="rounded-xl border border-dashed border-gold/40 bg-gold/5 p-4 text-center">
-        <span className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-gold/10 text-gold">
-          <LockIcon width={18} height={18} />
-        </span>
-        <p className="text-sm text-charcoal/70">{t("upgradePrompt")}</p>
-        <Button
-          variant="gold"
-          size="sm"
-          className="mt-3"
-          onClick={onUpgrade}
-          disabled={pending}
-        >
-          <StarIcon width={16} height={16} />
-          {t("upgrade")}
-        </Button>
-      </div>
-    );
-  } else if (!eligible || !contact) {
-    // Gate 2: the other person's consent (interest ACCEPTED).
-    body = (
-      <div className="rounded-xl border border-dashed border-charcoal/15 bg-ivory/60 p-4 text-center">
-        <span className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-charcoal/5 text-charcoal/60">
-          <LockIcon width={18} height={18} />
-        </span>
-        <p className="text-sm text-charcoal/60">{t("eligibilityNote")}</p>
-      </div>
-    );
-  } else {
-    // Both gates passed.
-    body = (
-      <dl className="space-y-2 text-sm text-charcoal/80">
-        <div className="flex gap-2">
-          <dt className="text-charcoal/50">{t("mobile")}:</dt>
-          <dd className="font-sans font-medium text-charcoal">
-            {contact.mobile}
-          </dd>
-        </div>
-        <div className="flex gap-2">
-          <dt className="text-charcoal/50">{t("email")}:</dt>
-          <dd className="font-sans font-medium text-charcoal">
-            {contact.email}
-          </dd>
-        </div>
-      </dl>
-    );
-  }
-
+/**
+ * Privacy-first: phone numbers and emails are never exposed on the platform.
+ * This card replaces the old contact-reveal section and steers users to the
+ * on-platform channels (in-app message + voice call).
+ */
+function PrivacyNote() {
+  const t = useTranslations("Profile.privacyNote");
   return (
     <Card>
       <CardBody>
-        <CardTitle>{t("title")}</CardTitle>
-        {body}
+        <div className="flex items-start gap-3">
+          <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-trustGreen/10 text-trustGreen">
+            <ShieldCheckIcon width={18} height={18} />
+          </span>
+          <div>
+            <p className="text-sm font-semibold text-charcoal">{t("title")}</p>
+            <p className="mt-0.5 text-sm text-charcoal/60">{t("body")}</p>
+          </div>
+        </div>
       </CardBody>
     </Card>
   );

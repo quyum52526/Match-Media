@@ -133,10 +133,24 @@ enum NotificationType {
   INTEREST_RECEIVED // someone expressed interest in you
   INTEREST_ACCEPTED // your interest was accepted (it's a match)
   NEW_MESSAGE // a matched user sent you a message
+  MISSED_CALL // a matched user voice-called you and you didn't answer
   PHOTO_APPROVED // admin approved your uploaded photo
   PHOTO_REJECTED // admin rejected your uploaded photo
   VERIFIED_BADGE // admin granted your Verified trust badge
   REPORT_RESOLVED // a report you filed was actioned
+}
+
+// --- Voice calling (WebRTC) -------------------------------------------------
+
+// Lifecycle of a 1:1 voice call. RINGING→ACTIVE→ENDED is the happy path; the
+// rest capture the ways a call can finish before/without connecting.
+enum CallStatus {
+  RINGING // caller dialed; awaiting callee answer
+  ACTIVE // callee accepted; media flowing
+  ENDED // a connected call hung up normally
+  MISSED // callee never answered (timeout or caller cancelled)
+  DECLINED // callee actively rejected
+  CANCELLED // caller aborted before connect (no missed-call alert)
 }
 
 // ---------------------------------------------------------------------------
@@ -523,6 +537,7 @@ model Conversation {
   lastMessageAt DateTime @default(now())
 
   messages Message[]
+  calls    CallSession[]
 
   @@unique([userAId, userBId])
   @@index([userAId, lastMessageAt])
@@ -563,6 +578,27 @@ model MobileOtp {
   createdAt DateTime  @default(now())
 
   @@index([userId])
+}
+
+// --- Voice calling: WebRTC call sessions ------------------------------------
+
+// One row per voice-call attempt within a conversation. The cuid `id` doubles
+// as the Supabase Realtime signaling channel name (`call:{id}`) — unguessable
+// and handed only to the two validated participants, so no separate token is
+// needed. `callerId` is plain audit (matches actorId/reviewedById convention).
+// Status transitions are driven authoritatively by the server (lib/actions/calls.ts);
+// connected-call duration = endedAt − startedAt.
+model CallSession {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  callerId       String // who initiated (audit only; no FK relation)
+  status         CallStatus   @default(RINGING)
+  startedAt      DateTime? // set when the callee accepts (ACTIVE)
+  endedAt        DateTime? // set on any terminal status
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
 }
 
 // --- In-app notifications ---------------------------------------------------

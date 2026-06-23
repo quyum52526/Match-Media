@@ -45,11 +45,6 @@ export interface ViewerState {
   isMatched: boolean;
 }
 
-export interface ProfileContact {
-  mobile: string;
-  email: string;
-}
-
 /** Extended attributes shown in the "View Full Details" modal. */
 export interface ProfileFullDetails {
   height: string;
@@ -132,6 +127,4 @@ export interface ProfileDetailView {
   imageUrl?: string;
   details: ProfileFullDetails;
   viewer: ViewerState;
-  /** Revealed only to Pro viewers. */
-  contact?: ProfileContact;
 }

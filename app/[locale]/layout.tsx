@@ -6,6 +6,7 @@ import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { Header } from "@/components/layout/Header";
 import { MobileVerifyBanner } from "@/components/auth/MobileVerifyBanner";
+import { CallProviderMount } from "@/components/calls/CallProviderMount";
 import "../globals.css";
 
 // Latin / numerals
@@ -55,9 +56,11 @@ export default async function LocaleLayout({
     <html lang={locale} className={`${inter.variable} ${hindSiliguri.variable}`}>
       <body className={`${bodyFont} bg-ivory text-charcoal antialiased`}>
         <NextIntlClientProvider>
-          <Header />
-          <MobileVerifyBanner />
-          {children}
+          <CallProviderMount>
+            <Header />
+            <MobileVerifyBanner />
+            {children}
+          </CallProviderMount>
         </NextIntlClientProvider>
       </body>
     </html>
