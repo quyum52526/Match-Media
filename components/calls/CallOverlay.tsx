@@ -24,6 +24,7 @@ function fmt(secs: number): string {
 export function CallOverlay({
   call,
   muted,
+  micUnavailable,
   onAccept,
   onDecline,
   onHangUp,
@@ -31,6 +32,7 @@ export function CallOverlay({
 }: {
   call: ActiveCall;
   muted: boolean;
+  micUnavailable?: boolean;
   onAccept: () => void;
   onDecline: () => void;
   onHangUp: () => void;
@@ -74,6 +76,12 @@ export function CallOverlay({
           <PhoneIcon width={14} height={14} />
           {status}
         </p>
+        {micUnavailable && call.phase !== "incoming" && call.phase !== "ended" && (
+          <p className="mt-2 flex items-center justify-center gap-1.5 text-xs text-amber-600">
+            <MicOffIcon width={13} height={13} />
+            {t("micUnavailable")}
+          </p>
+        )}
 
         <div className="mt-6 flex items-center justify-center gap-4">
           {call.phase === "incoming" ? (

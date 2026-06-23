@@ -63,10 +63,13 @@ export function CallProvider({
 }) {
   const [call, setCall] = useState<ActiveCall | null>(null);
   const [muted, setMuted] = useState(false);
+  // True when no microphone could be acquired and we fell back to silence.
+  const [micUnavailable, setMicUnavailable] = useState(false);
 
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
   const pendingIceRef = useRef<RTCIceCandidateInit[]>([]);
   const ringTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -82,6 +85,11 @@ export function CallProvider({
     pendingIceRef.current = [];
     localStreamRef.current?.getTracks().forEach((t) => t.stop());
     localStreamRef.current = null;
+    if (audioCtxRef.current) {
+      void audioCtxRef.current.close().catch(() => {});
+      audioCtxRef.current = null;
+    }
+    setMicUnavailable(false);
     if (pcRef.current) {
       pcRef.current.onicecandidate = null;
       pcRef.current.ontrack = null;
@@ -138,6 +146,38 @@ export function CallProvider({
     teardown();
   }, [sendOnce, teardown]);
 
+  /**
+   * Acquire the local audio stream. Tries the real microphone first; if none is
+   * available (no device, permission denied, insecure context, …) it falls back
+   * to a SILENT synthesized track so the call can still connect — the user can
+   * hear the other side, they just transmit silence. Never throws.
+   */
+  const acquireLocalAudioStream = useCallback(async (): Promise<MediaStream> => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setMicUnavailable(false);
+      return stream;
+    } catch (err) {
+      console.warn("Microphone unavailable — using a silent track", err);
+      setMicUnavailable(true);
+      // WebAudio silent source: oscillator → gain(0) → stream destination.
+      const Ctor =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext })
+          .webkitAudioContext;
+      const ctx = new Ctor();
+      audioCtxRef.current = ctx;
+      void ctx.resume().catch(() => {});
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      gain.gain.value = 0;
+      const dest = ctx.createMediaStreamDestination();
+      osc.connect(gain).connect(dest);
+      osc.start();
+      return dest.stream;
+    }
+  }, []);
+
   /** Build the RTCPeerConnection + join the per-call signaling channel. */
   const setupPeer = useCallback(
     async (callId: string, role: Role) => {
@@ -146,7 +186,7 @@ export function CallProvider({
       const pc = new RTCPeerConnection({ iceServers });
       pcRef.current = pc;
 
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await acquireLocalAudioStream();
       localStreamRef.current = stream;
       stream.getTracks().forEach((t) => pc.addTrack(t, stream));
 
@@ -237,7 +277,7 @@ export function CallProvider({
       });
       return channel;
     },
-    [supabase, drainIce, teardown, hangUp],
+    [supabase, drainIce, teardown, hangUp, acquireLocalAudioStream],
   );
 
   const placeCall = useCallback(
@@ -339,6 +379,7 @@ export function CallProvider({
         <CallOverlay
           call={call}
           muted={muted}
+          micUnavailable={micUnavailable}
           onAccept={accept}
           onDecline={decline}
           onHangUp={hangUp}
