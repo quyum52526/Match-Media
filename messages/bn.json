@@ -16,7 +16,21 @@
   "Home": {
     "title": "MatchMedia",
     "subtitle": "Privacy-first matrimonial platform — সারাদেশজুড়ে বিশ্বস্ত matchmaking",
-    "viewSample": "Sample Profile দেখুন"
+    "viewSample": "একটি Sample Profile দেখুন",
+    "hero": {
+      "trustBadge": "গোপনীয়তা-প্রথম · সম্মতি-ভিত্তিক",
+      "headline": "গোপনীয়তার সাথে আপনার জীবনসঙ্গী খুঁজুন।",
+      "subtext": "বাংলাদেশের জন্য একটি গোপনীয়তা-প্রথম, সম্মতি-ভিত্তিক ম্যাট্রিমোনিয়াল প্ল্যাটফর্ম। আপনি না চাওয়া পর্যন্ত আপনার ছবি ও তথ্য গোপন থাকে।"
+    },
+    "quickFilter": {
+      "lookingFor": "খুঁজছি",
+      "age": "বয়স",
+      "district": "জেলা",
+      "profession": "পেশা",
+      "any": "যেকোনো",
+      "anyAge": "যেকোনো বয়স",
+      "search": "খুঁজুন"
+    }
   },
   "Dashboard": {
     "greeting": "স্বাগতম",
@@ -383,6 +397,7 @@
     "hangUp": "কল কাটুন",
     "mute": "Mute",
     "unmute": "Unmute",
+    "micUnavailable": "মাইক্রোফোন নেই — অন্যরা আপনাকে শুনতে পাবে না",
     "event": {
       "ended": "Voice call · {duration}",
       "missed": "মিসড voice call",

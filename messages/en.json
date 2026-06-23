@@ -16,7 +16,21 @@
   "Home": {
     "title": "MatchMedia",
     "subtitle": "Privacy-first, nationwide matrimonial platform",
-    "viewSample": "View sample Profile"
+    "viewSample": "View a sample profile",
+    "hero": {
+      "trustBadge": "Privacy-first · Consent-based",
+      "headline": "Find your life partner, privately.",
+      "subtext": "A privacy-first, consent-based matrimonial platform for Bangladesh. Your photos and details stay private until you choose to share them."
+    },
+    "quickFilter": {
+      "lookingFor": "Looking for",
+      "age": "Age",
+      "district": "District",
+      "profession": "Profession",
+      "any": "Anyone",
+      "anyAge": "Any age",
+      "search": "Search"
+    }
   },
   "Dashboard": {
     "greeting": "Welcome back",
@@ -383,6 +397,7 @@
     "hangUp": "Hang up",
     "mute": "Mute",
     "unmute": "Unmute",
+    "micUnavailable": "No microphone — others can't hear you",
     "event": {
       "ended": "Voice call · {duration}",
       "missed": "Missed voice call",

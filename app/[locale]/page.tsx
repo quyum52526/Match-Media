@@ -1,6 +1,5 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
-import { Button } from "@/components/ui/Button";
+import { setRequestLocale } from "next-intl/server";
+import { HomeHero } from "@/components/home/HomeHero";
 import { Dashboard } from "@/components/dashboard/Dashboard";
 import { getViewerId } from "@/lib/session";
 import { getDashboardStats } from "@/lib/data/dashboard";
@@ -38,17 +37,10 @@ export default async function Home({
     );
   }
 
-  const t = await getTranslations("Home");
-
+  // Signed-out visitors: the public landing hero + quick-filter search.
   return (
-    <main className="mx-auto flex min-h-[70vh] max-w-3xl flex-col items-center justify-center px-4 text-center">
-      <h1 className="text-3xl font-bold text-charcoal sm:text-4xl">
-        {t("title")}
-      </h1>
-      <p className="mt-3 text-charcoal/60">{t("subtitle")}</p>
-      <Link href="/profiles/demo" className="mt-8">
-        <Button size="lg">{t("viewSample")}</Button>
-      </Link>
+    <main>
+      <HomeHero />
     </main>
   );
 }
