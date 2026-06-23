@@ -19,8 +19,8 @@
     "viewSample": "View a sample profile",
     "hero": {
       "trustBadge": "Privacy-first · Consent-based",
-      "headline": "Find your life partner, privately.",
-      "subtext": "A privacy-first, consent-based matrimonial platform for Bangladesh. Your photos and details stay private until you choose to share them."
+      "headline": "Find the right person. On your own terms.",
+      "subtext": "Thoughtfully matched, verified for your safety. Take your time — meaningful connections are worth the wait."
     },
     "quickFilter": {
       "lookingFor": "Looking for",
@@ -42,6 +42,22 @@
       "mobileVerified": "Mobile-verified",
       "member": "MatchMedia Member",
       "photoPrivate": "Photo private"
+    },
+    "howItWorks": {
+      "title": "How MatchMedia works",
+      "subtitle": "Privacy-first from the first tap to the first call.",
+      "stepLabel": "Step {n}",
+      "step1Title": "Browse blurred",
+      "step1Body": "Every photo stays blurred by default — explore profiles without anyone's privacy exposed.",
+      "step2Title": "Request & consent",
+      "step2Body": "Reveals happen only by mutual agreement; both sides must accept before anything opens up.",
+      "step3Title": "Connect securely",
+      "step3Body": "Talk over in-app chat and voice calls. Your phone number and email are never shared.",
+      "trust": {
+        "verified": "Mobile-verified members",
+        "consent": "Consent-based contact",
+        "moderated": "Admin-moderated photos"
+      }
     }
   },
   "Dashboard": {
@@ -548,6 +564,14 @@
       "VERIFIED_BADGE": "You earned the Verified badge",
       "REPORT_RESOLVED": "A report you filed was reviewed"
     }
+  },
+  "Footer": {
+    "tagline": "Privacy-first, consent-based matrimony for Bangladesh.",
+    "disclaimer": "This platform is only a communication medium; verifying identity and information is the user's responsibility.",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms",
+    "rights": "© {year} MatchMedia. All rights reserved."
   },
   "LocaleSwitcher": {
     "label": "Language"
