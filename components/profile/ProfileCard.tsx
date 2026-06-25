@@ -143,8 +143,26 @@ export function ProfileCard({ profile }: ProfileCardProps) {
           })}
         </p>
 
+        {/* Trust score mini bar */}
+        <div className="mt-auto space-y-1 pt-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-medium uppercase tracking-wide text-ink/35">
+              Trust
+            </span>
+            <span className="text-[10px] font-semibold text-success/80">
+              {profile.trustScore}%
+            </span>
+          </div>
+          <div className="h-1 w-full overflow-hidden rounded-full bg-ink/8">
+            <div
+              className="h-full rounded-full bg-success transition-all duration-500"
+              style={{ width: `${profile.trustScore}%` }}
+            />
+          </div>
+        </div>
+
         {/* Actions: Request + View Profile */}
-        <div className="mt-auto flex gap-2 pt-1">
+        <div className="flex gap-2 pt-2">
           <Button
             variant="primary"
             size="sm"

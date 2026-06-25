@@ -125,7 +125,7 @@ export async function getBrowseProfiles(
     where,
     orderBy: { createdAt: "asc" },
     include: {
-      user: { select: { isPro: true } },
+      user: { select: { isPro: true, isMobileVerified: true } },
       // Only an APPROVED primary photo is ever shown to other viewers
       // (pre-moderation: PENDING/REJECTED photos never leave the server).
       images: { where: { isPrimary: true, moderationStatus: "APPROVED" }, take: 1 },
@@ -173,6 +173,11 @@ export async function getBrowseProfiles(
       primaryImagePrivacy: (img?.privacy as ImagePrivacy) ?? "BLURRED",
       imageUrl: key ? signed.get(key) : undefined,
       photoAccess: access,
+      // 4 verification slots: photo (isVerified) + mobile + email* + NID*
+      // *email and NID are not yet implemented — always 0 until APIs are wired.
+      trustScore: Math.round(
+        ([p.isVerified, p.user.isMobileVerified, false, false].filter(Boolean).length / 4) * 100,
+      ),
     };
   });
 }

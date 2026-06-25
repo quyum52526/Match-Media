@@ -113,6 +113,11 @@ export interface ProfileSummary {
   imageUrl?: string;
   /** The current viewer's photo-access state for this profile. */
   photoAccess: PhotoAccessState;
+  /**
+   * 0–100 trust score derived from completed verifications (mobile, email,
+   * photo, NID). Drives the mini progress bar on the browse card.
+   */
+  trustScore: number;
 }
 
 /** Composed, presentation-ready profile for the detail page. */
