@@ -9,10 +9,10 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 const variantClasses: Record<Variant, string> = {
-  verified: "bg-verifyGreen/10 text-verifyGreen",
-  neutral: "bg-charcoal/5 text-charcoal/70",
-  gold: "bg-gold/10 text-gold",
-  outline: "border border-charcoal/15 text-charcoal/70",
+  verified: "bg-success/10 text-success",
+  neutral: "bg-ink/5 text-ink/70",
+  gold: "bg-accent/10 text-accent",
+  outline: "border border-hairline text-ink/70",
 };
 
 export function Badge({

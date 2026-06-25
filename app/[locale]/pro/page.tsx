@@ -27,12 +27,12 @@ export default async function ProPage({
   return (
     <main className="mx-auto max-w-4xl px-4 py-8 sm:py-12">
       <header className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-charcoal">{t("title")}</h1>
-        <p className="mx-auto mt-2 max-w-xl text-sm text-charcoal/70">
+        <h1 className="text-3xl font-bold text-ink">{t("title")}</h1>
+        <p className="mx-auto mt-2 max-w-xl text-sm text-ink/70">
           {t("subtitle")}
         </p>
         {status.isPro && status.proExpiresAt && (
-          <p className="mt-3 inline-block rounded-full bg-trustGreen/10 px-3 py-1 text-xs font-medium text-trustGreen">
+          <p className="mt-3 inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
             {t("activeUntil", {
               date: status.proExpiresAt.toLocaleDateString("en-US", {
                 year: "numeric",
@@ -46,7 +46,7 @@ export default async function ProPage({
 
       <PlanCards plans={plans} locale={locale} alreadyPro={status.isPro} />
 
-      <ul className="mx-auto mt-10 max-w-md space-y-2 text-sm text-charcoal/70">
+      <ul className="mx-auto mt-10 max-w-md space-y-2 text-sm text-ink/70">
         <li>• {t("perks.unlimited")}</li>
         <li>• {t("perks.reveal")}</li>
         <li>• {t("perks.priority")}</li>

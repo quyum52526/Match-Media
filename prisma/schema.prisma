@@ -29,6 +29,14 @@ enum ImagePrivacy {
   PUBLIC
 }
 
+// Pre-moderation lifecycle for uploaded photos. New photos are PENDING and are
+// shown to no one but the owner until an admin APPROVES them.
+enum ModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum PhotoAccessStatus {
   PENDING
   APPROVED
@@ -90,6 +98,61 @@ enum UsageAction {
   PHOTO_REQUEST
 }
 
+// --- Trust & safety: user reports ------------------------------------------
+
+enum ReportStatus {
+  OPEN
+  RESOLVED
+  DISMISSED
+}
+
+enum ReportReason {
+  INAPPROPRIATE_PHOTO
+  FAKE_PROFILE
+  HARASSMENT
+  SPAM
+  OTHER
+}
+
+// --- Messaging --------------------------------------------------------------
+
+// TEXT now. SYSTEM/CALL_EVENT are reserved so future call invites / missed-call
+// notices can log inline into the same thread (WebRTC-ready, no schema change).
+enum MessageType {
+  TEXT
+  SYSTEM
+  CALL_EVENT
+}
+
+// --- Notifications ----------------------------------------------------------
+
+// The kind of in-app notification, so the UI can pick an icon + localized copy.
+enum NotificationType {
+  PHOTO_REQUEST // someone requested access to your photo
+  PHOTO_ACCESS_GRANTED // an owner approved your photo-access request
+  INTEREST_RECEIVED // someone expressed interest in you
+  INTEREST_ACCEPTED // your interest was accepted (it's a match)
+  NEW_MESSAGE // a matched user sent you a message
+  MISSED_CALL // a matched user voice-called you and you didn't answer
+  PHOTO_APPROVED // admin approved your uploaded photo
+  PHOTO_REJECTED // admin rejected your uploaded photo
+  VERIFIED_BADGE // admin granted your Verified trust badge
+  REPORT_RESOLVED // a report you filed was actioned
+}
+
+// --- Voice calling (WebRTC) -------------------------------------------------
+
+// Lifecycle of a 1:1 voice call. RINGING→ACTIVE→ENDED is the happy path; the
+// rest capture the ways a call can finish before/without connecting.
+enum CallStatus {
+  RINGING // caller dialed; awaiting callee answer
+  ACTIVE // callee accepted; media flowing
+  ENDED // a connected call hung up normally
+  MISSED // callee never answered (timeout or caller cancelled)
+  DECLINED // callee actively rejected
+  CANCELLED // caller aborted before connect (no missed-call alert)
+}
+
 // ---------------------------------------------------------------------------
 // Core identity
 // ---------------------------------------------------------------------------
@@ -137,6 +200,21 @@ model User {
   subscriptions     Subscription[]     @relation("UserSubscriptions")
   couponRedemptions CouponRedemption[] @relation("UserRedemptions")
   dailyUsage        DailyUsage[]       @relation("UserUsage")
+
+  // Trust & safety
+  reportsMade     Report[] @relation("ReportsMade")
+  reportsReceived Report[] @relation("ReportsReceived")
+
+  // Messaging
+  conversationsA Conversation[] @relation("ConvA")
+  conversationsB Conversation[] @relation("ConvB")
+  messagesSent   Message[]      @relation("MsgSender")
+
+  // Trust: mobile one-time-password challenges
+  mobileOtps MobileOtp[] @relation("UserOtps")
+
+  // In-app notifications (as recipient)
+  notifications Notification[] @relation("UserNotifications")
 }
 
 model Profile {
@@ -189,9 +267,18 @@ model ProfileImage {
   originalKey String
   blurredKey  String
   isPrimary   Boolean      @default(false)
+  // Stable display order within a profile's gallery (primary aside).
+  sortOrder   Int          @default(0)
+  // Pre-moderation: PENDING until an admin reviews. Only APPROVED photos are
+  // ever served to other viewers (enforced in lib/data/profiles.ts).
+  moderationStatus ModerationStatus @default(PENDING)
+  reviewedAt       DateTime?
+  reviewedById     String? // admin User id (audit only; no FK relation)
+  rejectionReason  String?
   createdAt   DateTime     @default(now())
 
   @@index([profileId])
+  @@index([moderationStatus])
 }
 
 // ---------------------------------------------------------------------------
@@ -412,4 +499,124 @@ model DailyUsage {
 
   @@unique([userId, date, action])
   @@index([userId, date])
+}
+
+// User-submitted reports surfaced in the admin moderation queue. Targets a User
+// (the profile owner); `imageId` optionally pins the report to a specific photo.
+model Report {
+  id             String       @id @default(cuid())
+  reporterId     String
+  reporter       User         @relation("ReportsMade", fields: [reporterId], references: [id], onDelete: Cascade)
+  reportedUserId String
+  reportedUser   User         @relation("ReportsReceived", fields: [reportedUserId], references: [id], onDelete: Cascade)
+  imageId        String? // optional: a specific ProfileImage being reported
+  reason         ReportReason
+  note           String?
+  status         ReportStatus @default(OPEN)
+  resolvedById   String? // admin User id (audit only; no FK relation)
+  resolvedAt     DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@index([status, createdAt])
+  @@index([reportedUserId])
+}
+
+// --- Messaging: 1:1 conversations between matched users ---------------------
+
+// Exactly two participants, stored as a CANONICAL pair (userAId < userBId) so
+// the @@unique guarantees one conversation per pair regardless of who started
+// it. Conversation is also the natural future home for a CallSession (WebRTC).
+model Conversation {
+  id            String   @id @default(cuid())
+  userAId       String
+  userA         User     @relation("ConvA", fields: [userAId], references: [id], onDelete: Cascade)
+  userBId       String
+  userB         User     @relation("ConvB", fields: [userBId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  // Bumped on every send so the inbox can order by most-recent activity.
+  lastMessageAt DateTime @default(now())
+
+  messages Message[]
+  calls    CallSession[]
+
+  @@unique([userAId, userBId])
+  @@index([userAId, lastMessageAt])
+  @@index([userBId, lastMessageAt])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation("MsgSender", fields: [senderId], references: [id], onDelete: Cascade)
+  body           String
+  type           MessageType  @default(TEXT)
+  // Set when the recipient has seen it — drives unread counts / read receipts.
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+// --- Trust: mobile OTP ------------------------------------------------------
+
+// One-time-password challenge for verifying a user's mobile number. The code is
+// only ever stored as a bcrypt hash; `attempts` caps brute-force and `lastSentAt`
+// drives the resend cooldown. A fresh row is created on each send; verification
+// stamps `consumedAt` so a code can't be reused.
+model MobileOtp {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation("UserOtps", fields: [userId], references: [id], onDelete: Cascade)
+  mobile    String
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int       @default(0)
+  consumedAt DateTime?
+  lastSentAt DateTime  @default(now())
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// --- Voice calling: WebRTC call sessions ------------------------------------
+
+// One row per voice-call attempt within a conversation. The cuid `id` doubles
+// as the Supabase Realtime signaling channel name (`call:{id}`) — unguessable
+// and handed only to the two validated participants, so no separate token is
+// needed. `callerId` is plain audit (matches actorId/reviewedById convention).
+// Status transitions are driven authoritatively by the server (lib/actions/calls.ts);
+// connected-call duration = endedAt − startedAt.
+model CallSession {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  callerId       String // who initiated (audit only; no FK relation)
+  status         CallStatus   @default(RINGING)
+  startedAt      DateTime? // set when the callee accepts (ACTIVE)
+  endedAt        DateTime? // set on any terminal status
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+// --- In-app notifications ---------------------------------------------------
+
+// A single notification for a recipient (`userId`). `actorId` records who
+// triggered it (audit only, no FK so a deleted actor never cascades). `link` is
+// the in-app route opened on click; `readAt` drives the unread badge. The
+// dispatcher (lib/notifications/dispatch.ts) is the only writer.
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  actorId   String? // who triggered it (audit only; no FK relation)
+  link      String? // in-app route to open on click
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
 }

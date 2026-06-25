@@ -10,6 +10,20 @@
 // Mirrors schema `ImagePrivacy`
 export type ImagePrivacy = "BLURRED" | "PUBLIC";
 
+// Mirrors schema `ModerationStatus`
+export type ModerationStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+// Mirrors schema `ReportStatus`
+export type ReportStatus = "OPEN" | "RESOLVED" | "DISMISSED";
+
+// Mirrors schema `ReportReason`
+export type ReportReason =
+  | "INAPPROPRIATE_PHOTO"
+  | "FAKE_PROFILE"
+  | "HARASSMENT"
+  | "SPAM"
+  | "OTHER";
+
 // Mirrors schema `PhotoAccessStatus`, plus a "NONE" UI state (not yet requested)
 export type PhotoAccessState =
   | "NONE"
@@ -27,11 +41,24 @@ export interface ViewerState {
   interest: InterestState;
   /** Whether the current viewer has a Pro (paid) subscription. */
   isPro: boolean;
+  /** Mutual ACCEPTED interest (either direction) — unlocks in-app messaging. */
+  isMatched: boolean;
 }
 
-export interface ProfileContact {
-  mobile: string;
-  email: string;
+/**
+ * Verification statuses shown in the "Trust & Verifications" card.
+ * Fields without a real API backend yet are kept as mock booleans until the
+ * third-party verification providers are wired up.
+ */
+export interface ProfileVerifications {
+  /** Real — backed by MobileOtp flow + User.isMobileVerified in the DB. */
+  mobile: boolean;
+  /** Mock — email OTP not yet implemented. */
+  email: boolean;
+  /** Mock — selfie/liveness check not yet implemented; proxied from isVerified. */
+  photo: boolean;
+  /** Mock — NID/passport API not yet implemented. */
+  nid: boolean;
 }
 
 /** Extended attributes shown in the "View Full Details" modal. */
@@ -78,8 +105,19 @@ export interface ProfileSummary {
   /** Owner has a Pro membership -> shows the golden VIP badge on the card. */
   isPro: boolean;
   primaryImagePrivacy: ImagePrivacy;
+  /**
+   * Signed URL for the primary photo, viewer-appropriate: the ORIGINAL when the
+   * viewer is allowed to see it (PUBLIC photo or APPROVED access), otherwise the
+   * pre-blurred teaser. Absent when the profile has no photo.
+   */
+  imageUrl?: string;
   /** The current viewer's photo-access state for this profile. */
   photoAccess: PhotoAccessState;
+  /**
+   * 0–100 trust score derived from completed verifications (mobile, email,
+   * photo, NID). Drives the mini progress bar on the browse card.
+   */
+  trustScore: number;
 }
 
 /** Composed, presentation-ready profile for the detail page. */
@@ -103,8 +141,12 @@ export interface ProfileDetailView {
   /** Display name of the referring MEDIA partner, if any. */
   referredByMedia?: string;
   primaryImagePrivacy: ImagePrivacy;
+  /**
+   * Signed URL for the primary photo, viewer-appropriate (original when the
+   * viewer may see it, otherwise the pre-blurred teaser). Absent when no photo.
+   */
+  imageUrl?: string;
   details: ProfileFullDetails;
+  verifications: ProfileVerifications;
   viewer: ViewerState;
-  /** Revealed only to Pro viewers. */
-  contact?: ProfileContact;
 }

@@ -7,6 +7,7 @@ import {
   requestPhotoAccess as requestPhotoAccessAction,
   sendInterest as sendInterestAction,
 } from "@/lib/actions/funnel";
+import { startConversation } from "@/lib/actions/messages";
 import { QuotaNote } from "@/components/billing/PhotoQuota";
 import type { PhotoQuota } from "@/lib/data/billing";
 import { Button } from "@/components/ui/Button";
@@ -16,6 +17,7 @@ import { Modal } from "@/components/ui/Modal";
 import {
   ShieldCheckIcon,
   StarIcon,
+  CrownIcon,
   HeartIcon,
   CheckIcon,
   LockIcon,
@@ -23,10 +25,15 @@ import {
   BriefcaseIcon,
   GraduationIcon,
   RingIcon,
+  ChatIcon,
+  PhoneIcon,
 } from "@/components/ui/icons";
+import { useCallControls } from "@/components/calls/CallProvider";
 import { computeCompletion } from "@/lib/utils";
 import { localize } from "@/lib/constants/labels";
 import { BlurredImage } from "./BlurredImage";
+import { ReportButton } from "./ReportButton";
+import { TrustCard } from "./TrustCard";
 import type { ProfileDetailView, ViewerState } from "./types";
 
 interface ProfileDetailProps {
@@ -49,6 +56,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
   const t = useTranslations("Profile");
   const locale = useLocale();
   const router = useRouter();
+  const { placeCall, canCall } = useCallControls();
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [quota, setQuota] = useState(initialQuota);
@@ -95,9 +103,11 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
     });
   }
 
-  function upgradeToPro() {
-    // Send the viewer to the billing flow (plans -> checkout -> gateway).
-    router.push(locale === "en" ? "/en/pro" : "/pro");
+  function openConversation() {
+    startTransition(async () => {
+      const id = await startConversation(data.id);
+      if (id) router.push(`${locale === "en" ? "/en" : ""}/messages/${id}`);
+    });
   }
 
   return (
@@ -108,6 +118,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
           <BlurredImage
             privacy={data.primaryImagePrivacy}
             state={viewer.photoAccess}
+            src={data.imageUrl}
             name={data.displayName}
             onRequest={requestPhotoAccess}
             pending={isPending}
@@ -123,6 +134,31 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
             pending={isPending}
           />
 
+          {/* Matched users can chat + voice-call in-app (free, no Pro required). */}
+          {viewer.isMatched && (
+            <>
+              <Button
+                variant="secondary"
+                fullWidth
+                onClick={openConversation}
+                disabled={isPending}
+              >
+                <ChatIcon width={18} height={18} />
+                {t("message")}
+              </Button>
+              {canCall && (
+                <Button
+                  variant="outline"
+                  fullWidth
+                  onClick={() => placeCall(data.id, data.displayName)}
+                >
+                  <PhoneIcon width={18} height={18} />
+                  {t("call")}
+                </Button>
+              )}
+            </>
+          )}
+
           <CompletionMeter score={completion} />
         </div>
 
@@ -130,41 +166,41 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
         <div className="space-y-6">
           <header className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-bold text-charcoal">
+              <h1 className="text-2xl font-bold text-ink">
                 {data.displayName}
               </h1>
+
+              {/* Pro — gold crown badge */}
               {data.isPro && (
-                <Badge
-                  variant="gold"
-                  className="bg-gold text-white"
-                  icon={<StarIcon width={14} height={14} />}
-                >
+                <span className="inline-flex items-center gap-1 rounded-pill border border-accent/30 bg-gradient-to-r from-accent/20 to-amber-100/60 px-2.5 py-0.5 text-xs font-semibold text-amber-700 shadow-sm">
+                  <CrownIcon width={13} height={13} className="text-accent" />
                   {t("vip")}
-                </Badge>
+                </span>
               )}
+
+              {/* Overall identity verified — blue-tinted shield */}
+              {data.isVerified && (
+                <span className="inline-flex items-center gap-1 rounded-pill border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-semibold text-sky-700 shadow-sm">
+                  <ShieldCheckIcon width={13} height={13} className="text-sky-500" />
+                  {t("verified")}
+                </span>
+              )}
+
               {data.nameHidden && (
                 <Badge variant="neutral" icon={<LockIcon width={14} height={14} />}>
                   {t("nameHidden")}
                 </Badge>
               )}
-              {data.isVerified && (
-                <Badge
-                  variant="verified"
-                  icon={<ShieldCheckIcon width={14} height={14} />}
-                >
-                  {t("verified")}
-                </Badge>
-              )}
             </div>
 
-            <p className="text-sm text-charcoal/60">
+            <p className="text-sm text-ink/60">
               {t.rich("ageLine", {
                 age: String(data.age),
                 gender: localize(data.gender, locale),
                 upazila: localize(data.upazila, locale),
                 district: localize(data.district, locale),
                 n: (chunks) => (
-                  <span className="font-sans font-semibold text-charcoal/80">
+                  <span className="font-body font-semibold text-ink/80">
                     {chunks}
                   </span>
                 ),
@@ -205,7 +241,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
                 />
               </dl>
 
-              <div className="mt-5 border-t border-charcoal/10 pt-4">
+              <div className="mt-5 border-t border-ink/10 pt-4">
                 <Button
                   variant="outline"
                   size="sm"
@@ -221,17 +257,20 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
           <Card>
             <CardBody>
               <CardTitle>{t("about")}</CardTitle>
-              <p className="text-sm leading-7 text-charcoal/80">{data.bio}</p>
+              <p className="text-sm leading-7 text-ink/80">{data.bio}</p>
             </CardBody>
           </Card>
 
-          {/* Contact reveal — Pro gated */}
-          <ContactSection
-            viewer={viewer}
-            contact={data.contact}
-            onUpgrade={upgradeToPro}
-            pending={isPending}
-          />
+          {/* Trust & Verifications breakdown */}
+          <TrustCard verifications={data.verifications} />
+
+          {/* Privacy-first: phone & email are never shown. Connect in-app. */}
+          <PrivacyNote />
+
+          {/* Trust & safety: report this profile */}
+          <div className="flex justify-end pt-1">
+            <ReportButton reportedUserId={data.id} />
+          </div>
         </div>
       </div>
 
@@ -241,7 +280,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
         onClose={() => setDetailsOpen(false)}
         title={t("details.title")}
       >
-        <dl className="divide-y divide-charcoal/10">
+        <dl className="divide-y divide-ink/10">
           <DetailRow label={t("details.height")} value={data.details.height} />
           <DetailRow label={t("details.weight")} value={data.details.weight} />
           <DetailRow
@@ -273,10 +312,10 @@ function Fact({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="mt-0.5 text-trustGreen">{icon}</span>
+      <span className="mt-0.5 text-primary">{icon}</span>
       <div>
-        <dt className="text-xs text-charcoal/50">{label}</dt>
-        <dd className="text-sm font-medium text-charcoal">{value}</dd>
+        <dt className="text-xs text-ink/50">{label}</dt>
+        <dd className="text-sm font-medium text-ink">{value}</dd>
       </div>
     </div>
   );
@@ -285,8 +324,8 @@ function Fact({
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4 py-2.5">
-      <dt className="shrink-0 text-sm text-charcoal/50">{label}</dt>
-      <dd className="text-right text-sm font-medium text-charcoal">{value}</dd>
+      <dt className="shrink-0 text-sm text-ink/50">{label}</dt>
+      <dd className="text-right text-sm font-medium text-ink">{value}</dd>
     </div>
   );
 }
@@ -339,14 +378,14 @@ function CompletionMeter({ score }: { score: number }) {
     <Card>
       <CardBody className="!p-4">
         <div className="mb-2 flex items-center justify-between">
-          <span className="text-xs text-charcoal/60">{t("completion")}</span>
-          <span className="font-sans text-xs font-semibold text-trustGreen">
+          <span className="text-xs text-ink/60">{t("completion")}</span>
+          <span className="font-body text-xs font-semibold text-primary">
             {pct}%
           </span>
         </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-charcoal/10">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-ink/10">
           <div
-            className="h-full rounded-full bg-trustGreen transition-all"
+            className="h-full rounded-full bg-primary transition-all"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -355,78 +394,25 @@ function CompletionMeter({ score }: { score: number }) {
   );
 }
 
-function ContactSection({
-  viewer,
-  contact,
-  onUpgrade,
-  pending,
-}: {
-  viewer: ViewerState;
-  contact?: ProfileDetailView["contact"];
-  onUpgrade: () => void;
-  pending?: boolean;
-}) {
-  const t = useTranslations("Profile.contact");
-  // Privacy-first: BOTH gates must pass to reveal contact —
-  // (1) the viewer must be Pro, AND (2) interest must be mutually ACCEPTED.
-  const eligible = viewer.interest === "ACCEPTED";
-
-  let body: React.ReactNode;
-  if (!viewer.isPro) {
-    // Gate 1: Pro membership.
-    body = (
-      <div className="rounded-xl border border-dashed border-gold/40 bg-gold/5 p-4 text-center">
-        <span className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-gold/10 text-gold">
-          <LockIcon width={18} height={18} />
-        </span>
-        <p className="text-sm text-charcoal/70">{t("upgradePrompt")}</p>
-        <Button
-          variant="gold"
-          size="sm"
-          className="mt-3"
-          onClick={onUpgrade}
-          disabled={pending}
-        >
-          <StarIcon width={16} height={16} />
-          {t("upgrade")}
-        </Button>
-      </div>
-    );
-  } else if (!eligible || !contact) {
-    // Gate 2: the other person's consent (interest ACCEPTED).
-    body = (
-      <div className="rounded-xl border border-dashed border-charcoal/15 bg-ivory/60 p-4 text-center">
-        <span className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-charcoal/5 text-charcoal/60">
-          <LockIcon width={18} height={18} />
-        </span>
-        <p className="text-sm text-charcoal/60">{t("eligibilityNote")}</p>
-      </div>
-    );
-  } else {
-    // Both gates passed.
-    body = (
-      <dl className="space-y-2 text-sm text-charcoal/80">
-        <div className="flex gap-2">
-          <dt className="text-charcoal/50">{t("mobile")}:</dt>
-          <dd className="font-sans font-medium text-charcoal">
-            {contact.mobile}
-          </dd>
-        </div>
-        <div className="flex gap-2">
-          <dt className="text-charcoal/50">{t("email")}:</dt>
-          <dd className="font-sans font-medium text-charcoal">
-            {contact.email}
-          </dd>
-        </div>
-      </dl>
-    );
-  }
-
+/**
+ * Privacy-first: phone numbers and emails are never exposed on the platform.
+ * This card replaces the old contact-reveal section and steers users to the
+ * on-platform channels (in-app message + voice call).
+ */
+function PrivacyNote() {
+  const t = useTranslations("Profile.privacyNote");
   return (
     <Card>
       <CardBody>
-        <CardTitle>{t("title")}</CardTitle>
-        {body}
+        <div className="flex items-start gap-3">
+          <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <ShieldCheckIcon width={18} height={18} />
+          </span>
+          <div>
+            <p className="text-sm font-semibold text-ink">{t("title")}</p>
+            <p className="mt-0.5 text-sm text-ink/60">{t("body")}</p>
+          </div>
+        </div>
       </CardBody>
     </Card>
   );

@@ -2,7 +2,11 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { logout } from "@/lib/actions/auth";
+import { getViewerId, getViewerRole } from "@/lib/session";
+import { getUnreadCount } from "@/lib/data/messages";
+import { getUnreadNotificationCount } from "@/lib/data/notifications";
 import { Button } from "@/components/ui/Button";
+import { BellIcon } from "@/components/ui/icons";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 
 export async function Header() {
@@ -10,15 +14,22 @@ export async function Header() {
   const nav = await getTranslations("Nav");
   const authT = await getTranslations("Auth");
   const session = await auth();
+  // Cosmetic only — the /admin routes are gated server-side by requireAdmin.
+  const isAdmin = session ? (await getViewerRole()) === "ADMIN" : false;
+  const viewerId = session ? await getViewerId() : null;
+  const unread = viewerId ? await getUnreadCount(viewerId) : 0;
+  const unreadNotifications = viewerId
+    ? await getUnreadNotificationCount(viewerId)
+    : 0;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-charcoal/10 bg-ivory/80 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-ink/10 bg-canvas/80 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
         <div className="flex items-center gap-6">
           {/* Brand name stays English in every locale */}
           <Link
             href="/"
-            className="font-sans text-lg font-bold tracking-tight text-charcoal"
+            className="font-body text-lg font-bold tracking-tight text-ink"
           >
             {t("name")}
           </Link>
@@ -26,28 +37,60 @@ export async function Header() {
             <nav className="flex items-center gap-4">
               <Link
                 href="/browse"
-                className="text-sm font-medium text-charcoal/70 transition-colors hover:text-charcoal"
+                className="text-sm font-medium text-ink/70 transition-colors hover:text-ink"
               >
                 {nav("browse")}
               </Link>
               <Link
                 href="/requests"
-                className="text-sm font-medium text-charcoal/70 transition-colors hover:text-charcoal"
+                className="text-sm font-medium text-ink/70 transition-colors hover:text-ink"
               >
                 {nav("requests")}
               </Link>
               <Link
                 href="/interests"
-                className="text-sm font-medium text-charcoal/70 transition-colors hover:text-charcoal"
+                className="text-sm font-medium text-ink/70 transition-colors hover:text-ink"
               >
                 {nav("interests")}
               </Link>
               <Link
+                href="/messages"
+                className="relative text-sm font-medium text-ink/70 transition-colors hover:text-ink"
+              >
+                {nav("messages")}
+                {unread > 0 && (
+                  <span className="absolute -right-3 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 font-body text-[10px] font-semibold text-white">
+                    {unread}
+                  </span>
+                )}
+              </Link>
+              <Link
+                href="/notifications"
+                aria-label={nav("notifications")}
+                title={nav("notifications")}
+                className="relative text-ink/70 transition-colors hover:text-ink"
+              >
+                <BellIcon width={20} height={20} />
+                {unreadNotifications > 0 && (
+                  <span className="absolute -right-2 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 font-body text-[10px] font-semibold text-white">
+                    {unreadNotifications}
+                  </span>
+                )}
+              </Link>
+              <Link
                 href="/profile/edit"
-                className="text-sm font-medium text-charcoal/70 transition-colors hover:text-charcoal"
+                className="text-sm font-medium text-ink/70 transition-colors hover:text-ink"
               >
                 {nav("editProfile")}
               </Link>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+                >
+                  {nav("admin")}
+                </Link>
+              )}
             </nav>
           )}
         </div>
@@ -58,7 +101,7 @@ export async function Header() {
             <div className="flex items-center gap-2">
               <Link
                 href="/profile/edit"
-                className="hidden font-sans text-xs text-charcoal/60 transition-colors hover:text-charcoal sm:inline"
+                className="hidden font-body text-xs text-ink/60 transition-colors hover:text-ink sm:inline"
               >
                 {session.user.email}
               </Link>

@@ -1,3 +1,46 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Brand v1.0 — headings use the display serif (Fraunces / Noto Serif Bengali)
+   app-wide; body text inherits the body stack from <body> (set in the layout). */
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family:
+      var(--font-fraunces), var(--font-noto-bengali), Georgia, serif;
+  }
+}
+
+@layer utilities {
+  /* Hide the scrollbar on horizontal carousels while keeping scroll behaviour. */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Brand Guidelines v1.0 (2026) — premium, warm, respectful identity.
+   These exact tokens are the single source of truth; the Tailwind config maps
+   semantic color/radius/shadow utilities onto them. */
+:root {
+  --color-primary: #8c2f4a; /* Garnet */
+  --color-primary-dark: #5e1e31;
+  --color-secondary: #1e2436; /* Midnight Ink */
+  --color-accent: #c8a24b; /* Champagne Gold */
+  --color-bg: #fbf7f2; /* Ivory */
+  --color-surface: #ffffff;
+  --color-success: #2e7d5b;
+  --text-primary: #241f26;
+  --text-secondary: #686470;
+  --color-hairline: #ece6de;
+
+  --radius-pill: 999px;
+  --radius-md: 14px;
+  --shadow-card: 0 2px 12px rgba(30, 36, 54, 0.06);
+}

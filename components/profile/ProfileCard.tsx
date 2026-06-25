@@ -51,20 +51,33 @@ export function ProfileCard({ profile }: ProfileCardProps) {
   }
 
   return (
-    <article className="flex flex-col overflow-hidden rounded-2xl border border-charcoal/10 bg-white shadow-sm transition-shadow hover:shadow-md">
-      {/* Blurred photo (default privacy state) */}
-      <div className="relative aspect-[4/5] w-full overflow-hidden bg-charcoal/5">
-        <div
-          className={
-            "h-full w-full bg-gradient-to-br from-trustGreen/30 via-verifyGreen/20 to-gold/20" +
-            (revealed ? "" : " blur-2xl scale-110")
-          }
-          aria-hidden
-        />
+    <article className="flex flex-col overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-sm transition-shadow hover:shadow-md">
+      {/* Photo — real image when available, decorative gradient otherwise.
+          When gated, the server already supplied the pre-blurred teaser; the
+          CSS blur is harmless defense-in-depth. */}
+      <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink/5">
+        {profile.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={profile.imageUrl}
+            alt=""
+            className={
+              "h-full w-full object-cover" + (revealed ? "" : " blur-2xl scale-110")
+            }
+          />
+        ) : (
+          <div
+            className={
+              "h-full w-full bg-gradient-to-br from-primary/30 via-success/20 to-accent/20" +
+              (revealed ? "" : " blur-2xl scale-110")
+            }
+            aria-hidden
+          />
+        )}
 
         {!revealed && (
-          <div className="absolute inset-0 flex items-center justify-center bg-charcoal/20">
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-charcoal">
+          <div className="absolute inset-0 flex items-center justify-center bg-ink/20">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-ink">
               <LockIcon width={20} height={20} />
             </span>
           </div>
@@ -86,7 +99,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
           <span className="absolute right-2.5 top-2.5">
             <Badge
               variant="gold"
-              className="bg-gold text-white"
+              className="bg-accent text-white"
               icon={<StarIcon width={13} height={13} />}
             >
               {t("vip")}
@@ -95,7 +108,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
         )}
 
         {pending && (
-          <span className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-full bg-charcoal/80 px-2.5 py-1 text-xs font-medium text-white">
+          <span className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-full bg-ink/80 px-2.5 py-1 text-xs font-medium text-white">
             <ClockIcon width={13} height={13} />
             {t("photo.waiting")}
           </span>
@@ -105,33 +118,51 @@ export function ProfileCard({ profile }: ProfileCardProps) {
       {/* Identity */}
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex items-center gap-1.5">
-          <h3 className="truncate text-sm font-semibold text-charcoal">
+          <h3 className="truncate text-sm font-semibold text-ink">
             {profile.displayName}
           </h3>
           {profile.nameHidden && (
             <LockIcon
               width={13}
               height={13}
-              className="shrink-0 text-charcoal/40"
+              className="shrink-0 text-ink/40"
             />
           )}
         </div>
 
-        <p className="text-xs text-charcoal/60">
+        <p className="text-xs text-ink/60">
           {t.rich("card.ageLocation", {
             age: String(profile.age),
             upazila: localize(profile.upazila, locale),
             district: localize(profile.district, locale),
             n: (chunks) => (
-              <span className="font-sans font-semibold text-charcoal/80">
+              <span className="font-body font-semibold text-ink/80">
                 {chunks}
               </span>
             ),
           })}
         </p>
 
+        {/* Trust score mini bar */}
+        <div className="mt-auto space-y-1 pt-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-medium uppercase tracking-wide text-ink/35">
+              Trust
+            </span>
+            <span className="text-[10px] font-semibold text-success/80">
+              {profile.trustScore}%
+            </span>
+          </div>
+          <div className="h-1 w-full overflow-hidden rounded-full bg-ink/8">
+            <div
+              className="h-full rounded-full bg-success transition-all duration-500"
+              style={{ width: `${profile.trustScore}%` }}
+            />
+          </div>
+        </div>
+
         {/* Actions: Request + View Profile */}
-        <div className="mt-auto flex gap-2 pt-1">
+        <div className="flex gap-2 pt-2">
           <Button
             variant="primary"
             size="sm"

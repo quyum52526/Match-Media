@@ -48,6 +48,27 @@ export function resolveImmutableGender(
   return locked ? locked : submitted.trim();
 }
 
+/**
+ * Normalize a Bangladeshi mobile number to canonical international form
+ * (`8801XXXXXXXXX`). Accepts the common inputs — `01XXXXXXXXX`, `8801XXXXXXXXX`,
+ * `+8801XXXXXXXXX`, with spaces/dashes — and validates the operator digit
+ * (013–019). Returns null when it isn't a valid BD mobile, so callers can reject.
+ */
+export function normalizeBdMobile(input: string): string | null {
+  const digits = input.replace(/[^\d]/g, "");
+  let national: string;
+  if (digits.length === 11 && digits.startsWith("01")) {
+    national = digits; // 01XXXXXXXXX
+  } else if (digits.length === 13 && digits.startsWith("880")) {
+    national = "0" + digits.slice(3); // 8801... -> 01...
+  } else {
+    return null;
+  }
+  // 01[3-9] + 8 digits is the valid BD mobile shape.
+  if (!/^01[3-9]\d{8}$/.test(national)) return null;
+  return "88" + national;
+}
+
 /** Whole-year age from a date of birth. */
 export function calcAge(dateOfBirth: Date | string): number {
   const dob = new Date(dateOfBirth);

@@ -39,18 +39,18 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
     >
       <div
-        className="absolute inset-0 bg-charcoal/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-ink/50 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden
       />
-      <div className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-charcoal/10 p-4">
-          <h2 className="text-base font-semibold text-charcoal">{title}</h2>
+      <div className="relative z-10 w-full max-w-md overflow-hidden rounded-card bg-surface shadow-card">
+        <div className="flex items-center justify-between border-b border-hairline p-4">
+          <h2 className="text-base font-semibold text-ink">{title}</h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="rounded-lg p-1 text-charcoal/50 transition-colors hover:bg-charcoal/5 hover:text-charcoal"
+            className="rounded-lg p-1 text-ink/50 transition-colors hover:bg-ink/5 hover:text-ink"
           >
             <XIcon width={18} height={18} />
           </button>

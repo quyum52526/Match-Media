@@ -18,9 +18,9 @@ import { localize } from "@/lib/constants/labels";
 import type { EditableProfile } from "./types";
 
 const inputClass =
-  "h-11 w-full rounded-xl border border-charcoal/15 bg-white px-3 text-sm text-charcoal outline-none focus:border-trustGreen focus:ring-2 focus:ring-trustGreen/30";
+  "h-11 w-full rounded-xl border border-hairline bg-white px-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30";
 const areaClass =
-  "w-full rounded-xl border border-charcoal/15 bg-white p-3 text-sm text-charcoal outline-none focus:border-trustGreen focus:ring-2 focus:ring-trustGreen/30";
+  "w-full rounded-xl border border-hairline bg-white p-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30";
 
 type Valued = { value: string };
 
@@ -62,17 +62,17 @@ export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
                 // Gender is immutable once set (enforced server-side too).
                 <>
                   <div
-                    className={`${inputClass} flex items-center justify-between bg-charcoal/5 text-charcoal/70`}
+                    className={`${inputClass} flex items-center justify-between bg-ink/5 text-ink/70`}
                     aria-readonly="true"
                   >
                     <span>{localize(initial.gender, locale)}</span>
                     <LockIcon
                       width={14}
                       height={14}
-                      className="shrink-0 text-charcoal/40"
+                      className="shrink-0 text-ink/40"
                     />
                   </div>
-                  <p className="mt-1 text-xs text-charcoal/45">
+                  <p className="mt-1 text-xs text-ink/45">
                     {t("genderLocked")}
                   </p>
                 </>
@@ -93,7 +93,7 @@ export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
                 type="date"
                 required
                 defaultValue={initial.dateOfBirth}
-                className={`${inputClass} font-sans`}
+                className={`${inputClass} font-body`}
               />
             </Field>
           </div>
@@ -132,7 +132,7 @@ export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
                 value={upazila}
                 disabled={!district}
                 onChange={(e) => setUpazila(e.target.value)}
-                className={`${inputClass} disabled:bg-charcoal/5 disabled:text-charcoal/40`}
+                className={`${inputClass} disabled:bg-ink/5 disabled:text-ink/40`}
               >
                 <option value="">
                   {district ? t("select") : t("selectDistrictFirst")}
@@ -231,12 +231,12 @@ export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
               className={areaClass}
             />
           </Field>
-          <label className="flex items-center gap-2 text-sm text-charcoal">
+          <label className="flex items-center gap-2 text-sm text-ink">
             <input
               type="checkbox"
               name="nameHidden"
               defaultChecked={initial.nameHidden}
-              className="h-4 w-4 rounded border-charcoal/30 text-trustGreen focus:ring-trustGreen/30"
+              className="h-4 w-4 rounded border-ink/30 text-primary focus:ring-primary/30"
             />
             {t("fields.nameHidden")}
           </label>
@@ -248,7 +248,7 @@ export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
           {t("save")}
         </Button>
         {state === "OK" && (
-          <span className="inline-flex items-center gap-1 text-sm font-medium text-trustGreen">
+          <span className="inline-flex items-center gap-1 text-sm font-medium text-primary">
             <CheckIcon width={16} height={16} />
             {t("saved")}
           </span>
@@ -289,7 +289,7 @@ function StdSelect({
       name={name}
       defaultValue={value}
       required={required}
-      className={`${inputClass}${latin ? " font-sans" : ""}`}
+      className={`${inputClass}${latin ? " font-body" : ""}`}
     >
       <option value="" disabled={required}>
         {placeholder}
@@ -312,7 +312,7 @@ function Field({
 }) {
   return (
     <div className="space-y-1">
-      <label className="text-sm font-medium text-charcoal">{label}</label>
+      <label className="text-sm font-medium text-ink">{label}</label>
       {children}
     </div>
   );

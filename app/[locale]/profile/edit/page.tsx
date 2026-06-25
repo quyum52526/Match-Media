@@ -1,7 +1,10 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ProfileEditForm } from "@/components/profile/ProfileEditForm";
+import { PhotoManager } from "@/components/profile/PhotoManager";
 import { Card, CardBody } from "@/components/ui/Card";
 import { getEditableProfile } from "@/lib/data/profiles";
+import { getOwnPhotos } from "@/lib/data/photos";
+import { MAX_PHOTOS } from "@/lib/storage/images";
 import { requireViewerId } from "@/lib/session";
 
 export const metadata = {
@@ -22,20 +25,36 @@ export default async function ProfileEditPage({
   const t = await getTranslations("ProfileEdit");
 
   const initial = await getEditableProfile(viewerId);
+  // A Profile row requires gender (non-null), so an empty gender means the user
+  // hasn't created one yet — photos hang off Profile, so defer the uploader.
+  const hasProfile = initial.gender !== "";
+  const photos = hasProfile ? await getOwnPhotos(viewerId) : [];
   const isWelcome = welcome === "1";
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-6 sm:py-10">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold text-charcoal">
+        <h1 className="text-2xl font-bold text-ink">
           {isWelcome ? t("welcome.title") : t("title")}
         </h1>
       </header>
 
       {isWelcome && (
-        <Card className="mb-6 border-trustGreen/20 bg-trustGreen/[0.04]">
+        <Card className="mb-6 border-primary/20 bg-primary/[0.04]">
           <CardBody>
-            <p className="text-sm text-charcoal/80">{t("welcome.body")}</p>
+            <p className="text-sm text-ink/80">{t("welcome.body")}</p>
+          </CardBody>
+        </Card>
+      )}
+
+      {hasProfile ? (
+        <div className="mb-6">
+          <PhotoManager photos={photos} maxPhotos={MAX_PHOTOS} />
+        </div>
+      ) : (
+        <Card className="mb-6 border-ink/10">
+          <CardBody>
+            <p className="text-sm text-ink/70">{t("photos.needProfile")}</p>
           </CardBody>
         </Card>
       )}

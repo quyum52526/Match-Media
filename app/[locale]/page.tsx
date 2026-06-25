@@ -1,12 +1,20 @@
+// Always fetch fresh data — the showcase profiles change as users join/are verified.
+export const dynamic = "force-dynamic";
+
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
-import { Button } from "@/components/ui/Button";
+import { Sparkles, Crown, ShieldCheck } from "lucide-react";
+import { HomeHero } from "@/components/home/HomeHero";
+import { StackedFeatureSection } from "@/components/home/StackedFeatureSection";
+import { HowItWorks } from "@/components/home/HowItWorks";
+import { InteractiveMap } from "@/components/home/InteractiveMap";
+import { HomeFooter } from "@/components/home/HomeFooter";
 import { Dashboard } from "@/components/dashboard/Dashboard";
 import { getViewerId } from "@/lib/session";
 import { getDashboardStats } from "@/lib/data/dashboard";
 import { getProfileCompletion } from "@/lib/data/profileCompletion";
 import { getProfileViewers } from "@/lib/data/viewers";
 import { getViewerProStatus } from "@/lib/data/billing";
+import { getHomepageShowcase, getMarqueeProfiles } from "@/lib/data/showcase";
 
 // Viewer cards shown directly on the dashboard before the "See all" link.
 const DASHBOARD_VIEWERS = 6;
@@ -38,17 +46,51 @@ export default async function Home({
     );
   }
 
-  const t = await getTranslations("Home");
+  // Signed-out visitors: all three fetches run in parallel. getHomepageShowcase
+  // internally sequences its sub-queries for mutual exclusion, but the marquee
+  // and translations have no ordering dependency so they race alongside it.
+  const [tf, { premiumProfiles, newProfiles, verifiedProfiles }, marqueeProfiles] =
+    await Promise.all([
+      getTranslations("Home.featured"),
+      getHomepageShowcase(),
+      getMarqueeProfiles(),
+    ]);
 
   return (
-    <main className="mx-auto flex min-h-[70vh] max-w-3xl flex-col items-center justify-center px-4 text-center">
-      <h1 className="text-3xl font-bold text-charcoal sm:text-4xl">
-        {t("title")}
-      </h1>
-      <p className="mt-3 text-charcoal/60">{t("subtitle")}</p>
-      <Link href="/profiles/demo" className="mt-8">
-        <Button size="lg">{t("viewSample")}</Button>
-      </Link>
+    <main>
+      <HomeHero marqueeProfiles={marqueeProfiles} />
+      <div className="flex flex-col gap-24 py-20 w-full max-w-6xl mx-auto px-4">
+        {/* 1. Premium Members (cards on the right) */}
+        <StackedFeatureSection
+          imagePosition="right"
+          icon={<Crown size={24} />}
+          title={tf("premiumTitle")}
+          description={tf("premiumDesc")}
+          redirectLink="/browse"
+          profiles={premiumProfiles}
+        />
+        {/* 2. New Profiles (cards on the left) */}
+        <StackedFeatureSection
+          imagePosition="left"
+          icon={<Sparkles size={24} />}
+          title={tf("newTitle")}
+          description={tf("newDesc")}
+          redirectLink="/browse"
+          profiles={newProfiles}
+        />
+        {/* 3. Verified Professionals (cards on the right — completes the zig-zag) */}
+        <StackedFeatureSection
+          imagePosition="right"
+          icon={<ShieldCheck size={24} />}
+          title={tf("verifiedTitle")}
+          description={tf("verifiedDesc")}
+          redirectLink="/browse"
+          profiles={verifiedProfiles}
+        />
+      </div>
+      <InteractiveMap />
+      <HowItWorks />
+      <HomeFooter />
     </main>
   );
 }

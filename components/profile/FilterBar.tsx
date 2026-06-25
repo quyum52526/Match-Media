@@ -15,7 +15,7 @@ import { DISTRICTS, upazilasFor } from "@/lib/constants/bdGeo";
 import { localize } from "@/lib/constants/labels";
 
 const fieldClass =
-  "h-10 w-full rounded-xl border border-charcoal/15 bg-white px-3 text-sm text-charcoal outline-none focus:border-trustGreen focus:ring-2 focus:ring-trustGreen/30";
+  "h-10 w-full rounded-xl border border-hairline bg-white px-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30";
 
 export function FilterBar() {
   const t = useTranslations("Browse.filters");
@@ -73,14 +73,14 @@ export function FilterBar() {
     <Card className={isPending ? "opacity-70 transition-opacity" : undefined}>
       <CardBody className="space-y-4">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-semibold text-charcoal">
+          <span className="text-sm font-semibold text-ink">
             {t("heading")}
           </span>
           {hasAny && (
             <button
               type="button"
               onClick={clearAll}
-              className="text-xs font-medium text-trustGreen hover:underline"
+              className="text-xs font-medium text-primary hover:underline"
             >
               {t("clear")}
             </button>
@@ -115,9 +115,9 @@ export function FilterBar() {
                 placeholder={t("minAge")}
                 defaultValue={params.get("minAge") ?? ""}
                 onChange={(e) => setParam("minAge", e.target.value)}
-                className={`${fieldClass} font-sans`}
+                className={`${fieldClass} font-body`}
               />
-              <span className="text-charcoal/40">–</span>
+              <span className="text-ink/40">–</span>
               <input
                 type="number"
                 inputMode="numeric"
@@ -126,7 +126,7 @@ export function FilterBar() {
                 placeholder={t("maxAge")}
                 defaultValue={params.get("maxAge") ?? ""}
                 onChange={(e) => setParam("maxAge", e.target.value)}
-                className={`${fieldClass} font-sans`}
+                className={`${fieldClass} font-body`}
               />
             </div>
           </Labelled>
@@ -153,7 +153,7 @@ export function FilterBar() {
               value={params.get("upazila") ?? ""}
               onChange={(e) => setParam("upazila", e.target.value)}
               disabled={!selectedDistrict}
-              className={`${fieldClass} disabled:cursor-not-allowed disabled:bg-charcoal/5 disabled:text-charcoal/40`}
+              className={`${fieldClass} disabled:cursor-not-allowed disabled:bg-ink/5 disabled:text-ink/40`}
             >
               <option value="">
                 {selectedDistrict ? t("any") : t("upazilaPlaceholder")}
@@ -230,7 +230,7 @@ export function FilterBar() {
                   </option>
                 ))}
               </select>
-              <span className="text-charcoal/40">–</span>
+              <span className="text-ink/40">–</span>
               <select
                 value={params.get("maxHeight") ?? ""}
                 onChange={(e) => setParam("maxHeight", e.target.value)}
@@ -261,7 +261,7 @@ function Labelled({
 }) {
   return (
     <div className="space-y-1">
-      <label className="text-xs font-medium text-charcoal/60">{label}</label>
+      <label className="text-xs font-medium text-ink/60">{label}</label>
       {children}
     </div>
   );

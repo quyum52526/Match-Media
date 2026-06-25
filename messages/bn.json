@@ -8,12 +8,97 @@
     "browse": "Browse",
     "requests": "Requests",
     "interests": "Interests",
-    "editProfile": "My Profile"
+    "editProfile": "My Profile",
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "admin": "Admin"
   },
   "Home": {
     "title": "MatchMedia",
     "subtitle": "Privacy-first matrimonial platform — সারাদেশজুড়ে বিশ্বস্ত matchmaking",
-    "viewSample": "Sample Profile দেখুন"
+    "viewSample": "একটি Sample Profile দেখুন",
+    "hero": {
+      "trustBadge": "গোপনীয়তা-প্রথম · সম্মতি-ভিত্তিক",
+      "headline": "সঠিক মানুষ খুঁজুন। আপনার নিজের শর্তে।",
+      "subtext": "যত্নসহকারে মেলানো, আপনার নিরাপত্তার জন্য যাচাইকৃত। সময় নিন — অর্থপূর্ণ সম্পর্ক অপেক্ষার যোগ্য।"
+    },
+    "quickFilter": {
+      "lookingFor": "খুঁজছি",
+      "age": "বয়স",
+      "district": "জেলা",
+      "profession": "পেশা",
+      "any": "যেকোনো",
+      "anyAge": "যেকোনো বয়স",
+      "search": "খুঁজুন"
+    },
+    "marquee": {
+      "verified": "যাচাইকৃত সদস্য",
+      "active": "এখন সক্রিয়"
+    },
+    "featured": {
+      "newTitle": "নতুন প্রোফাইল",
+      "newDesc": "সম্প্রতি যুক্ত হওয়া সদস্যরা, তাঁদের সঙ্গী খোঁজ শুরু করতে প্রস্তুত। প্রথম দিকেই পরিচিত হোন।",
+      "premiumTitle": "প্রিমিয়াম সদস্য",
+      "premiumDesc": "যাচাইকৃত, আন্তরিক সদস্য যাঁরা আরও দৃঢ় খোঁজের জন্য Premium নিয়েছেন।",
+      "verifiedTitle": "ভেরিফায়েড পেশাজীবী",
+      "verifiedDesc": "বিশ্বস্ত ডাক্তার, ইঞ্জিনিয়ার ও বিশেষজ্ঞদের সাথে যুক্ত হোন — সত্যতা যাচাইকৃত।"
+    },
+    "professionals": {
+      "title": "ভেরিফায়েড পেশাজীবী",
+      "subtitle": "বিশ্বস্ত ডাক্তার, ইঞ্জিনিয়ার ও আরও অনেকের সাথে যুক্ত হোন",
+      "premium": "Premium",
+      "mobileVerified": "মোবাইল-ভেরিফায়েড",
+      "photoPrivate": "ছবি গোপন"
+    },
+    "showcase": {
+      "vip": "প্রিমিয়াম সদস্য",
+      "vipSub": "ভেরিফায়েড VIP প্রোফাইল",
+      "new": "নতুন প্রোফাইল",
+      "newSub": "সম্প্রতি যুক্ত হয়েছেন",
+      "professionals": "ভেরিফায়েড পেশাজীবী",
+      "professionalsSub": "ডাক্তার, ইঞ্জিনিয়ার ও আরও",
+      "premium": "প্রিমিয়াম",
+      "mobileVerified": "মোবাইল-ভেরিফায়েড",
+      "member": "MatchMedia সদস্য",
+      "photoPrivate": "ছবি গোপন"
+    },
+    "howItWorks": {
+      "title": "MatchMedia যেভাবে কাজ করে",
+      "subtitle": "প্রথম ক্লিক থেকে প্রথম কল পর্যন্ত — গোপনীয়তা সবার আগে।",
+      "stepLabel": "ধাপ {n}",
+      "step1Title": "ঝাপসা ছবিতে Browse",
+      "step1Body": "প্রতিটি ছবি ডিফল্টভাবে ঝাপসা থাকে — কারও গোপনীয়তা প্রকাশ না করেই প্রোফাইল দেখুন।",
+      "step2Title": "Request ও সম্মতি",
+      "step2Body": "শুধুমাত্র উভয়ের সম্মতিতেই তথ্য প্রকাশ পায়; দুই পক্ষকেই accept করতে হয়।",
+      "step3Title": "নিরাপদে যোগাযোগ",
+      "step3Body": "In-app chat ও voice call-এ কথা বলুন। আপনার ফোন নম্বর ও ইমেইল কখনো শেয়ার হয় না।",
+      "trust": {
+        "verified": "মোবাইল-ভেরিফায়েড সদস্য",
+        "consent": "সম্মতি-ভিত্তিক যোগাযোগ",
+        "moderated": "Admin-যাচাইকৃত ছবি"
+      }
+    },
+    "map": {
+      "badge": "লাইভ নেটওয়ার্ক",
+      "title": "সারা বাংলাদেশে মানুষ সংযুক্ত করছি",
+      "subtitle": "প্রতিটি বিভাগে যাচাইকৃত সদস্য — যত্নসহকারে মেলানো, গোপনীয়ভাবে পরিচিত।",
+      "stat1Value": "12,000+",
+      "stat1Label": "যাচাইকৃত সদস্য",
+      "stat2Value": "64",
+      "stat2Label": "জেলা",
+      "live": "অনলাইনে আছেন"
+    },
+    "curated": {
+      "title": "আপনার জন্য নির্বাচিত",
+      "subtitle": "ঘনিষ্ঠভাবে দেখার মতো কয়েকটি প্রোফাইল — প্রতিটি ছবি ডিফল্টভাবে গোপন।",
+      "photoPrivate": "ছবি গোপন",
+      "badges": {
+        "pro": "Pro",
+        "verified": "যাচাইকৃত",
+        "new": "নতুন",
+        "popular": "জনপ্রিয়"
+      }
+    }
   },
   "Dashboard": {
     "greeting": "স্বাগতম",
@@ -103,6 +188,8 @@
     "nameHidden": "নাম গোপন",
     "verified": "Verified",
     "vip": "Premium Verified",
+    "message": "মেসেজ",
+    "call": "কল",
     "ageLine": "<n>{age}</n> বছর · {gender} · {upazila}, {district}",
     "mediaPartner": "Media: {name}",
     "keyFacts": "মৌলিক তথ্য",
@@ -146,13 +233,9 @@
         "cardButton": "Limit শেষ"
       }
     },
-    "contact": {
-      "title": "Contact তথ্য",
-      "mobile": "Mobile",
-      "email": "Email",
-      "upgradePrompt": "Contact info দেখতে Pro Upgrade করুন",
-      "upgrade": "Upgrade to Pro",
-      "eligibilityNote": "Interest Accepted হলে Contact তথ্য দেখা যাবে"
+    "privacyNote": {
+      "title": "Contact তথ্য গোপন থাকে",
+      "body": "আপনার নিরাপত্তার জন্য ফোন নম্বর ও ইমেইল কখনো শেয়ার করা হয় না। Match হলে in-app messaging ও voice call-এর মাধ্যমে যোগাযোগ করুন।"
     },
     "card": {
       "request": "Request",
@@ -255,6 +338,139 @@
       "MISSING": "Gender ও Date of birth দিতে হবে",
       "AGE": "বয়স কমপক্ষে 18 হতে হবে",
       "UNAUTH": "আবার Login করুন"
+    },
+    "photos": {
+      "title": "ছবি",
+      "subtitle": "প্রোফাইল ছবি ও গ্যালারি যোগ করুন। আপনি অনুরোধ অনুমোদন না করা পর্যন্ত ছবি ঝাপসা থাকে, যদি না আপনি সেগুলো পাবলিক করেন।",
+      "count": "{max}টির মধ্যে {count}টি ছবি",
+      "add": "ছবি যোগ করুন",
+      "addFirst": "আপনার প্রথম ছবি যোগ করুন",
+      "uploading": "আপলোড হচ্ছে…",
+      "primaryBadge": "প্রধান",
+      "publicBadge": "পাবলিক",
+      "blurredBadge": "ঝাপসা",
+      "makePrimary": "প্রধান করুন",
+      "makePublic": "পাবলিক করুন",
+      "makeBlurred": "ঝাপসা করুন",
+      "delete": "মুছুন",
+      "limitNote": "ছবির সীমা পূর্ণ — নতুন যোগ করতে একটি মুছুন।",
+      "savedHint": "সংরক্ষিত",
+      "privacyHint": "আপনার প্রধান ছবিটি অন্যরা থাম্বনেইল হিসেবে দেখে। ঝাপসা ছবি কেবল আপনি ছবির অনুরোধ অনুমোদন করার পরই দেখা যায়।",
+      "needProfile": "আগে আপনার মূল তথ্য সংরক্ষণ করুন, তারপর ছবি যোগ করতে পারবেন।",
+      "moderationNote": "নতুন ছবি অন্যদের কাছে দৃশ্যমান হওয়ার আগে আমাদের টিম পর্যালোচনা করে।",
+      "status": {
+        "PENDING": "পর্যালোচনাধীন",
+        "REJECTED": "প্রত্যাখ্যাত"
+      },
+      "errors": {
+        "TYPE": "JPG, PNG বা WebP ছবি ব্যবহার করুন।",
+        "SIZE": "ছবিটি অনেক বড় (সর্বোচ্চ ৫ MB)।",
+        "EMPTY": "আপলোড করতে একটি ছবি নির্বাচন করুন।",
+        "DECODE": "ছবিটি পড়া যায়নি। অন্য একটি ফাইল চেষ্টা করুন।",
+        "UPLOAD": "আপলোড ব্যর্থ হয়েছে। আবার চেষ্টা করুন।",
+        "LIMIT": "আপনি ছবির সীমায় পৌঁছেছেন।",
+        "FORBIDDEN": "আপনি কেবল নিজের ছবি পরিচালনা করতে পারেন।",
+        "NO_PROFILE": "আগে আপনার মূল তথ্য সংরক্ষণ করুন, তারপর ছবি যোগ করুন।"
+      }
+    }
+  },
+  "Report": {
+    "button": "রিপোর্ট",
+    "title": "এই প্রোফাইল রিপোর্ট করুন",
+    "intro": "কী সমস্যা আমাদের জানান। আমরা প্রতিটি রিপোর্ট পর্যালোচনা করি।",
+    "reasonLabel": "কারণ",
+    "reasons": {
+      "INAPPROPRIATE_PHOTO": "অনুপযুক্ত ছবি",
+      "FAKE_PROFILE": "ভুয়া প্রোফাইল",
+      "HARASSMENT": "হয়রানি",
+      "SPAM": "স্প্যাম বা প্রতারণা",
+      "OTHER": "অন্য কিছু"
+    },
+    "noteLabel": "বিস্তারিত (ঐচ্ছিক)",
+    "notePlaceholder": "পর্যালোচনায় সাহায্য করে এমন বিবরণ যোগ করুন।",
+    "cancel": "বাতিল",
+    "submit": "রিপোর্ট জমা দিন",
+    "submitted": "রিপোর্ট জমা হয়েছে"
+  },
+  "Admin": {
+    "title": "Admin",
+    "subtitle": "কনটেন্ট মডারেট করুন, রিপোর্ট সামলান, এবং ট্রাস্ট পরিচালনা করুন।",
+    "nav": {
+      "overview": "Overview",
+      "photos": "ছবি",
+      "reports": "রিপোর্ট",
+      "verification": "যাচাই"
+    },
+    "overview": {
+      "pendingPhotos": "পর্যালোচনাধীন ছবি",
+      "openReports": "খোলা রিপোর্ট",
+      "unverifiedProfiles": "যাচাই-না-করা প্রোফাইল"
+    },
+    "photos": {
+      "empty": "পর্যালোচনার জন্য কোনো ছবি নেই।",
+      "uploadedOn": "আপলোড {date}",
+      "approve": "অনুমোদন",
+      "reject": "প্রত্যাখ্যান",
+      "confirmReject": "নিশ্চিত করুন",
+      "cancel": "বাতিল",
+      "rejectReasonPlaceholder": "কারণ (ব্যবহারকারীকে দেখানো হবে)"
+    },
+    "reports": {
+      "empty": "কোনো খোলা রিপোর্ট নেই।",
+      "reasons": {
+        "INAPPROPRIATE_PHOTO": "অনুপযুক্ত ছবি",
+        "FAKE_PROFILE": "ভুয়া প্রোফাইল",
+        "HARASSMENT": "হয়রানি",
+        "SPAM": "স্প্যাম বা প্রতারণা",
+        "OTHER": "অন্যান্য"
+      },
+      "meta": "রিপোর্ট করেছেন {reporter} · {date}",
+      "viewProfile": "প্রোফাইল দেখুন",
+      "resolve": "সমাধান",
+      "dismiss": "বাতিল"
+    },
+    "verification": {
+      "empty": "দেখানোর মতো কোনো প্রোফাইল নেই।",
+      "verified": "যাচাইকৃত",
+      "grant": "ব্যাজ দিন",
+      "revoke": "প্রত্যাহার",
+      "viewProfile": "প্রোফাইল দেখুন",
+      "filterUnverified": "যাচাই-না-করা",
+      "filterAll": "সব"
+    }
+  },
+  "Messages": {
+    "title": "Messages",
+    "empty": "এখনও কোনো কথোপকথন নেই",
+    "emptyHint": "আপনি ও একজন ম্যাচ একে অপরকে গ্রহণ করলে এখানে চ্যাট করতে পারবেন।",
+    "youPrefix": "আপনি:",
+    "noMessagesYet": "এখনও কোনো মেসেজ নেই",
+    "threadEmpty": "কথোপকথন শুরু করতে সালাম দিন।",
+    "composerPlaceholder": "একটি মেসেজ লিখুন…",
+    "send": "পাঠান",
+    "notMatched": "আপনি আর এই ব্যক্তিকে মেসেজ করতে পারবেন না।",
+    "sendFailed": "পাঠানো যায়নি। আবার চেষ্টা করুন।",
+    "verifyToSend": "মেসেজ পাঠাতে আপনার মোবাইল নম্বর যাচাই করুন।",
+    "verifyLink": "এখনই যাচাই করুন",
+    "call": "Voice call"
+  },
+  "Calls": {
+    "calling": "কল করা হচ্ছে…",
+    "incoming": "আসছে voice call",
+    "connecting": "সংযোগ হচ্ছে…",
+    "ended": "কল শেষ",
+    "unknownCaller": "অজানা",
+    "accept": "গ্রহণ করুন",
+    "decline": "প্রত্যাখ্যান",
+    "hangUp": "কল কাটুন",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "micUnavailable": "মাইক্রোফোন নেই — অন্যরা আপনাকে শুনতে পাবে না",
+    "event": {
+      "ended": "Voice call · {duration}",
+      "missed": "মিসড voice call",
+      "noAnswer": "সাড়া পাওয়া যায়নি",
+      "declined": "কল প্রত্যাখ্যাত"
     }
   },
   "Auth": {
@@ -273,6 +489,8 @@
       "fullName": "Full name",
       "optional": "ঐচ্ছিক",
       "email": "Email",
+      "mobile": "মোবাইল নম্বর",
+      "mobileHint": "বাংলাদেশি নম্বর — একটি code দিয়ে যাচাই করতে হবে।",
       "password": "Password",
       "passwordHint": "কমপক্ষে 8 অক্ষর",
       "gender": "Gender",
@@ -290,6 +508,7 @@
         "WEAK": "Password কমপক্ষে 8 অক্ষরের হতে হবে",
         "EXISTS": "এই Email দিয়ে account আগে থেকেই আছে",
         "AGE": "বয়স কমপক্ষে 18 হতে হবে",
+        "MOBILE": "সঠিক বাংলাদেশি মোবাইল নম্বর দিন",
         "INVALID": "Account তৈরি হয়েছে, কিন্তু sign-in হয়নি। Login করুন।"
       }
     }
@@ -341,6 +560,59 @@
       "validUntil": "{date} পর্যন্ত valid",
       "cta": "Dashboard-এ যান"
     }
+  },
+  "VerifyMobile": {
+    "title": "আপনার মোবাইল যাচাই করুন",
+    "subtitle": "নম্বর নিশ্চিত করতে আমরা SMS-এ একটি 6-সংখ্যার code পাঠাব।",
+    "numberLabel": "মোবাইল নম্বর",
+    "sendCode": "Code পাঠান",
+    "sending": "পাঠানো হচ্ছে…",
+    "sentTo": "<b>{number}</b> নম্বরে একটি code পাঠানো হয়েছে।",
+    "sent": "Code পাঠানো হয়েছে। আপনার SMS দেখুন।",
+    "codeLabel": "Verification code",
+    "verify": "যাচাই করুন",
+    "verifying": "যাচাই হচ্ছে…",
+    "resend": "আবার code পাঠান",
+    "resendIn": "{s}s পরে আবার পাঠান",
+    "banner": {
+      "message": "মেসেজিং ও contact reveal আনলক করতে আপনার মোবাইল নম্বর যাচাই করুন।",
+      "cta": "এখনই যাচাই করুন"
+    },
+    "errors": {
+      "UNAUTH": "আবার Login করুন।",
+      "INVALID_NUMBER": "সঠিক বাংলাদেশি মোবাইল নম্বর দিন।",
+      "RATE_LIMITED": "আরেকটি code চাওয়ার আগে একটু অপেক্ষা করুন।",
+      "ALREADY": "আপনার নম্বর আগেই যাচাই করা হয়েছে।",
+      "NO_CODE": "কোনো active code নেই। নতুন একটি চান।",
+      "EXPIRED": "Code-টির মেয়াদ শেষ। নতুন একটি চান।",
+      "TOO_MANY": "অনেকবার চেষ্টা হয়েছে। নতুন code চান।",
+      "INVALID": "Code-টি ভুল। আবার চেষ্টা করুন।"
+    }
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "empty": "এখনও কোনো notification নেই",
+    "types": {
+      "PHOTO_REQUEST": "কেউ আপনার ছবি দেখার অনুরোধ করেছে",
+      "PHOTO_ACCESS_GRANTED": "আপনার photo-access অনুরোধ অনুমোদিত হয়েছে",
+      "INTEREST_RECEIVED": "কেউ আপনার প্রতি Interest জানিয়েছে",
+      "INTEREST_ACCEPTED": "আপনার Interest গৃহীত হয়েছে — এটি একটি match!",
+      "NEW_MESSAGE": "আপনার একটি নতুন মেসেজ আছে",
+      "MISSED_CALL": "আপনি একটি voice call মিস করেছেন",
+      "PHOTO_APPROVED": "আপনার ছবি অনুমোদিত হয়েছে",
+      "PHOTO_REJECTED": "আপনার ছবি অনুমোদিত হয়নি",
+      "VERIFIED_BADGE": "আপনি Verified ব্যাজ পেয়েছেন",
+      "REPORT_RESOLVED": "আপনার করা একটি রিপোর্ট পর্যালোচনা করা হয়েছে"
+    }
+  },
+  "Footer": {
+    "tagline": "বাংলাদেশের জন্য গোপনীয়তা-প্রথম, সম্মতি-ভিত্তিক matrimony।",
+    "disclaimer": "প্ল্যাটফর্ম শুধুমাত্র একটি যোগাযোগ মাধ্যম; পরিচয়/তথ্য যাচাইয়ের দায়িত্ব ব্যবহারকারীর",
+    "colLegal": "লিঙ্ক",
+    "contact": "যোগাযোগ",
+    "privacy": "Privacy Policy",
+    "terms": "Terms",
+    "rights": "© {year} MatchMedia। সর্বস্বত্ব সংরক্ষিত।"
   },
   "LocaleSwitcher": {
     "label": "ভাষা"

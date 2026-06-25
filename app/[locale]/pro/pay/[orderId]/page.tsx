@@ -31,17 +31,17 @@ export default async function MockPayPage({
     <main className="mx-auto max-w-md px-4 py-12">
       <Card>
         <CardBody className="space-y-4 text-center">
-          <p className="text-xs uppercase tracking-wide text-charcoal/40">
+          <p className="text-xs uppercase tracking-wide text-ink/40">
             {t("sandbox")}
           </p>
-          <h1 className="text-xl font-bold text-charcoal">{t("title")}</h1>
-          <p className="text-sm text-charcoal/70">
+          <h1 className="text-xl font-bold text-ink">{t("title")}</h1>
+          <p className="text-sm text-ink/70">
             {t("amount")}:{" "}
-            <span className="font-semibold text-charcoal">
+            <span className="font-semibold text-ink">
               ৳{formatTaka(order.finalAmount)}
             </span>
           </p>
-          <p className="text-xs text-charcoal/45">{order.invoiceNo}</p>
+          <p className="text-xs text-ink/45">{order.invoiceNo}</p>
 
           <MockPay orderId={order.id} locale={locale} />
         </CardBody>

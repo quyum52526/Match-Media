@@ -12,7 +12,7 @@ export function LoginForm() {
   return (
     <form action={formAction} className="space-y-4">
       <div className="space-y-1">
-        <label htmlFor="email" className="text-sm font-medium text-charcoal">
+        <label htmlFor="email" className="text-sm font-medium text-ink">
           {t("email")}
         </label>
         <input
@@ -21,12 +21,12 @@ export function LoginForm() {
           type="email"
           required
           autoComplete="email"
-          className="h-11 w-full rounded-xl border border-charcoal/15 bg-white px-3 text-sm text-charcoal outline-none focus:border-trustGreen focus:ring-2 focus:ring-trustGreen/30"
+          className="h-11 w-full rounded-xl border border-hairline bg-white px-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
         />
       </div>
 
       <div className="space-y-1">
-        <label htmlFor="password" className="text-sm font-medium text-charcoal">
+        <label htmlFor="password" className="text-sm font-medium text-ink">
           {t("password")}
         </label>
         <input
@@ -35,7 +35,7 @@ export function LoginForm() {
           type="password"
           required
           autoComplete="current-password"
-          className="h-11 w-full rounded-xl border border-charcoal/15 bg-white px-3 text-sm text-charcoal outline-none focus:border-trustGreen focus:ring-2 focus:ring-trustGreen/30"
+          className="h-11 w-full rounded-xl border border-hairline bg-white px-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
         />
       </div>
 

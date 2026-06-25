@@ -2,6 +2,7 @@ import "server-only";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { calcAge } from "@/lib/utils";
+import { signUrl, signUrls } from "@/lib/storage/supabase";
 import { isProActive } from "@/lib/billing";
 import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
 import { heightsInRange } from "@/lib/constants/profileOptions";
@@ -124,8 +125,10 @@ export async function getBrowseProfiles(
     where,
     orderBy: { createdAt: "asc" },
     include: {
-      user: { select: { isPro: true } },
-      images: { where: { isPrimary: true }, take: 1 },
+      user: { select: { isPro: true, isMobileVerified: true } },
+      // Only an APPROVED primary photo is ever shown to other viewers
+      // (pre-moderation: PENDING/REJECTED photos never leave the server).
+      images: { where: { isPrimary: true, moderationStatus: "APPROVED" }, take: 1 },
     },
   });
 
@@ -139,19 +142,44 @@ export async function getBrowseProfiles(
     requests.map((r) => [r.ownerId, r.status as PhotoAccessState]),
   );
 
-  return profiles.map((p) => ({
-    id: p.userId,
-    displayName: p.nameHidden || !p.fullName ? HIDDEN_NAME : p.fullName,
-    nameHidden: p.nameHidden,
-    gender: p.gender,
-    age: calcAge(p.dateOfBirth),
-    district: p.district ?? "",
-    upazila: p.upazila ?? "",
-    isVerified: p.isVerified,
-    isPro: p.user.isPro,
-    primaryImagePrivacy: (p.images[0]?.privacy as ImagePrivacy) ?? "BLURRED",
-    photoAccess: statusByOwner.get(p.userId) ?? "NONE",
-  }));
+  // Pick the viewer-appropriate storage key per profile: the ORIGINAL only when
+  // the photo is PUBLIC or the viewer is APPROVED, otherwise the blurred teaser.
+  // The original key is never signed (and so never leaks) for gated viewers.
+  const keyToSign: string[] = [];
+  for (const p of profiles) {
+    const img = p.images[0];
+    if (!img) continue;
+    const access = statusByOwner.get(p.userId) ?? "NONE";
+    const revealed = img.privacy === "PUBLIC" || access === "APPROVED";
+    keyToSign.push(revealed ? img.originalKey : img.blurredKey);
+  }
+  const signed = await signUrls(keyToSign);
+
+  return profiles.map((p) => {
+    const img = p.images[0];
+    const access = statusByOwner.get(p.userId) ?? "NONE";
+    const revealed = !!img && (img.privacy === "PUBLIC" || access === "APPROVED");
+    const key = img ? (revealed ? img.originalKey : img.blurredKey) : undefined;
+    return {
+      id: p.userId,
+      displayName: p.nameHidden || !p.fullName ? HIDDEN_NAME : p.fullName,
+      nameHidden: p.nameHidden,
+      gender: p.gender,
+      age: calcAge(p.dateOfBirth),
+      district: p.district ?? "",
+      upazila: p.upazila ?? "",
+      isVerified: p.isVerified,
+      isPro: p.user.isPro,
+      primaryImagePrivacy: (img?.privacy as ImagePrivacy) ?? "BLURRED",
+      imageUrl: key ? signed.get(key) : undefined,
+      photoAccess: access,
+      // 4 verification slots: photo (isVerified) + mobile + email* + NID*
+      // *email and NID are not yet implemented — always 0 until APIs are wired.
+      trustScore: Math.round(
+        ([p.isVerified, p.user.isMobileVerified, false, false].filter(Boolean).length / 4) * 100,
+      ),
+    };
+  });
 }
 
 /**
@@ -229,7 +257,8 @@ export async function getProfileForViewer(
     where: { userId: ownerUserId },
     include: {
       user: true,
-      images: { where: { isPrimary: true }, take: 1 },
+      // Pre-moderation: only an APPROVED primary photo is served to viewers.
+      images: { where: { isPrimary: true, moderationStatus: "APPROVED" }, take: 1 },
     },
   });
   if (!profile) return null;
@@ -280,15 +309,26 @@ export async function getProfileForViewer(
 
   const viewerIsPro = isProActive(viewer);
   const interestAccepted = Boolean(acceptedInterest);
-  const contactAuthorized = viewerIsPro && interestAccepted;
 
   const viewerState: ViewerState = {
     photoAccess: (photoReq?.status as PhotoAccessState) ?? "NONE",
     interest: (sentInterest?.status as InterestState) ?? "NONE",
     isPro: viewerIsPro,
+    // Mutual consent (either direction) — unlocks in-app messaging + voice calls
+    // (no Pro requirement). Contact details are NEVER revealed (privacy-first).
+    isMatched: interestAccepted,
   };
 
   const primary = profile.images[0];
+
+  // Same gate as the photo overlay: original only when PUBLIC or APPROVED.
+  const photoRevealed =
+    !!primary &&
+    (primary.privacy === "PUBLIC" || photoReq?.status === "APPROVED");
+  const imageUrl = primary
+    ? (await signUrl(photoRevealed ? primary.originalKey : primary.blurredKey)) ??
+      undefined
+    : undefined;
 
   const view: ProfileDetailView = {
     id: profile.userId,
@@ -307,22 +347,22 @@ export async function getProfileForViewer(
     isVerified: profile.isVerified,
     isPro: isProActive(profile.user),
     primaryImagePrivacy: (primary?.privacy as ImagePrivacy) ?? "BLURRED",
+    imageUrl,
     details: {
       height: profile.height ?? "",
       weight: profile.weight ?? "",
       childrenStatus: profile.childrenStatus ?? "",
       family: profile.familyDetails ?? "",
     },
+    verifications: {
+      mobile: profile.user.isMobileVerified,
+      // TODO: wire these to real provider APIs when available.
+      email:  false,
+      photo:  profile.isVerified, // admin-granted badge proxies photo identity
+      nid:    false,
+    },
     viewer: viewerState,
   };
-
-  // Only attach contact when authorized — never serialized otherwise.
-  if (contactAuthorized) {
-    view.contact = {
-      mobile: profile.user.mobile ?? "",
-      email: profile.user.email,
-    };
-  }
 
   return view;
 }

@@ -65,8 +65,8 @@ export default async function BrowsePage({
   return (
     <main className="mx-auto max-w-5xl px-4 py-6 sm:py-10">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold text-charcoal">{t("title")}</h1>
-        <p className="mt-1 text-sm text-charcoal/60">{t("subtitle")}</p>
+        <h1 className="text-2xl font-bold text-ink">{t("title")}</h1>
+        <p className="mt-1 text-sm text-ink/60">{t("subtitle")}</p>
       </header>
 
       <QuotaNote quota={viewQuota} namespace="Browse.viewQuota" variant="banner" />
@@ -81,7 +81,7 @@ export default async function BrowsePage({
         <FilterBar />
       </div>
 
-      <p className="mb-4 font-sans text-sm text-charcoal/50">
+      <p className="mb-4 font-body text-sm text-ink/50">
         {t("resultCount", {
           count: profiles.length,
           n: String(profiles.length),
@@ -91,14 +91,14 @@ export default async function BrowsePage({
       {profiles.length > 0 ? (
         <ProfileGrid profiles={profiles} quota={quota} />
       ) : hasFilters ? (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-charcoal/15 bg-white py-14 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-charcoal/5 text-charcoal/40">
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-hairline bg-white py-14 text-center">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink/5 text-ink/40">
             <SearchIcon width={22} height={22} />
           </span>
-          <p className="text-base font-semibold text-charcoal">
+          <p className="text-base font-semibold text-ink">
             {t("noMatch.title")}
           </p>
-          <p className="max-w-xs text-sm text-charcoal/60">
+          <p className="max-w-xs text-sm text-ink/60">
             {t("noMatch.hint")}
           </p>
           <Link href="/browse" className="mt-1">
@@ -108,7 +108,7 @@ export default async function BrowsePage({
           </Link>
         </div>
       ) : (
-        <p className="text-sm text-charcoal/60">{t("empty")}</p>
+        <p className="text-sm text-ink/60">{t("empty")}</p>
       )}
     </main>
   );

@@ -18,10 +18,10 @@ export default async function RegisterPage({
 
   return (
     <main className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-10">
-      <h1 className="text-center text-2xl font-bold text-charcoal">
+      <h1 className="text-center text-2xl font-bold text-ink">
         {t("title")}
       </h1>
-      <p className="mb-6 mt-2 text-center text-sm text-charcoal/60">
+      <p className="mb-6 mt-2 text-center text-sm text-ink/60">
         {t("subtitle")}
       </p>
       <Card>
@@ -29,9 +29,9 @@ export default async function RegisterPage({
           <RegisterForm />
         </CardBody>
       </Card>
-      <p className="mt-4 text-center text-sm text-charcoal/60">
+      <p className="mt-4 text-center text-sm text-ink/60">
         {t("haveAccount")}{" "}
-        <Link href="/login" className="font-medium text-trustGreen hover:underline">
+        <Link href="/login" className="font-medium text-primary hover:underline">
           {t("loginLink")}
         </Link>
       </p>

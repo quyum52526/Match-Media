@@ -39,29 +39,29 @@ export function PlanCards({
         return (
           <Card
             key={plan.code}
-            className={featured ? "border-gold ring-1 ring-gold/40" : undefined}
+            className={featured ? "border-accent ring-1 ring-accent/40" : undefined}
           >
             <CardBody className="flex flex-col items-center text-center">
               {featured && (
-                <Badge variant="gold" className="mb-2 bg-gold text-white">
+                <Badge variant="gold" className="mb-2 bg-accent text-white">
                   {t("bestValue")}
                 </Badge>
               )}
-              <h2 className="text-lg font-semibold text-charcoal">{plan.name}</h2>
+              <h2 className="text-lg font-semibold text-ink">{plan.name}</h2>
 
               <div className="mt-3">
                 {discounted && (
-                  <span className="mr-2 text-sm text-charcoal/40 line-through">
+                  <span className="mr-2 text-sm text-ink/40 line-through">
                     ৳{formatTaka(plan.baseAmount)}
                   </span>
                 )}
-                <span className="text-2xl font-bold text-charcoal">
+                <span className="text-2xl font-bold text-ink">
                   ৳{formatTaka(plan.finalAmount)}
                 </span>
               </div>
 
               {discounted && plan.couponCode && (
-                <p className="mt-1 text-xs font-medium text-trustGreen">
+                <p className="mt-1 text-xs font-medium text-primary">
                   {t("promoApplied", { code: plan.couponCode })}
                 </p>
               )}

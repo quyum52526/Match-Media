@@ -8,12 +8,97 @@
     "browse": "Browse",
     "requests": "Requests",
     "interests": "Interests",
-    "editProfile": "My Profile"
+    "editProfile": "My Profile",
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "admin": "Admin"
   },
   "Home": {
     "title": "MatchMedia",
     "subtitle": "Privacy-first, nationwide matrimonial platform",
-    "viewSample": "View sample Profile"
+    "viewSample": "View a sample profile",
+    "hero": {
+      "trustBadge": "Privacy-first · Consent-based",
+      "headline": "Find the right person. On your own terms.",
+      "subtext": "Thoughtfully matched, verified for your safety. Take your time — meaningful connections are worth the wait."
+    },
+    "quickFilter": {
+      "lookingFor": "Looking for",
+      "age": "Age",
+      "district": "District",
+      "profession": "Profession",
+      "any": "Anyone",
+      "anyAge": "Any age",
+      "search": "Search"
+    },
+    "marquee": {
+      "verified": "Verified Member",
+      "active": "Active now"
+    },
+    "featured": {
+      "newTitle": "New Profiles",
+      "newDesc": "Freshly joined members, ready to begin their search. Be among the first to say hello.",
+      "premiumTitle": "Premium Members",
+      "premiumDesc": "Verified, serious members who've upgraded for a more committed search.",
+      "verifiedTitle": "Verified Professionals",
+      "verifiedDesc": "Connect with trusted doctors, engineers, and specialized experts verified for authenticity."
+    },
+    "professionals": {
+      "title": "Verified Professionals",
+      "subtitle": "Connect with trusted doctors, engineers & more",
+      "premium": "Premium",
+      "mobileVerified": "Mobile-verified",
+      "photoPrivate": "Photo private"
+    },
+    "showcase": {
+      "vip": "Premium Members",
+      "vipSub": "Verified VIP profiles",
+      "new": "New Profiles",
+      "newSub": "Recently joined",
+      "professionals": "Verified Professionals",
+      "professionalsSub": "Doctors, engineers & more",
+      "premium": "Premium",
+      "mobileVerified": "Mobile-verified",
+      "member": "MatchMedia Member",
+      "photoPrivate": "Photo private"
+    },
+    "howItWorks": {
+      "title": "How MatchMedia works",
+      "subtitle": "Privacy-first from the first tap to the first call.",
+      "stepLabel": "Step {n}",
+      "step1Title": "Browse blurred",
+      "step1Body": "Every photo stays blurred by default — explore profiles without anyone's privacy exposed.",
+      "step2Title": "Request & consent",
+      "step2Body": "Reveals happen only by mutual agreement; both sides must accept before anything opens up.",
+      "step3Title": "Connect securely",
+      "step3Body": "Talk over in-app chat and voice calls. Your phone number and email are never shared.",
+      "trust": {
+        "verified": "Mobile-verified members",
+        "consent": "Consent-based contact",
+        "moderated": "Admin-moderated photos"
+      }
+    },
+    "map": {
+      "badge": "Live network",
+      "title": "Connecting people across Bangladesh",
+      "subtitle": "Verified members in every division — matched thoughtfully, introduced privately.",
+      "stat1Value": "12,000+",
+      "stat1Label": "Verified members",
+      "stat2Value": "64",
+      "stat2Label": "Districts",
+      "live": "Members online"
+    },
+    "curated": {
+      "title": "Curated for you",
+      "subtitle": "A handful of profiles worth a closer look — every photo private by default.",
+      "photoPrivate": "Photo private",
+      "badges": {
+        "pro": "Pro",
+        "verified": "Verified",
+        "new": "New joiner",
+        "popular": "High interest"
+      }
+    }
   },
   "Dashboard": {
     "greeting": "Welcome back",
@@ -103,6 +188,8 @@
     "nameHidden": "Name hidden",
     "verified": "Verified",
     "vip": "Premium Verified",
+    "message": "Message",
+    "call": "Call",
     "ageLine": "<n>{age}</n> yrs · {gender} · {upazila}, {district}",
     "mediaPartner": "Media: {name}",
     "keyFacts": "Key information",
@@ -146,13 +233,9 @@
         "cardButton": "Limit reached"
       }
     },
-    "contact": {
-      "title": "Contact information",
-      "mobile": "Mobile",
-      "email": "Email",
-      "upgradePrompt": "Upgrade to Pro to view contact info",
-      "upgrade": "Upgrade to Pro",
-      "eligibilityNote": "Contact unlocks after your Interest is accepted"
+    "privacyNote": {
+      "title": "Contact details stay private",
+      "body": "For your safety, phone numbers and emails are never shared. Connect through in-app messaging and voice calls once you match."
     },
     "card": {
       "request": "Request",
@@ -255,6 +338,139 @@
       "MISSING": "Gender and date of birth are required",
       "AGE": "You must be at least 18 years old",
       "UNAUTH": "Please log in again"
+    },
+    "photos": {
+      "title": "Photos",
+      "subtitle": "Add a profile photo and gallery. Photos stay blurred until you approve a request, unless you make them public.",
+      "count": "{count} of {max} photos",
+      "add": "Add a photo",
+      "addFirst": "Add your first photo",
+      "uploading": "Uploading…",
+      "primaryBadge": "Primary",
+      "publicBadge": "Public",
+      "blurredBadge": "Blurred",
+      "makePrimary": "Set as primary",
+      "makePublic": "Make public",
+      "makeBlurred": "Make blurred",
+      "delete": "Delete",
+      "limitNote": "Photo limit reached — delete one to add another.",
+      "savedHint": "Saved",
+      "privacyHint": "Your primary photo is the thumbnail others see. Blurred photos are revealed only after you approve a photo request.",
+      "needProfile": "Save your basic details first, then you can add photos.",
+      "moderationNote": "New photos are reviewed by our team before they're visible to others.",
+      "status": {
+        "PENDING": "Pending review",
+        "REJECTED": "Rejected"
+      },
+      "errors": {
+        "TYPE": "Use a JPG, PNG, or WebP image.",
+        "SIZE": "Image is too large (max 5 MB).",
+        "EMPTY": "Please choose an image to upload.",
+        "DECODE": "That image couldn't be read. Try another file.",
+        "UPLOAD": "Upload failed. Please try again.",
+        "LIMIT": "You've reached the photo limit.",
+        "FORBIDDEN": "You can only manage your own photos.",
+        "NO_PROFILE": "Save your basic details first, then add photos."
+      }
+    }
+  },
+  "Report": {
+    "button": "Report",
+    "title": "Report this profile",
+    "intro": "Tell us what's wrong. Our team reviews every report.",
+    "reasonLabel": "Reason",
+    "reasons": {
+      "INAPPROPRIATE_PHOTO": "Inappropriate photo",
+      "FAKE_PROFILE": "Fake profile",
+      "HARASSMENT": "Harassment",
+      "SPAM": "Spam or scam",
+      "OTHER": "Something else"
+    },
+    "noteLabel": "Details (optional)",
+    "notePlaceholder": "Add any details that help us review this.",
+    "cancel": "Cancel",
+    "submit": "Submit report",
+    "submitted": "Report submitted"
+  },
+  "Admin": {
+    "title": "Admin",
+    "subtitle": "Moderate content, handle reports, and manage trust.",
+    "nav": {
+      "overview": "Overview",
+      "photos": "Photos",
+      "reports": "Reports",
+      "verification": "Verification"
+    },
+    "overview": {
+      "pendingPhotos": "Photos pending review",
+      "openReports": "Open reports",
+      "unverifiedProfiles": "Unverified profiles"
+    },
+    "photos": {
+      "empty": "No photos waiting for review.",
+      "uploadedOn": "Uploaded {date}",
+      "approve": "Approve",
+      "reject": "Reject",
+      "confirmReject": "Confirm",
+      "cancel": "Cancel",
+      "rejectReasonPlaceholder": "Reason (shown to the user)"
+    },
+    "reports": {
+      "empty": "No open reports.",
+      "reasons": {
+        "INAPPROPRIATE_PHOTO": "Inappropriate photo",
+        "FAKE_PROFILE": "Fake profile",
+        "HARASSMENT": "Harassment",
+        "SPAM": "Spam or scam",
+        "OTHER": "Other"
+      },
+      "meta": "Reported by {reporter} · {date}",
+      "viewProfile": "View profile",
+      "resolve": "Resolve",
+      "dismiss": "Dismiss"
+    },
+    "verification": {
+      "empty": "No profiles to show.",
+      "verified": "Verified",
+      "grant": "Grant badge",
+      "revoke": "Revoke",
+      "viewProfile": "View profile",
+      "filterUnverified": "Unverified",
+      "filterAll": "All"
+    }
+  },
+  "Messages": {
+    "title": "Messages",
+    "empty": "No conversations yet",
+    "emptyHint": "When you and a match accept each other, you can chat here.",
+    "youPrefix": "You:",
+    "noMessagesYet": "No messages yet",
+    "threadEmpty": "Say hello to start the conversation.",
+    "composerPlaceholder": "Write a message…",
+    "send": "Send",
+    "notMatched": "You can no longer message this person.",
+    "sendFailed": "Couldn't send. Please try again.",
+    "verifyToSend": "Verify your mobile number to send messages.",
+    "verifyLink": "Verify now",
+    "call": "Voice call"
+  },
+  "Calls": {
+    "calling": "Calling…",
+    "incoming": "Incoming voice call",
+    "connecting": "Connecting…",
+    "ended": "Call ended",
+    "unknownCaller": "Unknown",
+    "accept": "Accept",
+    "decline": "Decline",
+    "hangUp": "Hang up",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "micUnavailable": "No microphone — others can't hear you",
+    "event": {
+      "ended": "Voice call · {duration}",
+      "missed": "Missed voice call",
+      "noAnswer": "No answer",
+      "declined": "Call declined"
     }
   },
   "Auth": {
@@ -273,6 +489,8 @@
       "fullName": "Full name",
       "optional": "optional",
       "email": "Email",
+      "mobile": "Mobile number",
+      "mobileHint": "Bangladeshi number — you'll verify it with a code.",
       "password": "Password",
       "passwordHint": "At least 8 characters",
       "gender": "Gender",
@@ -290,6 +508,7 @@
         "WEAK": "Password must be at least 8 characters",
         "EXISTS": "An account with this email already exists",
         "AGE": "You must be at least 18 years old",
+        "MOBILE": "Enter a valid Bangladeshi mobile number",
         "INVALID": "Account created, but sign-in failed. Please log in."
       }
     }
@@ -341,6 +560,59 @@
       "validUntil": "Valid until {date}",
       "cta": "Go to dashboard"
     }
+  },
+  "VerifyMobile": {
+    "title": "Verify your mobile",
+    "subtitle": "We'll send a 6-digit code by SMS to confirm your number.",
+    "numberLabel": "Mobile number",
+    "sendCode": "Send code",
+    "sending": "Sending…",
+    "sentTo": "We sent a code to <b>{number}</b>.",
+    "sent": "Code sent. Check your SMS.",
+    "codeLabel": "Verification code",
+    "verify": "Verify",
+    "verifying": "Verifying…",
+    "resend": "Resend code",
+    "resendIn": "Resend in {s}s",
+    "banner": {
+      "message": "Verify your mobile number to unlock messaging and contact reveal.",
+      "cta": "Verify now"
+    },
+    "errors": {
+      "UNAUTH": "Please log in again.",
+      "INVALID_NUMBER": "Enter a valid Bangladeshi mobile number.",
+      "RATE_LIMITED": "Please wait a moment before requesting another code.",
+      "ALREADY": "Your number is already verified.",
+      "NO_CODE": "No active code. Request a new one.",
+      "EXPIRED": "That code expired. Request a new one.",
+      "TOO_MANY": "Too many attempts. Request a new code.",
+      "INVALID": "That code is incorrect. Try again."
+    }
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "empty": "No notifications yet",
+    "types": {
+      "PHOTO_REQUEST": "Someone requested access to your photo",
+      "PHOTO_ACCESS_GRANTED": "Your photo-access request was approved",
+      "INTEREST_RECEIVED": "Someone expressed interest in you",
+      "INTEREST_ACCEPTED": "Your interest was accepted — it's a match!",
+      "NEW_MESSAGE": "You have a new message",
+      "MISSED_CALL": "You missed a voice call",
+      "PHOTO_APPROVED": "Your photo was approved",
+      "PHOTO_REJECTED": "Your photo was not approved",
+      "VERIFIED_BADGE": "You earned the Verified badge",
+      "REPORT_RESOLVED": "A report you filed was reviewed"
+    }
+  },
+  "Footer": {
+    "tagline": "Privacy-first, consent-based matrimony for Bangladesh.",
+    "disclaimer": "This platform is only a communication medium; verifying identity and information is the user's responsibility.",
+    "colLegal": "Quick links",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms",
+    "rights": "© {year} MatchMedia. All rights reserved."
   },
   "LocaleSwitcher": {
     "label": "Language"

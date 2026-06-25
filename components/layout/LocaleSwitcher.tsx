@@ -30,7 +30,7 @@ export function LocaleSwitcher() {
       role="group"
       aria-label="Language"
       className={cn(
-        "inline-flex items-center rounded-full border border-charcoal/15 bg-white p-0.5 text-xs font-medium font-sans",
+        "inline-flex items-center rounded-full border border-hairline bg-white p-0.5 text-xs font-medium font-body",
         isPending && "opacity-60",
       )}
     >
@@ -46,8 +46,8 @@ export function LocaleSwitcher() {
             className={cn(
               "rounded-full px-3 py-1 transition-colors",
               isActive
-                ? "bg-trustGreen text-white"
-                : "text-charcoal/60 hover:text-charcoal",
+                ? "bg-primary text-white"
+                : "text-ink/60 hover:text-ink",
             )}
           >
             {LABELS[loc]}
