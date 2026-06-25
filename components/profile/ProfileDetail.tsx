@@ -17,6 +17,7 @@ import { Modal } from "@/components/ui/Modal";
 import {
   ShieldCheckIcon,
   StarIcon,
+  CrownIcon,
   HeartIcon,
   CheckIcon,
   LockIcon,
@@ -32,6 +33,7 @@ import { computeCompletion } from "@/lib/utils";
 import { localize } from "@/lib/constants/labels";
 import { BlurredImage } from "./BlurredImage";
 import { ReportButton } from "./ReportButton";
+import { TrustCard } from "./TrustCard";
 import type { ProfileDetailView, ViewerState } from "./types";
 
 interface ProfileDetailProps {
@@ -167,26 +169,26 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
               <h1 className="text-2xl font-bold text-ink">
                 {data.displayName}
               </h1>
+
+              {/* Pro — gold crown badge */}
               {data.isPro && (
-                <Badge
-                  variant="gold"
-                  className="bg-accent text-white"
-                  icon={<StarIcon width={14} height={14} />}
-                >
+                <span className="inline-flex items-center gap-1 rounded-pill border border-accent/30 bg-gradient-to-r from-accent/20 to-amber-100/60 px-2.5 py-0.5 text-xs font-semibold text-amber-700 shadow-sm">
+                  <CrownIcon width={13} height={13} className="text-accent" />
                   {t("vip")}
-                </Badge>
+                </span>
               )}
+
+              {/* Overall identity verified — blue-tinted shield */}
+              {data.isVerified && (
+                <span className="inline-flex items-center gap-1 rounded-pill border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-semibold text-sky-700 shadow-sm">
+                  <ShieldCheckIcon width={13} height={13} className="text-sky-500" />
+                  {t("verified")}
+                </span>
+              )}
+
               {data.nameHidden && (
                 <Badge variant="neutral" icon={<LockIcon width={14} height={14} />}>
                   {t("nameHidden")}
-                </Badge>
-              )}
-              {data.isVerified && (
-                <Badge
-                  variant="verified"
-                  icon={<ShieldCheckIcon width={14} height={14} />}
-                >
-                  {t("verified")}
                 </Badge>
               )}
             </div>
@@ -258,6 +260,9 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
               <p className="text-sm leading-7 text-ink/80">{data.bio}</p>
             </CardBody>
           </Card>
+
+          {/* Trust & Verifications breakdown */}
+          <TrustCard verifications={data.verifications} />
 
           {/* Privacy-first: phone & email are never shown. Connect in-app. */}
           <PrivacyNote />

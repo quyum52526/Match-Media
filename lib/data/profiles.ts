@@ -349,6 +349,13 @@ export async function getProfileForViewer(
       childrenStatus: profile.childrenStatus ?? "",
       family: profile.familyDetails ?? "",
     },
+    verifications: {
+      mobile: profile.user.isMobileVerified,
+      // TODO: wire these to real provider APIs when available.
+      email:  false,
+      photo:  profile.isVerified, // admin-granted badge proxies photo identity
+      nid:    false,
+    },
     viewer: viewerState,
   };
 

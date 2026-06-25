@@ -45,6 +45,22 @@ export interface ViewerState {
   isMatched: boolean;
 }
 
+/**
+ * Verification statuses shown in the "Trust & Verifications" card.
+ * Fields without a real API backend yet are kept as mock booleans until the
+ * third-party verification providers are wired up.
+ */
+export interface ProfileVerifications {
+  /** Real — backed by MobileOtp flow + User.isMobileVerified in the DB. */
+  mobile: boolean;
+  /** Mock — email OTP not yet implemented. */
+  email: boolean;
+  /** Mock — selfie/liveness check not yet implemented; proxied from isVerified. */
+  photo: boolean;
+  /** Mock — NID/passport API not yet implemented. */
+  nid: boolean;
+}
+
 /** Extended attributes shown in the "View Full Details" modal. */
 export interface ProfileFullDetails {
   height: string;
@@ -126,5 +142,6 @@ export interface ProfileDetailView {
    */
   imageUrl?: string;
   details: ProfileFullDetails;
+  verifications: ProfileVerifications;
   viewer: ViewerState;
 }
