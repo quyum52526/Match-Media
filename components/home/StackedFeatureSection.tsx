@@ -1,28 +1,69 @@
 import type { ReactNode } from "react";
-import { BadgeCheck } from "lucide-react";
+import Image from "next/image";
+import { BadgeCheck, Crown, LockKeyhole } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import type { ShowcaseProfile } from "@/lib/data/showcase";
 
-/**
- * Reusable two-column feature block for the homepage: an icon + title +
- * description on one side, and a clickable stack of three overlapping profile
- * cards on the other. `imagePosition` decides which side the card stack sits on
- * (desktop only — on mobile it always stacks text-over-cards). Brand tokens map
- * to the spec's hex: primary = Garnet #8C2F4A, accent = Champagne #C8A24B.
- *
- * NOTE: this renders just the two-column grid (no full-width band / bg / max-w /
- * padding) — the parent container on the homepage owns bounds + spacing.
- *
- * Stripe-style: the only motion is a smooth `group-hover` spread of the cards
- * (transition-all / ease-out) to signal the column is clickable.
- */
 export interface StackedFeatureSectionProps {
   title: string;
   description: string;
-  icon: ReactNode; // a lucide-react icon element, e.g. <Sparkles size={24} />
+  icon: ReactNode;
   imagePosition: "left" | "right";
   redirectLink: string;
-  /** Dummy name on the top card's floating badge. */
+  profiles?: ShowcaseProfile[];
+  /** Decorative name shown on the front card when no real profiles are provided. */
   badgeName?: string;
+}
+
+/** Inner content of a single stacked card. */
+function CardFace({
+  profile,
+  isFront,
+  badgeName,
+}: {
+  profile: ShowcaseProfile | undefined;
+  isFront: boolean;
+  badgeName: string;
+}) {
+  // Card body: real photo, or pastel placeholder with a lock icon.
+  const body = profile?.imageUrl ? (
+    <div className="relative h-full w-full">
+      <Image
+        src={profile.imageUrl}
+        alt={isFront ? profile.displayName : ""}
+        fill
+        className="object-cover"
+        sizes="220px"
+        priority={isFront}
+      />
+    </div>
+  ) : (
+    <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-accent/30 via-canvas to-primary/20">
+      <LockKeyhole size={28} className="text-primary/30" />
+    </div>
+  );
+
+  // Name badge — only on the front (top) card.
+  const badge = isFront ? (
+    <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-pill bg-surface px-3 py-1.5 text-xs font-medium text-ink shadow-card">
+      {profile ? profile.displayName : badgeName}
+      {profile ? (
+        <>
+          {profile.isVerified && <BadgeCheck size={14} className="text-success" />}
+          {profile.isPro && <Crown size={12} className="text-accent" />}
+        </>
+      ) : (
+        <BadgeCheck size={14} className="text-success" />
+      )}
+    </span>
+  ) : null;
+
+  return (
+    <>
+      {body}
+      {badge}
+    </>
+  );
 }
 
 export function StackedFeatureSection({
@@ -31,9 +72,16 @@ export function StackedFeatureSection({
   icon,
   imagePosition,
   redirectLink,
+  profiles,
   badgeName = "Faisal Ansari",
 }: StackedFeatureSectionProps) {
   const cardsLeft = imagePosition === "left";
+
+  // Explicit index assignment — each variable is a distinct profile (or undefined
+  // when the DB returns fewer than 3 results for this section).
+  const profile1 = profiles?.[0]; // front / top card  — most visible
+  const profile2 = profiles?.[1]; // middle card
+  const profile3 = profiles?.[2]; // back / bottom card
 
   return (
     <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-12">
@@ -62,22 +110,19 @@ export function StackedFeatureSection({
           cardsLeft ? "md:order-1" : "md:order-2"
         }`}
       >
-        {/* Card 1 — bottom, rotated left */}
-        <div className="absolute h-[300px] w-[220px] rounded-2xl border-2 border-primary bg-surface shadow-lg transition-all duration-300 ease-out z-10 -translate-x-6 rotate-[-8deg] group-hover:-translate-x-14 group-hover:rotate-[-12deg]" />
+        {/* Back card — profile3, rotated left */}
+        <div className="absolute z-10 h-[300px] w-[220px] overflow-hidden rounded-2xl border-2 border-primary shadow-lg transition-all duration-300 ease-out -translate-x-6 rotate-[-8deg] group-hover:-translate-x-14 group-hover:rotate-[-12deg]">
+          <CardFace profile={profile3} isFront={false} badgeName={badgeName} />
+        </div>
 
-        {/* Card 2 — middle, rotated right */}
-        <div className="absolute h-[300px] w-[220px] rounded-2xl border-2 border-primary bg-surface shadow-lg transition-all duration-300 ease-out z-20 translate-x-4 rotate-[6deg] group-hover:translate-x-12 group-hover:rotate-[10deg]" />
+        {/* Middle card — profile2, rotated right */}
+        <div className="absolute z-20 h-[300px] w-[220px] overflow-hidden rounded-2xl border-2 border-primary shadow-lg transition-all duration-300 ease-out translate-x-4 rotate-[6deg] group-hover:translate-x-12 group-hover:rotate-[10deg]">
+          <CardFace profile={profile2} isFront={false} badgeName={badgeName} />
+        </div>
 
-        {/* Card 3 — top, straight (the "profile") */}
+        {/* Front card — profile1, straight, name badge */}
         <div className="absolute z-30 h-[300px] w-[220px] overflow-hidden rounded-2xl border-2 border-primary shadow-2xl transition-all duration-300 ease-out group-hover:-translate-y-2">
-          {/* Simulated profile photo */}
-          <div className="h-full w-full bg-gradient-to-br from-accent/40 via-canvas to-primary/30" />
-
-          {/* Floating verified name pill */}
-          <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-pill bg-surface px-3 py-1.5 text-xs font-medium text-ink shadow-card">
-            {badgeName}
-            <BadgeCheck size={14} className="text-success" />
-          </span>
+          <CardFace profile={profile1} isFront badgeName={badgeName} />
         </div>
       </Link>
     </div>

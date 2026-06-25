@@ -39,7 +39,9 @@
       "newTitle": "New Profiles",
       "newDesc": "Freshly joined members, ready to begin their search. Be among the first to say hello.",
       "premiumTitle": "Premium Members",
-      "premiumDesc": "Verified, serious members who've upgraded for a more committed search."
+      "premiumDesc": "Verified, serious members who've upgraded for a more committed search.",
+      "verifiedTitle": "Verified Professionals",
+      "verifiedDesc": "Connect with trusted doctors, engineers, and specialized experts verified for authenticity."
     },
     "professionals": {
       "title": "Verified Professionals",

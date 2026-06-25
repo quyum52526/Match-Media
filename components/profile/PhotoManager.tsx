@@ -18,7 +18,48 @@ import type { OwnPhoto } from "@/lib/data/photos";
 // Client-side pre-checks mirror the server limits in lib/storage/images.ts.
 // The server remains the source of truth; these just give instant feedback.
 const ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp"];
-const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+
+// Files already under this threshold are uploaded as-is (skip compress round-trip).
+const COMPRESS_THRESHOLD = 300 * 1024; // 300 KB
+// Canvas output is capped at 1920 px on the longest edge.
+const MAX_DIM = 1920;
+// Quality ladder — each step is tried until the output fits under target size.
+const TARGET_BYTES = 700 * 1024;
+const QUALITY_STEPS = [0.88, 0.78, 0.68, 0.58];
+
+function canvasToBlob(canvas: HTMLCanvasElement, quality: number): Promise<Blob> {
+  return new Promise((resolve, reject) =>
+    canvas.toBlob(
+      (b) => (b ? resolve(b) : reject(new Error("toBlob failed"))),
+      "image/jpeg",
+      quality,
+    ),
+  );
+}
+
+async function compressImage(file: File): Promise<Blob> {
+  const bitmap = await createImageBitmap(file);
+
+  let { width, height } = bitmap;
+  if (width > MAX_DIM || height > MAX_DIM) {
+    const scale = MAX_DIM / Math.max(width, height);
+    width = Math.round(width * scale);
+    height = Math.round(height * scale);
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close();
+
+  for (const quality of QUALITY_STEPS) {
+    const blob = await canvasToBlob(canvas, quality);
+    if (blob.size <= TARGET_BYTES) return blob;
+  }
+  // Fallback: return at the lowest quality if still over target
+  return canvasToBlob(canvas, QUALITY_STEPS.at(-1)!);
+}
 
 export function PhotoManager({
   photos,
@@ -31,8 +72,10 @@ export function PhotoManager({
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [pending, startTransition] = useTransition();
+  const [compressing, setCompressing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const busy = pending || compressing;
   const atLimit = photos.length >= maxPhotos;
 
   function run(action: () => Promise<PhotoActionResult>) {
@@ -44,17 +87,32 @@ export function PhotoManager({
     });
   }
 
-  function onFilePicked(e: React.ChangeEvent<HTMLInputElement>) {
+  async function onFilePicked(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = ""; // allow re-picking the same file later
     if (!file) return;
 
-    // Instant client-side validation before the upload round-trip.
+    // Instant MIME check — no round-trip needed.
     if (!ALLOWED_MIME.includes(file.type)) return setError("TYPE");
-    if (file.size > MAX_UPLOAD_BYTES) return setError("SIZE");
+
+    // Compress on the client before handing off to the server action.
+    // Small files skip the canvas round-trip entirely.
+    let uploadBlob: Blob = file;
+    if (file.size > COMPRESS_THRESHOLD) {
+      setCompressing(true);
+      try {
+        uploadBlob = await compressImage(file);
+      } catch {
+        setCompressing(false);
+        return setError("DECODE");
+      }
+      setCompressing(false);
+    }
 
     const formData = new FormData();
-    formData.append("photo", file);
+    // Rename to .jpg since compressImage always outputs JPEG.
+    const uploadName = file.name.replace(/\.[^.]+$/, ".jpg");
+    formData.append("photo", uploadBlob, uploadName);
     run(() => uploadProfilePhoto(formData));
   }
 
@@ -122,7 +180,7 @@ export function PhotoManager({
                     <button
                       type="button"
                       onClick={() => run(() => setPrimaryPhoto(photo.id))}
-                      disabled={pending}
+                      disabled={busy}
                       className="rounded-lg bg-ink/5 px-2 py-1 text-[11px] font-medium text-ink hover:bg-ink/10 disabled:opacity-50"
                     >
                       {t("makePrimary")}
@@ -138,7 +196,7 @@ export function PhotoManager({
                         ),
                       )
                     }
-                    disabled={pending}
+                    disabled={busy}
                     className="rounded-lg bg-ink/5 px-2 py-1 text-[11px] font-medium text-ink hover:bg-ink/10 disabled:opacity-50"
                   >
                     {photo.privacy === "PUBLIC" ? t("makeBlurred") : t("makePublic")}
@@ -146,7 +204,7 @@ export function PhotoManager({
                   <button
                     type="button"
                     onClick={() => run(() => deleteProfilePhoto(photo.id))}
-                    disabled={pending}
+                    disabled={busy}
                     className="rounded-lg bg-red-50 px-2 py-1 text-[11px] font-medium text-red-600 hover:bg-red-100 disabled:opacity-50"
                   >
                     {t("delete")}
@@ -176,9 +234,9 @@ export function PhotoManager({
             type="button"
             variant="outline"
             onClick={() => fileRef.current?.click()}
-            disabled={pending || atLimit}
+            disabled={busy || atLimit}
           >
-            {pending
+            {busy
               ? t("uploading")
               : photos.length === 0
                 ? t("addFirst")
@@ -187,7 +245,7 @@ export function PhotoManager({
           {atLimit && (
             <span className="text-xs text-ink/50">{t("limitNote")}</span>
           )}
-          {!pending && error === null && photos.length > 0 && (
+          {!busy && error === null && photos.length > 0 && (
             <span className="inline-flex items-center gap-1 text-xs text-primary">
               <CheckIcon width={14} height={14} />
               {t("savedHint")}
