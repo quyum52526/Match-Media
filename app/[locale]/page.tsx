@@ -1,7 +1,10 @@
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Sparkles, Crown } from "lucide-react";
 import { HomeHero } from "@/components/home/HomeHero";
-import { ProfileShowcase } from "@/components/home/ProfileShowcase";
+import { StackedFeatureSection } from "@/components/home/StackedFeatureSection";
+import { ProfileCarousel } from "@/components/home/ProfileCarousel";
 import { HowItWorks } from "@/components/home/HowItWorks";
+import { InteractiveMap } from "@/components/home/InteractiveMap";
 import { HomeFooter } from "@/components/home/HomeFooter";
 import { Dashboard } from "@/components/dashboard/Dashboard";
 import { getViewerId } from "@/lib/session";
@@ -41,10 +44,31 @@ export default async function Home({
   }
 
   // Signed-out visitors: the public landing page.
+  const tf = await getTranslations("Home.featured");
   return (
     <main>
       <HomeHero />
-      <ProfileShowcase />
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-24 px-4 py-16">
+        {/* 1. Premium Members (cards on the right) */}
+        <StackedFeatureSection
+          imagePosition="right"
+          icon={<Crown size={24} />}
+          title={tf("premiumTitle")}
+          description={tf("premiumDesc")}
+          redirectLink="/browse"
+        />
+        {/* 2. New Profiles (cards on the left) */}
+        <StackedFeatureSection
+          imagePosition="left"
+          icon={<Sparkles size={24} />}
+          title={tf("newTitle")}
+          description={tf("newDesc")}
+          redirectLink="/browse"
+        />
+        {/* 3. Verified Professionals (carousel) */}
+        <ProfileCarousel />
+      </div>
+      <InteractiveMap />
       <HowItWorks />
       <HomeFooter />
     </main>

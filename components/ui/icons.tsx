@@ -191,6 +191,67 @@ export function MicIcon(props: IconProps) {
   );
 }
 
+export function SparklesIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 3l1.7 4.3L18 9l-4.3 1.7L12 15l-1.7-4.3L6 9l4.3-1.7L12 3Z" />
+      <path d="M18.5 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2Z" />
+    </svg>
+  );
+}
+
+export function FlameIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 2C9 6 7 8 7 12a5 5 0 0 0 10 0c0-2-1-3.6-2-5-.5 1.2-1.2 1.8-2 2 .6-2.3.1-5-1-7Z" />
+    </svg>
+  );
+}
+
+export function CrownIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M4 8l3.5 3.2L12 5l4.5 6.2L20 8l-1.4 10H5.4L4 8Z" />
+      <path d="M5.4 18h13.2" />
+    </svg>
+  );
+}
+
+// Social marks (filled — brand glyphs read better solid than stroked).
+export function FacebookIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" width={20} height={20} fill="currentColor" {...props}>
+      <path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.8 3.7-3.8 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.8-1.6 1.5V12h2.7l-.4 2.9h-2.3v7A10 10 0 0 0 22 12Z" />
+    </svg>
+  );
+}
+
+export function InstagramIcon(props: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width={20}
+      height={20}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      {...props}
+    >
+      <rect x="4" y="4" width="16" height="16" rx="4.5" />
+      <circle cx="12" cy="12" r="3.6" />
+      <circle cx="16.6" cy="7.4" r="0.9" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function YoutubeIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" width={20} height={20} fill="currentColor" {...props}>
+      <path d="M23 7.5a2.9 2.9 0 0 0-2-2C19.2 5 12 5 12 5s-7.2 0-9 .5a2.9 2.9 0 0 0-2 2A30 30 0 0 0 .5 12 30 30 0 0 0 1 16.5a2.9 2.9 0 0 0 2 2c1.8.5 9 .5 9 .5s7.2 0 9-.5a2.9 2.9 0 0 0 2-2 30 30 0 0 0 .5-4.5A30 30 0 0 0 23 7.5ZM9.8 15.3V8.7l5.7 3.3-5.7 3.3Z" />
+    </svg>
+  );
+}
+
 export function RingIcon(props: IconProps) {
   return (
     <svg {...base} {...props}>

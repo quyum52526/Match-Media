@@ -14,6 +14,17 @@
   }
 }
 
+@layer utilities {
+  /* Hide the scrollbar on horizontal carousels while keeping scroll behaviour. */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* Brand Guidelines v1.0 (2026) — premium, warm, respectful identity.
    These exact tokens are the single source of truth; the Tailwind config maps
    semantic color/radius/shadow utilities onto them. */

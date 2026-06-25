@@ -6,7 +6,7 @@ import { useRouter } from "@/i18n/navigation";
 import { GENDERS, PROFESSIONS } from "@/lib/constants/profileOptions";
 import { DISTRICTS } from "@/lib/constants/bdGeo";
 import { localize } from "@/lib/constants/labels";
-import { SearchIcon } from "@/components/ui/icons";
+import { Search } from "lucide-react";
 
 /**
  * Homepage Quick-Filter — Brand v1.0. An Airbnb-style segmented search bar on a
@@ -105,7 +105,7 @@ export function QuickFilter() {
             aria-label={t("search")}
             className="flex h-12 w-full items-center justify-center gap-2 rounded-pill bg-primary px-6 text-sm font-medium text-white shadow-card transition-all duration-150 ease-in-out hover:bg-primary-dark hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-[0.98] disabled:opacity-70 md:w-auto"
           >
-            <SearchIcon width={18} height={18} />
+            <Search size={18} />
             {t("search")}
           </button>
         </div>

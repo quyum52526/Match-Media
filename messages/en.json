@@ -31,6 +31,23 @@
       "anyAge": "Any age",
       "search": "Search"
     },
+    "marquee": {
+      "verified": "Verified Member",
+      "active": "Active now"
+    },
+    "featured": {
+      "newTitle": "New Profiles",
+      "newDesc": "Freshly joined members, ready to begin their search. Be among the first to say hello.",
+      "premiumTitle": "Premium Members",
+      "premiumDesc": "Verified, serious members who've upgraded for a more committed search."
+    },
+    "professionals": {
+      "title": "Verified Professionals",
+      "subtitle": "Connect with trusted doctors, engineers & more",
+      "premium": "Premium",
+      "mobileVerified": "Mobile-verified",
+      "photoPrivate": "Photo private"
+    },
     "showcase": {
       "vip": "Premium Members",
       "vipSub": "Verified VIP profiles",
@@ -57,6 +74,27 @@
         "verified": "Mobile-verified members",
         "consent": "Consent-based contact",
         "moderated": "Admin-moderated photos"
+      }
+    },
+    "map": {
+      "badge": "Live network",
+      "title": "Connecting people across Bangladesh",
+      "subtitle": "Verified members in every division — matched thoughtfully, introduced privately.",
+      "stat1Value": "12,000+",
+      "stat1Label": "Verified members",
+      "stat2Value": "64",
+      "stat2Label": "Districts",
+      "live": "Members online"
+    },
+    "curated": {
+      "title": "Curated for you",
+      "subtitle": "A handful of profiles worth a closer look — every photo private by default.",
+      "photoPrivate": "Photo private",
+      "badges": {
+        "pro": "Pro",
+        "verified": "Verified",
+        "new": "New joiner",
+        "popular": "High interest"
       }
     }
   },
@@ -568,6 +606,7 @@
   "Footer": {
     "tagline": "Privacy-first, consent-based matrimony for Bangladesh.",
     "disclaimer": "This platform is only a communication medium; verifying identity and information is the user's responsibility.",
+    "colLegal": "Quick links",
     "contact": "Contact",
     "privacy": "Privacy Policy",
     "terms": "Terms",

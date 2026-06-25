@@ -38,6 +38,30 @@ const config: Config = {
       boxShadow: {
         card: "var(--shadow-card)",
       },
+      keyframes: {
+        // Soft, elegant location-pin pulse (Stripe-style — not flashy).
+        "pulse-ring": {
+          "0%": { transform: "scale(0.6)", opacity: "0.55" },
+          "100%": { transform: "scale(2.4)", opacity: "0" },
+        },
+        // Seamless marquee: the track holds two copies of the list, so shifting
+        // by -50% loops with no visible seam.
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
+        // Line-art "drawing" — paths use pathLength=1, so dashoffset 1→0 traces
+        // the contour regardless of true length.
+        draw: {
+          from: { strokeDashoffset: "1" },
+          to: { strokeDashoffset: "0" },
+        },
+      },
+      animation: {
+        "pulse-ring": "pulse-ring 2.8s cubic-bezier(0, 0, 0.2, 1) infinite",
+        marquee: "marquee 45s linear infinite",
+        draw: "draw 2.6s ease-out both",
+      },
     },
   },
   plugins: [],
