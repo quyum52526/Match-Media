@@ -41,31 +41,60 @@ async function toShowcaseProfiles(rows: ShowcaseRow[]): Promise<ShowcaseProfile[
   }));
 }
 
-export async function getPremiumShowcaseProfiles(): Promise<ShowcaseProfile[]> {
+/**
+ * Recently-active profiles for the hero marquee. Ordered by updatedAt so the
+ * strip feels live. No exclusion needed — the marquee is visually distinct from
+ * the stacked sections and scrolls past too quickly to cause confusion.
+ */
+export async function getMarqueeProfiles(limit = 10): Promise<ShowcaseProfile[]> {
   const rows = await prisma.profile.findMany({
+    take: limit,
+    orderBy: { createdAt: "desc" },
+    include: showcaseInclude,
+  });
+  return toShowcaseProfiles(rows);
+}
+
+export interface HomepageShowcase {
+  premiumProfiles: ShowcaseProfile[];
+  newProfiles: ShowcaseProfile[];
+  verifiedProfiles: ShowcaseProfile[];
+}
+
+/**
+ * Waterfall query: each section excludes IDs already claimed by higher-priority
+ * sections, so no profile appears twice on the homepage.
+ * Priority: Premium → New → Verified
+ */
+export async function getHomepageShowcase(): Promise<HomepageShowcase> {
+  const premiumRows = await prisma.profile.findMany({
     where: { user: { isPro: true } },
     take: 3,
     orderBy: { createdAt: "desc" },
     include: showcaseInclude,
   });
-  return toShowcaseProfiles(rows);
-}
+  const premiumIds = premiumRows.map((r) => r.userId);
 
-export async function getNewShowcaseProfiles(): Promise<ShowcaseProfile[]> {
-  const rows = await prisma.profile.findMany({
+  const newRows = await prisma.profile.findMany({
+    where: { userId: { notIn: premiumIds } },
     take: 3,
     orderBy: { createdAt: "desc" },
     include: showcaseInclude,
   });
-  return toShowcaseProfiles(rows);
-}
+  const excludeIds = [...premiumIds, ...newRows.map((r) => r.userId)];
 
-export async function getVerifiedShowcaseProfiles(): Promise<ShowcaseProfile[]> {
-  const rows = await prisma.profile.findMany({
-    where: { isVerified: true },
+  const verifiedRows = await prisma.profile.findMany({
+    where: { isVerified: true, userId: { notIn: excludeIds } },
     take: 3,
     orderBy: { createdAt: "desc" },
     include: showcaseInclude,
   });
-  return toShowcaseProfiles(rows);
+
+  const [premiumProfiles, newProfiles, verifiedProfiles] = await Promise.all([
+    toShowcaseProfiles(premiumRows),
+    toShowcaseProfiles(newRows),
+    toShowcaseProfiles(verifiedRows),
+  ]);
+
+  return { premiumProfiles, newProfiles, verifiedProfiles };
 }

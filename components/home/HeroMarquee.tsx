@@ -1,41 +1,79 @@
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { ShieldCheckIcon } from "@/components/ui/icons";
+import type { ShowcaseProfile } from "@/lib/data/showcase";
 
 /**
- * Infinite horizontal marquee at the bottom edge of the Hero — small pill-shaped
- * mini-profile cards ("Verified Member", a blurred placeholder avatar, and a
- * green "Active now" dot) that scroll continuously. The track holds TWO copies
- * of the list and shifts by -50% (CSS `marquee` keyframe), so the loop is
- * seamless; the container is masked at both edges so pills fade in/out. Pure CSS
- * — no JS. Honors prefers-reduced-motion (motion-reduce:animate-none).
+ * Infinite horizontal marquee — real profiles from the DB, blurred gradient
+ * fallback when no public photo exists. Two copies of the list shift by -50%
+ * (CSS `marquee` keyframe) for a seamless loop; edges fade via mask. Pure CSS
+ * animation, no JS. Honors prefers-reduced-motion.
  */
 
-const HUES: readonly string[] = [
+const FALLBACK_HUES: readonly string[] = [
   "from-rose-200 to-amber-100",
   "from-emerald-200 to-teal-100",
   "from-sky-200 to-indigo-100",
   "from-violet-200 to-fuchsia-100",
   "from-amber-200 to-rose-100",
   "from-teal-200 to-emerald-100",
+  "from-pink-200 to-purple-100",
+  "from-cyan-200 to-blue-100",
+  "from-lime-200 to-green-100",
+  "from-orange-200 to-red-100",
 ];
 
-export async function HeroMarquee() {
+function Avatar({ profile, hue }: { profile: ShowcaseProfile; hue: string }) {
+  if (profile.imageUrl) {
+    return (
+      <span className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full">
+        <Image
+          src={profile.imageUrl}
+          alt=""
+          fill
+          sizes="28px"
+          className="object-cover"
+        />
+      </span>
+    );
+  }
+  return (
+    <span
+      className={`h-7 w-7 shrink-0 rounded-full bg-gradient-to-br ${hue} blur-[2px]`}
+    />
+  );
+}
+
+export async function HeroMarquee({ profiles }: { profiles: ShowcaseProfile[] }) {
   const t = await getTranslations("Home.marquee");
 
-  function Pill({ hue, hidden }: { hue: string; hidden?: boolean }) {
+  // Guarantee at least one pill even if the DB is empty.
+  const items = profiles.length > 0 ? profiles : [];
+
+  function Pill({
+    profile,
+    index,
+    ariaHidden,
+  }: {
+    profile: ShowcaseProfile;
+    index: number;
+    ariaHidden?: boolean;
+  }) {
+    const hue = FALLBACK_HUES[index % FALLBACK_HUES.length];
+    const label = profile.displayName !== "Member" ? profile.displayName.split(" ")[0] : t("verified");
+
     return (
       <div
-        aria-hidden={hidden}
+        aria-hidden={ariaHidden}
         className="flex shrink-0 items-center gap-2.5 rounded-pill border border-hairline bg-surface/90 px-3 py-2 shadow-card backdrop-blur-sm"
       >
-        {/* Blurred placeholder avatar (privacy-default) */}
-        <span
-          className={`h-7 w-7 shrink-0 rounded-full bg-gradient-to-br ${hue} blur-[2px]`}
-        />
+        <Avatar profile={profile} hue={hue} />
         <div className="leading-tight">
           <p className="flex items-center gap-1 whitespace-nowrap text-xs font-medium text-ink">
-            {t("verified")}
-            <ShieldCheckIcon width={12} height={12} className="text-success" />
+            {label}
+            {profile.isVerified && (
+              <ShieldCheckIcon width={12} height={12} className="text-success" />
+            )}
           </p>
           <p className="flex items-center gap-1 whitespace-nowrap text-[10px] text-muted">
             <span className="relative flex h-1.5 w-1.5">
@@ -49,11 +87,7 @@ export async function HeroMarquee() {
     );
   }
 
-  // Two copies → -50% shift loops seamlessly. Second copy is decorative.
-  const copies = [
-    { items: HUES, hidden: false, tag: "a" },
-    { items: HUES, hidden: true, tag: "b" },
-  ];
+  if (items.length === 0) return null;
 
   return (
     <div
@@ -65,12 +99,14 @@ export async function HeroMarquee() {
           "linear-gradient(to right, transparent, #000 8%, #000 92%, transparent)",
       }}
     >
+      {/* Two copies → -50% shift loops seamlessly; second copy is decorative. */}
       <div className="flex w-max items-center gap-3 animate-marquee motion-reduce:animate-none">
-        {copies.map((c) =>
-          c.items.map((hue, i) => (
-            <Pill key={`${c.tag}-${i}`} hue={hue} hidden={c.hidden} />
-          )),
-        )}
+        {items.map((p, i) => (
+          <Pill key={`a-${p.id}`} profile={p} index={i} />
+        ))}
+        {items.map((p, i) => (
+          <Pill key={`b-${p.id}`} profile={p} index={i} ariaHidden />
+        ))}
       </div>
     </div>
   );

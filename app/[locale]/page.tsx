@@ -14,11 +14,7 @@ import { getDashboardStats } from "@/lib/data/dashboard";
 import { getProfileCompletion } from "@/lib/data/profileCompletion";
 import { getProfileViewers } from "@/lib/data/viewers";
 import { getViewerProStatus } from "@/lib/data/billing";
-import {
-  getPremiumShowcaseProfiles,
-  getNewShowcaseProfiles,
-  getVerifiedShowcaseProfiles,
-} from "@/lib/data/showcase";
+import { getHomepageShowcase, getMarqueeProfiles } from "@/lib/data/showcase";
 
 // Viewer cards shown directly on the dashboard before the "See all" link.
 const DASHBOARD_VIEWERS = 6;
@@ -50,17 +46,19 @@ export default async function Home({
     );
   }
 
-  // Signed-out visitors: fetch translations + real profile data in parallel.
-  const [tf, premiumProfiles, newProfiles, verifiedProfiles] = await Promise.all([
-    getTranslations("Home.featured"),
-    getPremiumShowcaseProfiles(),
-    getNewShowcaseProfiles(),
-    getVerifiedShowcaseProfiles(),
-  ]);
+  // Signed-out visitors: all three fetches run in parallel. getHomepageShowcase
+  // internally sequences its sub-queries for mutual exclusion, but the marquee
+  // and translations have no ordering dependency so they race alongside it.
+  const [tf, { premiumProfiles, newProfiles, verifiedProfiles }, marqueeProfiles] =
+    await Promise.all([
+      getTranslations("Home.featured"),
+      getHomepageShowcase(),
+      getMarqueeProfiles(),
+    ]);
 
   return (
     <main>
-      <HomeHero />
+      <HomeHero marqueeProfiles={marqueeProfiles} />
       <div className="flex flex-col gap-24 py-20 w-full max-w-6xl mx-auto px-4">
         {/* 1. Premium Members (cards on the right) */}
         <StackedFeatureSection

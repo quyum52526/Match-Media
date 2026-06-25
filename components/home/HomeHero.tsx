@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { QuickFilter } from "./QuickFilter";
 import { Reveal } from "./Reveal";
 import { HeroMarquee } from "./HeroMarquee";
+import type { ShowcaseProfile } from "@/lib/data/showcase";
 
 /**
  * Public landing hero — Brand v1.0. Uses a single static background image
@@ -13,7 +14,7 @@ import { HeroMarquee } from "./HeroMarquee";
  * an infinite mini-profile marquee runs along the bottom edge.
  * Server component — interactive bits (QuickFilter, Reveal) are nested clients.
  */
-export async function HomeHero() {
+export async function HomeHero({ marqueeProfiles }: { marqueeProfiles: ShowcaseProfile[] }) {
   const t = await getTranslations("Home");
 
   return (
@@ -69,7 +70,7 @@ export async function HomeHero() {
 
       {/* Infinite mini-profile marquee at the bottom edge of the hero */}
       <div className="relative z-10 pb-10">
-        <HeroMarquee />
+        <HeroMarquee profiles={marqueeProfiles} />
       </div>
     </section>
   );
