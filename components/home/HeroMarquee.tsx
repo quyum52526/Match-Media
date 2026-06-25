@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { ShieldCheckIcon } from "@/components/ui/icons";
 import type { ShowcaseProfile } from "@/lib/data/showcase";
 
@@ -63,9 +64,11 @@ export async function HeroMarquee({ profiles }: { profiles: ShowcaseProfile[] })
     const label = profile.displayName !== "Member" ? profile.displayName.split(" ")[0] : t("verified");
 
     return (
-      <div
+      <Link
+        href="/browse"
         aria-hidden={ariaHidden}
-        className="flex shrink-0 items-center gap-2.5 rounded-pill border border-hairline bg-surface/90 px-3 py-2 shadow-card backdrop-blur-sm"
+        tabIndex={ariaHidden ? -1 : undefined}
+        className="flex shrink-0 items-center gap-2.5 rounded-pill border border-hairline bg-surface/90 px-3 py-2 shadow-card backdrop-blur-sm cursor-pointer transition-transform hover:scale-105"
       >
         <Avatar profile={profile} hue={hue} />
         <div className="leading-tight">
@@ -83,7 +86,7 @@ export async function HeroMarquee({ profiles }: { profiles: ShowcaseProfile[] })
             {t("active")}
           </p>
         </div>
-      </div>
+      </Link>
     );
   }
 
