@@ -4,6 +4,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { StepCategorySelect, type AccountCategory } from "./steps/StepCategorySelect";
 import { StepBasicDetails } from "./steps/StepBasicDetails";
+import { StepMediaDetails } from "./steps/StepMediaDetails";
 import { StepPhotoUpload } from "./steps/StepPhotoUpload";
 import { StepMobileVerify } from "./steps/StepMobileVerify";
 
@@ -42,6 +43,13 @@ const STEP_LABELS: Record<StepId, string> = {
   VERIFY: "Verify",
   DONE: "Done",
 };
+
+// The "BASIC" step label differs by category — matrimonial users see
+// "Basic Details"; media agencies see "Agency Details".
+function stepLabel(stepId: StepId, category: AccountCategory | null): string {
+  if (stepId === "BASIC" && category === "MEDIA") return "Agency Details";
+  return STEP_LABELS[stepId];
+}
 
 export function OnboardingWizard() {
   const [category, setCategory] = useState<AccountCategory | null>(null);
@@ -99,7 +107,7 @@ export function OnboardingWizard() {
           Step {stepIndex + 1} of {totalVisible}
         </p>
         <h1 className="mt-1 font-display text-2xl font-semibold text-ink">
-          {STEP_LABELS[currentStep]}
+          {stepLabel(currentStep, category)}
         </h1>
       </div>
 
@@ -141,7 +149,7 @@ export function OnboardingWizard() {
                   "hidden text-[11px] font-medium sm:block",
                   isActive ? "text-primary" : "text-muted",
                 )}>
-                  {STEP_LABELS[stepId]}
+                  {stepLabel(stepId, category)}
                 </span>
               </li>
             );
@@ -159,7 +167,10 @@ export function OnboardingWizard() {
             }}
           />
         )}
-        {currentStep === "BASIC" && (
+        {currentStep === "BASIC" && category === "MEDIA" && (
+          <StepMediaDetails onNext={next} onBack={back} />
+        )}
+        {currentStep === "BASIC" && category !== "MEDIA" && (
           <StepBasicDetails onNext={next} />
         )}
         {currentStep === "PHOTO" && (

@@ -184,6 +184,10 @@ model User {
   // truth that isProActive() checks so access lapses the moment it passes.
   isPro            Boolean   @default(false)
   proExpiresAt     DateTime?
+  // Agency info — only populated for MEDIA accounts.
+  agencyName       String?
+  contactPerson    String?
+  agencyDistrict   String?
   createdAt        DateTime  @default(now())
 
   // 1:1 — the user's own profile
