@@ -16,19 +16,35 @@ export interface OwnPhoto {
 }
 
 /**
+ * Fetch photos for a client profile managed by a MEDIA agency, for the edit
+ * page. Returns [] if the profile isn't owned by this agency.
+ */
+export async function getClientPhotos(
+  agencyUserId: string,
+  clientProfileId: string,
+): Promise<OwnPhoto[]> {
+  const profile = await prisma.profile.findUnique({
+    where: { id: clientProfileId },
+    select: { id: true, managedByAgency: true, referredById: true },
+  });
+  if (
+    !profile ||
+    !profile.managedByAgency ||
+    profile.referredById !== agencyUserId
+  ) {
+    return [];
+  }
+  return fetchPhotosForProfile(profile.id);
+}
+
+/**
  * The current user's own gallery (clear originals), ordered primary-first then
  * by sortOrder. Returns [] when the user has no profile yet. Used by the
  * PhotoManager on /profile/edit — never exposed to other viewers.
  */
-export async function getOwnPhotos(viewerId: string): Promise<OwnPhoto[]> {
-  const profile = await prisma.profile.findUnique({
-    where: { userId: viewerId },
-    select: { id: true },
-  });
-  if (!profile) return [];
-
+async function fetchPhotosForProfile(profileId: string): Promise<OwnPhoto[]> {
   const images = await prisma.profileImage.findMany({
-    where: { profileId: profile.id },
+    where: { profileId },
     orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }, { createdAt: "asc" }],
     select: {
       id: true,
@@ -57,4 +73,13 @@ export async function getOwnPhotos(viewerId: string): Promise<OwnPhoto[]> {
       } satisfies OwnPhoto;
     })
     .filter((p): p is OwnPhoto => p !== null);
+}
+
+export async function getOwnPhotos(viewerId: string): Promise<OwnPhoto[]> {
+  const profile = await prisma.profile.findUnique({
+    where: { userId: viewerId },
+    select: { id: true },
+  });
+  if (!profile) return [];
+  return fetchPhotosForProfile(profile.id);
 }

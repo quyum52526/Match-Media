@@ -97,8 +97,9 @@ export async function signUrls(
       .storage.from(STORAGE_BUCKET)
       .createSignedUrls(keys, expiresIn);
     if (error || !data) return result;
-    for (const item of data) {
-      if (item.signedUrl && item.path) result.set(item.path, item.signedUrl);
+    for (let i = 0; i < data.length; i++) {
+      const item = data[i];
+      if (item.signedUrl) result.set(keys[i], item.signedUrl);
     }
   } catch {
     // Storage unavailable/unconfigured — return what we have (empty) so callers

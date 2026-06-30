@@ -33,7 +33,14 @@ function withCurrent(options: readonly Valued[], current: string): Valued[] {
 
 const HEIGHT_OPTIONS: Valued[] = HEIGHTS.map((h) => ({ value: h }));
 
-export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
+export function ProfileEditForm({
+  initial,
+  clientId,
+}: {
+  initial: EditableProfile;
+  /** When set, the form targets this client profile (MEDIA agency edit flow). */
+  clientId?: string;
+}) {
   const t = useTranslations("ProfileEdit");
   const locale = useLocale();
   const [state, formAction, pending] = useActionState(updateProfile, undefined);
@@ -44,6 +51,7 @@ export function ProfileEditForm({ initial }: { initial: EditableProfile }) {
 
   return (
     <form action={formAction} className="space-y-6">
+      {clientId && <input type="hidden" name="clientId" value={clientId} />}
       {/* Basic */}
       <Card>
         <CardBody className="space-y-4">

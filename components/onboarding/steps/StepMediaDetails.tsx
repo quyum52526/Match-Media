@@ -1,31 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/Button";
+import { saveMediaDetailsAction } from "@/lib/actions/onboarding";
+import { DISTRICTS } from "@/lib/constants/bdGeo";
 
 interface Props {
   onNext: () => void;
   onBack: () => void;
 }
 
-const DISTRICTS = [
-  "Dhaka","Chattogram","Sylhet","Rajshahi","Khulna","Barishal","Mymensingh","Rangpur",
-  "Gazipur","Narayanganj","Comilla","Cumilla","Jessore","Jashore","Cox's Bazar","Bogura",
-  "Dinajpur","Tangail","Faridpur","Noakhali",
-];
+const INPUT =
+  "w-full rounded-card border border-hairline bg-white px-3 py-2.5 text-sm text-ink placeholder:text-muted/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary";
+
+const LABEL =
+  "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted";
 
 export function StepMediaDetails({ onNext, onBack }: Props) {
-  const [agencyName, setAgencyName] = useState("");
+  const [agencyName, setAgencyName]       = useState("");
   const [contactPerson, setContactPerson] = useState("");
-  const [district, setDistrict] = useState("");
+  const [district, setDistrict]           = useState("");
+  const [error, setError]                 = useState("");
+  const [isPending, startTransition]      = useTransition();
 
   const isValid = agencyName.trim().length > 1 && contactPerson.trim().length > 1;
 
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!isValid) return;
+    setError("");
+    startTransition(async () => {
+      const result = await saveMediaDetailsAction({
+        agencyName,
+        contactPerson,
+        agencyDistrict: district || undefined,
+      });
+      if ("error" in result) {
+        setError(result.error);
+      } else {
+        onNext();
+      }
+    });
+  }
+
   return (
-    <form
-      onSubmit={(e) => { e.preventDefault(); if (isValid) onNext(); }}
-      className="space-y-5"
-    >
+    <form onSubmit={handleSubmit} className="space-y-5">
       {/* Context note */}
       <div className="flex items-start gap-2.5 rounded-card bg-accent/10 px-4 py-3">
         <svg className="mt-0.5 h-4 w-4 shrink-0 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -38,7 +57,7 @@ export function StepMediaDetails({ onNext, onBack }: Props) {
 
       {/* Agency Name */}
       <div>
-        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted">
+        <label className={LABEL}>
           Agency Name <span className="text-primary">*</span>
         </label>
         <input
@@ -46,13 +65,13 @@ export function StepMediaDetails({ onNext, onBack }: Props) {
           value={agencyName}
           onChange={(e) => setAgencyName(e.target.value)}
           placeholder="e.g. Dhaka Matrimony Services"
-          className="w-full rounded-card border border-hairline bg-white px-3 py-2.5 text-sm text-ink placeholder:text-muted/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          className={INPUT}
         />
       </div>
 
       {/* Contact Person */}
       <div>
-        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted">
+        <label className={LABEL}>
           Contact Person Name <span className="text-primary">*</span>
         </label>
         <input
@@ -60,33 +79,42 @@ export function StepMediaDetails({ onNext, onBack }: Props) {
           value={contactPerson}
           onChange={(e) => setContactPerson(e.target.value)}
           placeholder="Full name of the primary contact"
-          className="w-full rounded-card border border-hairline bg-white px-3 py-2.5 text-sm text-ink placeholder:text-muted/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          className={INPUT}
         />
       </div>
 
-      {/* District */}
+      {/* District — all 64 districts */}
       <div>
-        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted">
-          Agency District <span className="font-normal normal-case text-muted/60">(optional)</span>
+        <label className={LABEL}>
+          Agency District{" "}
+          <span className="font-normal normal-case text-muted/60">(optional)</span>
         </label>
         <select
           value={district}
           onChange={(e) => setDistrict(e.target.value)}
-          className="w-full rounded-card border border-hairline bg-white px-3 py-2.5 text-sm text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          className={INPUT}
         >
           <option value="">Select district…</option>
           {DISTRICTS.map((d) => (
-            <option key={d} value={d}>{d}</option>
+            <option key={d.value} value={d.value}>
+              {d.value}
+            </option>
           ))}
         </select>
       </div>
 
+      {error && (
+        <p className="rounded-card border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {error}
+        </p>
+      )}
+
       <div className="flex gap-3">
-        <Button type="button" variant="outline" onClick={onBack} className="flex-1">
+        <Button type="button" variant="outline" onClick={onBack} className="flex-1" disabled={isPending}>
           Back
         </Button>
-        <Button type="submit" disabled={!isValid} className="flex-1">
-          Continue
+        <Button type="submit" disabled={!isValid || isPending} className="flex-1">
+          {isPending ? "Saving…" : "Continue"}
         </Button>
       </div>
     </form>

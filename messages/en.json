@@ -11,7 +11,9 @@
     "editProfile": "My Profile",
     "messages": "Messages",
     "notifications": "Notifications",
-    "admin": "Admin"
+    "dashboard": "Dashboard",
+    "admin": "Admin",
+    "jobs": "Job Board"
   },
   "Home": {
     "title": "MatchMedia",
@@ -188,6 +190,8 @@
     "nameHidden": "Name hidden",
     "verified": "Verified",
     "vip": "Premium Verified",
+    "managedByParents": "Managed by Parents",
+    "managedByAgency": "Managed by Agency",
     "message": "Message",
     "call": "Call",
     "ageLine": "<n>{age}</n> yrs · {gender} · {upazila}, {district}",
@@ -399,7 +403,8 @@
       "overview": "Overview",
       "photos": "Photos",
       "reports": "Reports",
-      "verification": "Verification"
+      "verification": "Verification",
+      "users": "Users"
     },
     "overview": {
       "pendingPhotos": "Photos pending review",
@@ -604,6 +609,119 @@
       "VERIFIED_BADGE": "You earned the Verified badge",
       "REPORT_RESOLVED": "A report you filed was reviewed"
     }
+  },
+  "MediaDashboard": {
+    "title": "Client Profiles",
+    "subtitle": "Matrimonial profiles you manage on behalf of your clients",
+    "agencyInfo": "Agency Information",
+    "stats": {
+      "total": "Total Profiles",
+      "active": "Active Profiles",
+      "pending": "Pending Completion"
+    },
+    "table": {
+      "name": "Name",
+      "gender": "Gender",
+      "location": "Location",
+      "completion": "Completion",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "statusLabel": {
+      "active": "Active",
+      "incomplete": "Incomplete"
+    },
+    "addClient": "Add New Client",
+    "editClient": "Edit",
+    "noClients": "No client profiles yet. Add your first client to get started.",
+    "managedBadge": "Agency Managed",
+    "addModal": {
+      "title": "Add New Client Profile",
+      "subtitle": "Fill in the client's basic details to create their profile.",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Client's full name",
+      "gender": "Gender",
+      "dateOfBirth": "Date of Birth",
+      "district": "District",
+      "districtPlaceholder": "Select district…",
+      "profession": "Profession",
+      "professionPlaceholder": "Select profession…",
+      "education": "Education",
+      "educationPlaceholder": "Select level…",
+      "cancel": "Cancel",
+      "save": "Create Profile",
+      "saving": "Creating…",
+      "success": "Profile created successfully!"
+    }
+  },
+  "GuardianDashboard": {
+    "title": "My Children's Profiles",
+    "subtitle": "Matrimonial profiles you manage on behalf of your son or daughter",
+    "parentInfo": "Parent / Guardian Information",
+    "stats": {
+      "total": "Total Profiles",
+      "active": "Active",
+      "pending": "Incomplete"
+    },
+    "table": {
+      "name": "Name",
+      "location": "Location",
+      "completion": "Completion",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "statusLabel": {
+      "active": "Active",
+      "incomplete": "Incomplete"
+    },
+    "addChild": "Add Child Profile",
+    "editClient": "Edit",
+    "noChildren": "No profiles yet. Add your child's profile to get started.",
+    "addModal": {
+      "title": "Add Child Profile",
+      "subtitle": "Fill in your child's basic details to create their matrimonial profile.",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Child's full name",
+      "gender": "Gender",
+      "dateOfBirth": "Date of Birth",
+      "district": "District",
+      "districtPlaceholder": "Select district…",
+      "profession": "Profession",
+      "professionPlaceholder": "Select profession…",
+      "education": "Education",
+      "educationPlaceholder": "Select level…",
+      "cancel": "Cancel",
+      "save": "Create Profile",
+      "saving": "Creating…",
+      "success": "Profile created successfully!"
+    }
+  },
+  "AgentDashboard": {
+    "title": "My Assignments",
+    "subtitle": "Physical verification jobs assigned to you",
+    "earningsSummary": "Earnings Summary",
+    "totalEarned": "Total Earned",
+    "pending": "Pending",
+    "completed": "Completed",
+    "noAssignments": "No assignments yet. Your jobs will appear here once an admin assigns one to you.",
+    "candidate": "Candidate",
+    "location": "Location",
+    "assignedOn": "Assigned on",
+    "status": {
+      "PENDING": "Pending",
+      "IN_PROGRESS": "In Progress",
+      "SUBMITTED": "Awaiting Review",
+      "VERIFIED": "Verified",
+      "CANCELLED": "Cancelled"
+    },
+    "actions": {
+      "startWork": "Start Work",
+      "submitReport": "Submit Report",
+      "reportPlaceholder": "Describe your findings (identity confirmed, documents checked, etc.)",
+      "submitConfirm": "Submit for Review"
+    },
+    "feeLabel": "Your earnings",
+    "perAssignment": "per assignment"
   },
   "Footer": {
     "tagline": "Privacy-first, consent-based matrimony for Bangladesh.",

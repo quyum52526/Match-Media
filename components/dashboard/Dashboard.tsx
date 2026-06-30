@@ -14,10 +14,16 @@ import {
   SearchIcon,
   StarIcon,
 } from "@/components/ui/icons";
+import { MyPostedJobs } from "@/components/jobs/MyPostedJobs";
+import { MyApplications } from "@/components/jobs/MyApplications";
+import { RequestVerificationButton } from "@/components/jobs/RequestVerificationButton";
 import type { DashboardStats } from "@/lib/data/dashboard";
 import type { ProfileCompletion } from "@/lib/data/profileCompletion";
 import type { ProfileViewers } from "@/lib/data/viewers";
 import type { ViewerProStatus } from "@/lib/data/billing";
+import type { MyJobPost, getAgentApplications } from "@/lib/data/jobs";
+
+type AgentApplications = Awaited<ReturnType<typeof getAgentApplications>>;
 
 /** Renew CTA turns urgent (gold) when fewer than this many days remain. */
 const RENEW_SOON_DAYS = 14;
@@ -27,11 +33,17 @@ export async function Dashboard({
   completion,
   viewers,
   proStatus,
+  myPostedJobs,
+  agentApplications,
+  userRole,
 }: {
   stats: DashboardStats;
   completion: ProfileCompletion;
   viewers: ProfileViewers;
   proStatus: ViewerProStatus;
+  myPostedJobs?: MyJobPost[];
+  agentApplications?: AgentApplications;
+  userRole?: string | null;
 }) {
   const t = await getTranslations("Dashboard");
   const v = await getTranslations("Viewers");
@@ -40,13 +52,18 @@ export async function Dashboard({
     ? t("greetingName", { name: stats.firstName })
     : t("greeting");
 
+  const isRegularUser = userRole === "GENERAL" || userRole === "GUARDIAN";
+
   return (
     <main className="mx-auto max-w-5xl px-4 py-8 sm:py-10">
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold text-ink sm:text-3xl">
-          {greeting}
-        </h1>
-        <p className="mt-1 text-sm text-ink/60">{t("subtitle")}</p>
+      <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-ink sm:text-3xl">
+            {greeting}
+          </h1>
+          <p className="mt-1 text-sm text-ink/60">{t("subtitle")}</p>
+        </div>
+        {isRegularUser && <RequestVerificationButton />}
       </header>
 
       <div className="mb-6">
@@ -123,6 +140,29 @@ export async function Dashboard({
         </div>
         <WhoViewedMe viewers={viewers.viewers} />
       </section>
+
+      {/* My Posted Jobs — visible to anyone who has posted jobs (incl. ADMIN) */}
+      {myPostedJobs !== undefined && (
+        <section className="mt-10">
+          <div className="mb-4 flex items-center justify-between gap-2">
+            <h2 className="text-base font-semibold text-ink">My Posted Jobs</h2>
+          </div>
+          <MyPostedJobs jobs={myPostedJobs} />
+        </section>
+      )}
+
+      {/* My Applications — visible to AGENT users */}
+      {agentApplications !== undefined && (
+        <section className="mt-10">
+          <div className="mb-4 flex items-center justify-between gap-2">
+            <h2 className="text-base font-semibold text-ink">My Job Applications</h2>
+            <Link href="/jobs" className="text-sm font-medium text-primary hover:underline">
+              Browse jobs →
+            </Link>
+          </div>
+          <MyApplications applications={agentApplications} />
+        </section>
+      )}
     </main>
   );
 }

@@ -64,9 +64,12 @@ async function compressImage(file: File): Promise<Blob> {
 export function PhotoManager({
   photos,
   maxPhotos,
+  clientId,
 }: {
   photos: OwnPhoto[];
   maxPhotos: number;
+  /** When set, all photo actions target this client profile (MEDIA agency flow). */
+  clientId?: string;
 }) {
   const t = useTranslations("ProfileEdit.photos");
   const router = useRouter();
@@ -113,6 +116,7 @@ export function PhotoManager({
     // Rename to .jpg since compressImage always outputs JPEG.
     const uploadName = file.name.replace(/\.[^.]+$/, ".jpg");
     formData.append("photo", uploadBlob, uploadName);
+    if (clientId) formData.append("clientId", clientId);
     run(() => uploadProfilePhoto(formData));
   }
 
@@ -179,7 +183,7 @@ export function PhotoManager({
                   {!photo.isPrimary && (
                     <button
                       type="button"
-                      onClick={() => run(() => setPrimaryPhoto(photo.id))}
+                      onClick={() => run(() => setPrimaryPhoto(photo.id, clientId))}
                       disabled={busy}
                       className="rounded-lg bg-ink/5 px-2 py-1 text-[11px] font-medium text-ink hover:bg-ink/10 disabled:opacity-50"
                     >
@@ -193,6 +197,7 @@ export function PhotoManager({
                         setPhotoPrivacy(
                           photo.id,
                           photo.privacy === "PUBLIC" ? "BLURRED" : "PUBLIC",
+                          clientId,
                         ),
                       )
                     }
@@ -203,7 +208,7 @@ export function PhotoManager({
                   </button>
                   <button
                     type="button"
-                    onClick={() => run(() => deleteProfilePhoto(photo.id))}
+                    onClick={() => run(() => deleteProfilePhoto(photo.id, clientId))}
                     disabled={busy}
                     className="rounded-lg bg-red-50 px-2 py-1 text-[11px] font-medium text-red-600 hover:bg-red-100 disabled:opacity-50"
                   >

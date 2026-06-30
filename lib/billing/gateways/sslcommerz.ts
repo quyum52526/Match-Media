@@ -42,7 +42,10 @@ function apiHost(sandbox: boolean): string {
 
 /** Absolute origin used to build the callback URLs SSLCommerz redirects to. */
 function appBase(appUrl?: string): string {
-  return (appUrl ?? process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  if (!appUrl && !process.env.APP_URL) {
+    throw new Error("APP_URL env var is required for payment gateway callbacks.");
+  }
+  return (appUrl ?? process.env.APP_URL!).replace(/\/$/, "");
 }
 
 export class SSLCommerzGateway implements PaymentGateway {

@@ -9,6 +9,7 @@ import type {
 import type {
   AdminStats,
   AdminReport,
+  AdminUser,
   PendingPhoto,
   VerificationProfile,
 } from "@/components/admin/types";
@@ -50,12 +51,13 @@ export async function getPendingPhotos(): Promise<PendingPhoto[]> {
     .map((i) => {
       const url = urls.get(i.originalKey);
       if (!url) return null;
+      // Agency-managed profiles (user=null) can still have photos moderated.
       return {
         id: i.id,
         url,
-        ownerUserId: i.profile.user.id,
+        ownerUserId: i.profile.user?.id ?? "",
         ownerName: realName(i.profile.fullName),
-        ownerEmail: i.profile.user.email,
+        ownerEmail: i.profile.user?.email ?? "(agency client)",
         uploadedAt: i.createdAt.toISOString(),
       } satisfies PendingPhoto;
     })
@@ -105,6 +107,38 @@ export async function getOpenReports(): Promise<AdminReport[]> {
   }));
 }
 
+/** All users for the admin Users tab — ordered newest first. */
+export async function getAdminUsers(): Promise<AdminUser[]> {
+  const users = await prisma.user.findMany({
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      accountCategory: true,
+      isPro: true,
+      createdAt: true,
+      profile: {
+        select: {
+          fullName: true,
+          _count: { select: { images: true } },
+        },
+      },
+    },
+  });
+
+  return users.map((u) => ({
+    id: u.id,
+    email: u.email,
+    role: u.role,
+    accountCategory: u.accountCategory,
+    isPro: u.isPro,
+    profileName: u.profile?.fullName ?? null,
+    hasPhotos: (u.profile?._count?.images ?? 0) > 0,
+    createdAt: u.createdAt.toISOString(),
+  }));
+}
+
 /** Profiles for the verification list. `filter` narrows to unverified-only. */
 export async function getVerificationProfiles(
   filter: "unverified" | "all",
@@ -122,12 +156,14 @@ export async function getVerificationProfiles(
       user: { select: { email: true } },
     },
   });
-  return profiles.map((p) => ({
-    userId: p.userId,
-    name: realName(p.fullName),
-    email: p.user.email,
-    district: p.district ?? "",
-    age: calcAge(p.dateOfBirth),
-    isVerified: p.isVerified,
-  }));
+  return profiles
+    .filter((p) => p.userId !== null) // skip agency profiles with no login account
+    .map((p) => ({
+      userId: p.userId as string,
+      name: realName(p.fullName),
+      email: p.user?.email ?? "",
+      district: p.district ?? "",
+      age: calcAge(p.dateOfBirth),
+      isVerified: p.isVerified,
+    }));
 }

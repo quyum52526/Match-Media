@@ -31,6 +31,10 @@ const ICONS: Record<NotificationType, typeof BellIcon> = {
   PHOTO_REJECTED: XIcon,
   VERIFIED_BADGE: ShieldCheckIcon,
   REPORT_RESOLVED: FlagIcon,
+  NID_APPROVED: CheckIcon,
+  NID_REJECTED: XIcon,
+  SELFIE_APPROVED: CheckIcon,
+  SELFIE_REJECTED: XIcon,
 };
 
 function Row({

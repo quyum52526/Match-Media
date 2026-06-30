@@ -10,6 +10,7 @@ import { getProfileCompletion } from "@/lib/data/profileCompletion";
 import { getPhotoRequestQuota, getProfileViewQuota } from "@/lib/data/billing";
 import { QuotaNote } from "@/components/billing/PhotoQuota";
 import { requireViewerId } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
 
 export const metadata = {
   title: "Browse · MatchMedia",
@@ -41,6 +42,14 @@ export default async function BrowsePage({
   const viewerId = await requireViewerId(`/${locale}/login`);
   const t = await getTranslations("Browse");
 
+  const viewer = await prisma.user.findUnique({
+    where: { id: viewerId },
+    select: { role: true, accountCategory: true },
+  });
+  const viewerRole = viewer?.role ?? null;
+  const viewerCategory = viewer?.accountCategory ?? null;
+  const isPrivilegedViewer = viewerRole === "ADMIN" || viewerCategory === "MEDIA" || viewerCategory === "PARENTS";
+
   const filters: SearchFilters = {
     gender: str(sp.gender),
     minAge: num(sp.minAge),
@@ -56,8 +65,9 @@ export default async function BrowsePage({
   const hasFilters = Object.values(filters).some((v) => v !== undefined);
 
   const [profiles, completion, quota, viewQuota] = await Promise.all([
-    getBrowseProfiles(viewerId, filters),
-    getProfileCompletion(viewerId),
+    getBrowseProfiles(viewerId, filters, viewerRole, viewerCategory),
+    // MEDIA/ADMIN users have no personal profile, so skip the completion fetch.
+    isPrivilegedViewer ? Promise.resolve(null) : getProfileCompletion(viewerId),
     getPhotoRequestQuota(viewerId),
     getProfileViewQuota(viewerId),
   ]);
@@ -71,7 +81,7 @@ export default async function BrowsePage({
 
       <QuotaNote quota={viewQuota} namespace="Browse.viewQuota" variant="banner" />
 
-      {completion.score < 100 && (
+      {completion && completion.score < 100 && (
         <div className="mb-6">
           <ProfileCompletionBanner completion={completion} />
         </div>

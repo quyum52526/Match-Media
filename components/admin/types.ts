@@ -36,6 +36,18 @@ export interface AdminReport {
   imageUrl?: string;
 }
 
+/** A user row for the admin Users tab. */
+export interface AdminUser {
+  id: string;
+  email: string;
+  role: string;
+  accountCategory: string | null;
+  isPro: boolean;
+  profileName: string | null;
+  hasPhotos: boolean;
+  createdAt: string;
+}
+
 /** A profile row for the verification list. */
 export interface VerificationProfile {
   userId: string;

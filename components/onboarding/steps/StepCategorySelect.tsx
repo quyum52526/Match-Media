@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
+import { saveCategoryAction } from "@/lib/actions/onboarding";
 
 export type AccountCategory = "SELF" | "PARENTS" | "MEDIA" | "AGENT";
 
@@ -70,6 +71,8 @@ interface Props {
 
 export function StepCategorySelect({ onNext }: Props) {
   const [selected, setSelected] = useState<AccountCategory | null>(null);
+  const [error, setError] = useState("");
+  const [isPending, startTransition] = useTransition();
 
   return (
     <div className="space-y-5">
@@ -139,12 +142,29 @@ export function StepCategorySelect({ onNext }: Props) {
         </div>
       )}
 
+      {error && (
+        <p className="rounded-card border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {error}
+        </p>
+      )}
+
       <Button
         fullWidth
-        disabled={!selected}
-        onClick={() => selected && onNext(selected)}
+        disabled={!selected || isPending}
+        onClick={() => {
+          if (!selected) return;
+          setError("");
+          startTransition(async () => {
+            const result = await saveCategoryAction(selected);
+            if ("error" in result) {
+              setError(result.error);
+            } else {
+              onNext(selected);
+            }
+          });
+        }}
       >
-        Continue
+        {isPending ? "Saving…" : "Continue"}
       </Button>
     </div>
   );

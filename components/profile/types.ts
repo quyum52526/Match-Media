@@ -104,6 +104,11 @@ export interface ProfileSummary {
   isVerified: boolean;
   /** Owner has a Pro membership -> shows the golden VIP badge on the card. */
   isPro: boolean;
+  /**
+   * Who manages this profile: "GUARDIAN" = parent, "MEDIA" = agency, null = self.
+   * Drives the management badge on the browse card.
+   */
+  managedBy: "GUARDIAN" | "MEDIA" | null;
   primaryImagePrivacy: ImagePrivacy;
   /**
    * Signed URL for the primary photo, viewer-appropriate: the ORIGINAL when the
@@ -138,6 +143,8 @@ export interface ProfileDetailView {
   isVerified: boolean;
   /** Owner has a Pro membership -> shows the golden VIP badge. */
   isPro: boolean;
+  /** Who manages this profile: "GUARDIAN" = parent, "MEDIA" = agency, null = self. */
+  managedBy: "GUARDIAN" | "MEDIA" | null;
   /** Display name of the referring MEDIA partner, if any. */
   referredByMedia?: string;
   primaryImagePrivacy: ImagePrivacy;

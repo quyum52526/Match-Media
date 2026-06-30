@@ -27,6 +27,7 @@ import {
   RingIcon,
   ChatIcon,
   PhoneIcon,
+  UsersIcon,
 } from "@/components/ui/icons";
 import { useCallControls } from "@/components/calls/CallProvider";
 import { computeCompletion } from "@/lib/utils";
@@ -183,6 +184,19 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
                 <span className="inline-flex items-center gap-1 rounded-pill border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-semibold text-sky-700 shadow-sm">
                   <ShieldCheckIcon width={13} height={13} className="text-sky-500" />
                   {t("verified")}
+                </span>
+              )}
+
+              {data.managedBy === "GUARDIAN" && (
+                <span className="inline-flex items-center gap-1 rounded-pill border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-semibold text-sky-700 shadow-sm">
+                  <UsersIcon width={13} height={13} className="text-sky-500" />
+                  {t("managedByParents")}
+                </span>
+              )}
+              {data.managedBy === "MEDIA" && (
+                <span className="inline-flex items-center gap-1 rounded-pill border border-violet-200 bg-violet-50 px-2.5 py-0.5 text-xs font-semibold text-violet-700 shadow-sm">
+                  <BriefcaseIcon width={13} height={13} className="text-violet-500" />
+                  {t("managedByAgency")}
                 </span>
               )}
 

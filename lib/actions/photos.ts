@@ -38,22 +38,53 @@ async function ownProfileId(): Promise<string | null> {
 }
 
 /**
- * Confirm `imageId` belongs to the caller's own profile before mutating it —
- * the security boundary for delete / primary / privacy actions.
+ * Resolve a profile id that is either the caller's own OR a managed client
+ * profile of a MEDIA agency. Returns null if not authorised.
  */
-async function ownImage(imageId: string) {
-  const profileId = await ownProfileId();
+async function resolveAuthorisedProfileId(
+  clientId: string | null | undefined,
+): Promise<string | null> {
+  const viewerId = await getViewerId();
+  if (!viewerId) return null;
+
+  if (!clientId) return ownProfileId();
+
+  // Agency path: verify ownership of the client profile.
+  const user = await prisma.user.findUnique({
+    where: { id: viewerId },
+    select: { accountCategory: true },
+  });
+  if (user?.accountCategory !== "MEDIA" && user?.accountCategory !== "PARENTS") return null;
+
+  const profile = await prisma.profile.findUnique({
+    where: { id: clientId },
+    select: { id: true, managedByAgency: true, referredById: true },
+  });
+  if (!profile || !profile.managedByAgency || profile.referredById !== viewerId) {
+    return null;
+  }
+  return profile.id;
+}
+
+/**
+ * Confirm `imageId` belongs to an authorised profile before mutating it —
+ * the security boundary for delete / primary / privacy actions.
+ * Pass `clientId` when a MEDIA agency is managing a client photo.
+ */
+async function ownImage(imageId: string, clientId?: string | null) {
+  const profileId = await resolveAuthorisedProfileId(clientId);
   if (!profileId) return null;
   const image = await prisma.profileImage.findUnique({ where: { id: imageId } });
   if (!image || image.profileId !== profileId) return null;
   return image;
 }
 
-/** Upload one photo to the caller's gallery. New photos default to BLURRED. */
+/** Upload one photo to the caller's gallery (or a managed client's gallery). New photos default to BLURRED. */
 export async function uploadProfilePhoto(
   formData: FormData,
 ): Promise<PhotoActionResult> {
-  const profileId = await ownProfileId();
+  const clientId = formData.get("clientId") as string | null;
+  const profileId = await resolveAuthorisedProfileId(clientId);
   if (!profileId) return err("NO_PROFILE");
 
   const file = formData.get("photo");
@@ -89,8 +120,9 @@ export async function uploadProfilePhoto(
 /** Delete a photo (row + both storage objects); re-promote a primary if needed. */
 export async function deleteProfilePhoto(
   imageId: string,
+  clientId?: string | null,
 ): Promise<PhotoActionResult> {
-  const image = await ownImage(imageId);
+  const image = await ownImage(imageId, clientId);
   if (!image) return err("FORBIDDEN");
 
   await prisma.profileImage.delete({ where: { id: image.id } });
@@ -119,8 +151,9 @@ export async function deleteProfilePhoto(
 /** Make `imageId` the single primary photo for the caller's profile. */
 export async function setPrimaryPhoto(
   imageId: string,
+  clientId?: string | null,
 ): Promise<PhotoActionResult> {
-  const image = await ownImage(imageId);
+  const image = await ownImage(imageId, clientId);
   if (!image) return err("FORBIDDEN");
 
   await prisma.$transaction([
@@ -142,8 +175,9 @@ export async function setPrimaryPhoto(
 export async function setPhotoPrivacy(
   imageId: string,
   privacy: "PUBLIC" | "BLURRED",
+  clientId?: string | null,
 ): Promise<PhotoActionResult> {
-  const image = await ownImage(imageId);
+  const image = await ownImage(imageId, clientId);
   if (!image) return err("FORBIDDEN");
 
   await prisma.profileImage.update({

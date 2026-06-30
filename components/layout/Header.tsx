@@ -6,16 +6,18 @@ import { getViewerId, getViewerRole } from "@/lib/session";
 import { getUnreadCount } from "@/lib/data/messages";
 import { getUnreadNotificationCount } from "@/lib/data/notifications";
 import { Button } from "@/components/ui/Button";
-import { BellIcon } from "@/components/ui/icons";
 import { LocaleSwitcher } from "./LocaleSwitcher";
+import { NavLinks } from "./NavLinks";
 
 export async function Header() {
   const t = await getTranslations("Brand");
   const nav = await getTranslations("Nav");
   const authT = await getTranslations("Auth");
   const session = await auth();
-  // Cosmetic only — the /admin routes are gated server-side by requireAdmin.
-  const isAdmin = session ? (await getViewerRole()) === "ADMIN" : false;
+  // Cosmetic only — routes are gated server-side by requireAdmin / role checks.
+  const role = session ? await getViewerRole() : null;
+  const isAdmin = role === "ADMIN";
+  const isAgent = role === "AGENT" || role === "ADMIN";
   const viewerId = session ? await getViewerId() : null;
   const unread = viewerId ? await getUnreadCount(viewerId) : 0;
   const unreadNotifications = viewerId
@@ -34,64 +36,24 @@ export async function Header() {
             {t("name")}
           </Link>
           {session && (
-            <nav className="flex items-center gap-4">
-              <Link
-                href="/browse"
-                className="text-sm font-medium text-ink/70 transition-colors hover:text-ink"
-              >
-                {nav("browse")}
-              </Link>
-              <Link
-                href="/requests"
-                className="text-sm font-medium text-ink/70 transition-colors hover:text-ink"
-              >
-                {nav("requests")}
-              </Link>
-              <Link
-                href="/interests"
-                className="text-sm font-medium text-ink/70 transition-colors hover:text-ink"
-              >
-                {nav("interests")}
-              </Link>
-              <Link
-                href="/messages"
-                className="relative text-sm font-medium text-ink/70 transition-colors hover:text-ink"
-              >
-                {nav("messages")}
-                {unread > 0 && (
-                  <span className="absolute -right-3 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 font-body text-[10px] font-semibold text-white">
-                    {unread}
-                  </span>
-                )}
-              </Link>
-              <Link
-                href="/notifications"
-                aria-label={nav("notifications")}
-                title={nav("notifications")}
-                className="relative text-ink/70 transition-colors hover:text-ink"
-              >
-                <BellIcon width={20} height={20} />
-                {unreadNotifications > 0 && (
-                  <span className="absolute -right-2 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 font-body text-[10px] font-semibold text-white">
-                    {unreadNotifications}
-                  </span>
-                )}
-              </Link>
-              <Link
-                href="/profile/edit"
-                className="text-sm font-medium text-ink/70 transition-colors hover:text-ink"
-              >
-                {nav("editProfile")}
-              </Link>
-              {isAdmin && (
-                <Link
-                  href="/admin"
-                  className="text-sm font-semibold text-primary transition-colors hover:text-primary/80"
-                >
-                  {nav("admin")}
-                </Link>
-              )}
-            </nav>
+            <NavLinks
+              unread={unread}
+              unreadNotifications={unreadNotifications}
+              isAdmin={isAdmin}
+              isAgent={isAgent}
+              labels={{
+                home: nav("home"),
+                dashboard: nav("dashboard"),
+                browse: nav("browse"),
+                requests: nav("requests"),
+                interests: nav("interests"),
+                messages: nav("messages"),
+                notifications: nav("notifications"),
+                editProfile: nav("editProfile"),
+                admin: nav("admin"),
+                jobs: nav("jobs"),
+              }}
+            />
           )}
         </div>
 

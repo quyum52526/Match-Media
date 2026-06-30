@@ -1,11 +1,25 @@
 "use server";
 
 import { AuthError } from "next-auth";
+import { headers } from "next/headers";
 import bcrypt from "bcryptjs";
 import { signIn, signOut } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { calcAge, normalizeBdMobile } from "@/lib/utils";
 import { grantSignupSubscription } from "@/lib/billing";
+
+/**
+ * Build the absolute origin from the incoming request headers.
+ * Auth.js converts a relative `redirectTo` to an absolute URL using its own
+ * base-URL detection (Host header), which on some Windows/Node setups strips
+ * the port. Passing an already-absolute URL sidesteps that detection entirely.
+ */
+async function getOrigin(): Promise<string> {
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost";
+  const proto = h.get("x-forwarded-proto") ?? "http";
+  return `${proto}://${host}`;
+}
 
 /**
  * Credentials login. Returns "INVALID" on bad credentials so the form can show
@@ -16,10 +30,11 @@ export async function authenticate(
   formData: FormData,
 ): Promise<string | undefined> {
   try {
+    const origin = await getOrigin();
     await signIn("credentials", {
       email: formData.get("email"),
       password: formData.get("password"),
-      redirectTo: "/",
+      redirectTo: `${origin}/`,
     });
   } catch (error) {
     if (error instanceof AuthError) {
@@ -30,7 +45,8 @@ export async function authenticate(
 }
 
 export async function logout(): Promise<void> {
-  await signOut({ redirectTo: "/" });
+  const origin = await getOrigin();
+  await signOut({ redirectTo: `${origin}/` });
 }
 
 /**
@@ -113,13 +129,14 @@ export async function register(
   }
 
   // --- Auto sign-in (throws a redirect on success) ---
-  // New users with a mobile go straight to verification; everyone else lands on
-  // the edit form (?welcome=1) to finish their profile (the verify-mobile banner
-  // nudges them later). 'bn' is the default, unprefixed locale; 'en' is prefixed.
-  const dest = mobile ? "/verify-mobile?welcome=1" : "/profile/edit?welcome=1";
+  // All new users land on the onboarding wizard so they pick an account
+  // category before anything else. Mobile verification is the wizard's last
+  // step, so we no longer need a separate /verify-mobile post-register detour.
+  const dest = "/onboarding?success=true";
   const onboarding = locale === "en" ? `/en${dest}` : dest;
+  const origin = await getOrigin();
   try {
-    await signIn("credentials", { email, password, redirectTo: onboarding });
+    await signIn("credentials", { email, password, redirectTo: `${origin}${onboarding}` });
   } catch (error) {
     if (error instanceof AuthError) return "INVALID";
     throw error;

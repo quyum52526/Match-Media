@@ -52,24 +52,6 @@ export function AgentStatusCard({ isVerified, email, mobile }: Props) {
             </div>
           </div>
 
-          {/* Service fee breakdown */}
-          <div className="rounded-card border border-hairline p-4">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">Service Fee Structure</p>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-ink/70">Per-assignment fee (client pays)</span>
-                <span className="font-semibold text-ink">৳2,500</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-ink/70">MatchMedia platform fee (20%)</span>
-                <span className="font-medium text-primary">−৳500</span>
-              </div>
-              <div className="flex justify-between border-t border-hairline pt-2">
-                <span className="font-semibold text-ink">Your earnings per assignment</span>
-                <span className="font-bold text-success">৳2,000</span>
-              </div>
-            </div>
-          </div>
         </CardBody>
       </Card>
 

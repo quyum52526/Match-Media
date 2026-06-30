@@ -10,6 +10,8 @@ import {
   ShieldCheckIcon,
   ClockIcon,
   StarIcon,
+  UsersIcon,
+  BriefcaseIcon,
 } from "@/components/ui/icons";
 import { requestPhotoAccess as requestPhotoAccessAction } from "@/lib/actions/funnel";
 import { usePhotoQuota } from "@/components/billing/PhotoQuota";
@@ -103,6 +105,29 @@ export function ProfileCard({ profile }: ProfileCardProps) {
               icon={<StarIcon width={13} height={13} />}
             >
               {t("vip")}
+            </Badge>
+          </span>
+        )}
+
+        {profile.managedBy === "GUARDIAN" && (
+          <span className="absolute bottom-2.5 right-2.5">
+            <Badge
+              variant="neutral"
+              className="bg-sky-50 text-sky-700 border border-sky-200"
+              icon={<UsersIcon width={13} height={13} />}
+            >
+              {t("managedByParents")}
+            </Badge>
+          </span>
+        )}
+        {profile.managedBy === "MEDIA" && (
+          <span className="absolute bottom-2.5 right-2.5">
+            <Badge
+              variant="neutral"
+              className="bg-violet-50 text-violet-700 border border-violet-200"
+              icon={<BriefcaseIcon width={13} height={13} />}
+            >
+              {t("managedByAgency")}
             </Badge>
           </span>
         )}

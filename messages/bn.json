@@ -11,7 +11,9 @@
     "editProfile": "My Profile",
     "messages": "Messages",
     "notifications": "Notifications",
-    "admin": "Admin"
+    "dashboard": "Dashboard",
+    "admin": "Admin",
+    "jobs": "জব বোর্ড"
   },
   "Home": {
     "title": "MatchMedia",
@@ -188,6 +190,8 @@
     "nameHidden": "নাম গোপন",
     "verified": "Verified",
     "vip": "Premium Verified",
+    "managedByParents": "পিতা-মাতা দ্বারা পরিচালিত",
+    "managedByAgency": "এজেন্সি দ্বারা পরিচালিত",
     "message": "মেসেজ",
     "call": "কল",
     "ageLine": "<n>{age}</n> বছর · {gender} · {upazila}, {district}",
@@ -399,7 +403,8 @@
       "overview": "Overview",
       "photos": "ছবি",
       "reports": "রিপোর্ট",
-      "verification": "যাচাই"
+      "verification": "যাচাই",
+      "users": "ব্যবহারকারী"
     },
     "overview": {
       "pendingPhotos": "পর্যালোচনাধীন ছবি",
@@ -604,6 +609,119 @@
       "VERIFIED_BADGE": "আপনি Verified ব্যাজ পেয়েছেন",
       "REPORT_RESOLVED": "আপনার করা একটি রিপোর্ট পর্যালোচনা করা হয়েছে"
     }
+  },
+  "MediaDashboard": {
+    "title": "ক্লায়েন্ট প্রোফাইল",
+    "subtitle": "আপনি যে ক্লায়েন্টদের পক্ষে প্রোফাইল পরিচালনা করছেন",
+    "agencyInfo": "এজেন্সি তথ্য",
+    "stats": {
+      "total": "মোট প্রোফাইল",
+      "active": "সক্রিয় প্রোফাইল",
+      "pending": "অসম্পূর্ণ"
+    },
+    "table": {
+      "name": "নাম",
+      "gender": "লিঙ্গ",
+      "location": "অবস্থান",
+      "completion": "সম্পূর্ণতা",
+      "status": "স্ট্যাটাস",
+      "actions": "কার্যক্রম"
+    },
+    "statusLabel": {
+      "active": "সক্রিয়",
+      "incomplete": "অসম্পূর্ণ"
+    },
+    "addClient": "নতুন ক্লায়েন্ট যোগ করুন",
+    "editClient": "সম্পাদনা",
+    "noClients": "এখনো কোনো ক্লায়েন্ট প্রোফাইল নেই। প্রথম ক্লায়েন্ট যোগ করুন।",
+    "managedBadge": "এজেন্সি পরিচালিত",
+    "addModal": {
+      "title": "নতুন ক্লায়েন্ট প্রোফাইল তৈরি করুন",
+      "subtitle": "ক্লায়েন্টের মৌলিক তথ্য দিয়ে প্রোফাইল তৈরি করুন।",
+      "fullName": "পূর্ণ নাম",
+      "fullNamePlaceholder": "ক্লায়েন্টের পূর্ণ নাম",
+      "gender": "লিঙ্গ",
+      "dateOfBirth": "জন্ম তারিখ",
+      "district": "জেলা",
+      "districtPlaceholder": "জেলা নির্বাচন করুন…",
+      "profession": "পেশা",
+      "professionPlaceholder": "পেশা নির্বাচন করুন…",
+      "education": "শিক্ষা",
+      "educationPlaceholder": "স্তর নির্বাচন করুন…",
+      "cancel": "বাতিল",
+      "save": "প্রোফাইল তৈরি করুন",
+      "saving": "তৈরি হচ্ছে…",
+      "success": "প্রোফাইল সফলভাবে তৈরি হয়েছে!"
+    }
+  },
+  "GuardianDashboard": {
+    "title": "সন্তানের প্রোফাইল",
+    "subtitle": "আপনি যে ছেলে বা মেয়ের জন্য প্রোফাইল পরিচালনা করছেন",
+    "parentInfo": "অভিভাবক তথ্য",
+    "stats": {
+      "total": "মোট প্রোফাইল",
+      "active": "সক্রিয়",
+      "pending": "অসম্পূর্ণ"
+    },
+    "table": {
+      "name": "নাম",
+      "location": "অবস্থান",
+      "completion": "সম্পূর্ণতা",
+      "status": "স্ট্যাটাস",
+      "actions": "কার্যক্রম"
+    },
+    "statusLabel": {
+      "active": "সক্রিয়",
+      "incomplete": "অসম্পূর্ণ"
+    },
+    "addChild": "সন্তানের প্রোফাইল যোগ করুন",
+    "editClient": "এডিট",
+    "noChildren": "এখনো কোনো প্রোফাইল নেই। আপনার সন্তানের প্রোফাইল যোগ করুন।",
+    "addModal": {
+      "title": "সন্তানের প্রোফাইল যোগ করুন",
+      "subtitle": "আপনার সন্তানের মূল তথ্য পূরণ করুন।",
+      "fullName": "পূর্ণ নাম",
+      "fullNamePlaceholder": "সন্তানের পূর্ণ নাম",
+      "gender": "লিঙ্গ",
+      "dateOfBirth": "জন্ম তারিখ",
+      "district": "জেলা",
+      "districtPlaceholder": "জেলা নির্বাচন করুন…",
+      "profession": "পেশা",
+      "professionPlaceholder": "পেশা নির্বাচন করুন…",
+      "education": "শিক্ষা",
+      "educationPlaceholder": "স্তর নির্বাচন করুন…",
+      "cancel": "বাতিল",
+      "save": "প্রোফাইল তৈরি করুন",
+      "saving": "তৈরি হচ্ছে…",
+      "success": "প্রোফাইল সফলভাবে তৈরি হয়েছে!"
+    }
+  },
+  "AgentDashboard": {
+    "title": "আমার অ্যাসাইনমেন্ট",
+    "subtitle": "আপনাকে দেওয়া ফিজিক্যাল ভেরিফিকেশন কাজ",
+    "earningsSummary": "আয়ের সারসংক্ষেপ",
+    "totalEarned": "মোট আয়",
+    "pending": "অপেক্ষমাণ",
+    "completed": "সম্পন্ন",
+    "noAssignments": "এখনো কোনো অ্যাসাইনমেন্ট নেই। Admin কাজ দিলে এখানে দেখা যাবে।",
+    "candidate": "প্রার্থী",
+    "location": "অবস্থান",
+    "assignedOn": "অ্যাসাইন করা হয়েছে",
+    "status": {
+      "PENDING": "অপেক্ষমাণ",
+      "IN_PROGRESS": "কার্যক্রমে",
+      "SUBMITTED": "পর্যালোচনার অপেক্ষায়",
+      "VERIFIED": "যাচাইকৃত",
+      "CANCELLED": "বাতিল"
+    },
+    "actions": {
+      "startWork": "কাজ শুরু করুন",
+      "submitReport": "রিপোর্ট জমা দিন",
+      "reportPlaceholder": "আপনার অনুসন্ধান বর্ণনা করুন (পরিচয় নিশ্চিত, কাগজপত্র যাচাই ইত্যাদি)",
+      "submitConfirm": "পর্যালোচনার জন্য জমা দিন"
+    },
+    "feeLabel": "আপনার আয়",
+    "perAssignment": "প্রতি অ্যাসাইনমেন্ট"
   },
   "Footer": {
     "tagline": "বাংলাদেশের জন্য গোপনীয়তা-প্রথম, সম্মতি-ভিত্তিক matrimony।",

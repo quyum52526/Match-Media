@@ -8,8 +8,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ---------------------------------------------------------------------------
@@ -68,6 +69,38 @@ enum ServiceStatus {
   VERIFIED
 }
 
+// Lifecycle of an admin-initiated verification assignment to an AGENT user.
+// PENDING → IN_PROGRESS (agent acknowledges) → SUBMITTED (agent done, awaiting
+// review) → VERIFIED (admin approves, Profile.isVerified set true) or CANCELLED.
+enum AssignmentStatus {
+  PENDING
+  IN_PROGRESS
+  SUBMITTED
+  VERIFIED
+  CANCELLED
+}
+
+// Verification lifecycle for a MEDIA agency account.
+// UNVERIFIED → PENDING_APPROVAL (agency submits trade license)
+//            → VERIFIED (admin approves) or REJECTED (admin rejects)
+// REJECTED agencies can re-submit, cycling back to PENDING_APPROVAL.
+enum AgencyVerificationStatus {
+  UNVERIFIED
+  PENDING_APPROVAL
+  VERIFIED
+  REJECTED
+}
+
+// Generic manual-approval status for individual user verifications
+// (NID photos, live selfie). Shared by every document type so we don't
+// need a new enum per field. REJECTED allows re-submission.
+enum VerificationStatus {
+  UNVERIFIED  // not yet submitted
+  PENDING     // submitted, awaiting admin review
+  APPROVED    // admin accepted
+  REJECTED    // admin rejected; user may resubmit
+}
+
 // --- Billing / subscription -------------------------------------------------
 
 enum OrderStatus {
@@ -103,6 +136,22 @@ enum CouponTrigger {
   NONE
   SIGNUP
   RENEWAL
+}
+
+// ---------------------------------------------------------------------------
+// Job Board
+// ---------------------------------------------------------------------------
+
+enum JobStatus {
+  OPEN
+  ASSIGNED
+  CLOSED
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
 
 enum UsageAction {
@@ -150,6 +199,10 @@ enum NotificationType {
   PHOTO_REJECTED // admin rejected your uploaded photo
   VERIFIED_BADGE // admin granted your Verified trust badge
   REPORT_RESOLVED // a report you filed was actioned
+  NID_APPROVED    // admin approved NID submission
+  NID_REJECTED    // admin rejected NID submission
+  SELFIE_APPROVED // admin approved live selfie
+  SELFIE_REJECTED // admin rejected live selfie
 }
 
 // --- Voice calling (WebRTC) -------------------------------------------------
@@ -185,9 +238,27 @@ model User {
   isPro            Boolean   @default(false)
   proExpiresAt     DateTime?
   // Agency info — only populated for MEDIA accounts.
-  agencyName       String?
-  contactPerson    String?
-  agencyDistrict   String?
+  agencyName               String?
+  contactPerson            String?
+  agencyDistrict           String?
+  // Storage key (not a URL) of the agency's logo in Supabase; signed at read time.
+  agencyLogo               String?
+  // Storage key of the uploaded trade license document.
+  tradeLicenseUrl          String?
+  agencyVerificationStatus AgencyVerificationStatus @default(UNVERIFIED)
+
+  // Document / identity verification — manual admin-approval workflow.
+  // Keys are Supabase Storage paths in the private "verification-docs" bucket;
+  // never stored as public URLs (signed at read time, like profile photos).
+  nidFrontKey              String?
+  nidBackKey               String?
+  nidVerificationStatus    VerificationStatus @default(UNVERIFIED)
+  nidReviewNote            String?   // admin rejection reason; cleared on re-submit
+
+  selfieKey                String?
+  selfieVerificationStatus VerificationStatus @default(UNVERIFIED)
+  selfieReviewNote         String?
+
   createdAt        DateTime  @default(now())
 
   // 1:1 — the user's own profile
@@ -210,6 +281,11 @@ model User {
   // Agent service requests
   agentServiceRequests     ServiceRequest[] @relation("AgentServices")
   requestedServiceRequests ServiceRequest[] @relation("RequesterServices")
+
+  // Verification assignments (admin perspective: jobs they created)
+  assignmentsCreated   VerificationAssignment[] @relation("AssignmentCreatedBy")
+  // Verification assignments (agent perspective: jobs assigned to them)
+  assignmentsReceived  VerificationAssignment[] @relation("AssignmentAgent")
 
   // Profile view activity (as the viewer)
   profileViews ProfileViewLog[] @relation("ViewsMade")
@@ -234,12 +310,18 @@ model User {
 
   // In-app notifications (as recipient)
   notifications Notification[] @relation("UserNotifications")
+
+  // Job board
+  postedJobs      JobPost[]        @relation("PostedJobs")
+  jobApplications JobApplication[] @relation("AgentApplications")
 }
 
 model Profile {
-  id     String @id @default(cuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String  @id @default(cuid())
+  // NULL for agency-managed client profiles whose subject has no login account yet.
+  // PostgreSQL allows multiple NULLs in a unique index, so @@unique is safe.
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   fullName      String?
   gender        String
@@ -259,6 +341,10 @@ model Profile {
   childrenStatus String?
   familyDetails  String?
 
+  // True when this profile was created by a MEDIA agency on behalf of a client
+  // who has no User account of their own. Drives the "Managed by Agency" badge.
+  managedByAgency Boolean @default(false)
+
   // Trust badge: ID/photo verified by an admin/agent.
   isVerified      Boolean @default(false)
   nameHidden      Boolean @default(false)
@@ -270,9 +356,10 @@ model Profile {
 
   createdAt DateTime @default(now())
 
-  images          ProfileImage[]
-  viewLogs        ProfileViewLog[] @relation("ProfileViews")
-  serviceRequests ServiceRequest[] @relation("ServiceTargets")
+  images                 ProfileImage[]
+  viewLogs               ProfileViewLog[]         @relation("ProfileViews")
+  serviceRequests        ServiceRequest[]         @relation("ServiceTargets")
+  verificationAssignment VerificationAssignment?
 
   @@index([referredById])
   @@index([district, upazila])
@@ -360,6 +447,84 @@ model ServiceRequest {
 
   @@index([agentId, status])
   @@index([requesterId])
+}
+
+// Admin-initiated physical verification job assigned to an AGENT user.
+// One assignment per profile (@@unique on profileId): once a profile is being
+// verified, it cannot be simultaneously assigned to two agents.
+// Fee breakdown: totalFee = agentShare + platformFee (all in poisha, BDT×100).
+// Default rates: ৳2,500 total → ৳2,000 agent (80%) + ৳500 platform (20%).
+model VerificationAssignment {
+  id           String           @id @default(cuid())
+
+  // Admin who created / owns this assignment (audit FK)
+  assignedById String
+  assignedBy   User             @relation("AssignmentCreatedBy", fields: [assignedById], references: [id], onDelete: Restrict)
+
+  // AGENT user doing the physical verification
+  agentId      String
+  agent        User             @relation("AssignmentAgent", fields: [agentId], references: [id], onDelete: Restrict)
+
+  // The candidate whose identity is being verified
+  profileId    String           @unique
+  profile      Profile          @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  status       AssignmentStatus @default(PENDING)
+
+  // Agent's completion report (filled when status → SUBMITTED)
+  agentNote    String?
+
+  // Fee split in poisha (BDT × 100). Snapshot at assignment time so later rate
+  // changes never rewrite existing jobs.
+  totalFee     Int              @default(250000) // ৳2,500
+  agentShare   Int              @default(200000) // ৳2,000
+  platformFee  Int              @default(50000)  // ৳500
+
+  assignedAt   DateTime         @default(now())
+  startedAt    DateTime?        // set when agent moves to IN_PROGRESS
+  submittedAt  DateTime?        // set when agent submits for review
+  completedAt  DateTime?        // set when admin marks VERIFIED or CANCELLED
+  createdAt    DateTime         @default(now())
+
+  @@index([agentId, status])
+  @@index([assignedById])
+}
+
+// ---------------------------------------------------------------------------
+// Job Board
+// ---------------------------------------------------------------------------
+
+model JobPost {
+  id               String           @id @default(cuid())
+  title            String
+  description      String
+  targetDistrict   String
+  budgetAmount     Int              // in poisha (e.g. 50000 = ৳500)
+  status           JobStatus        @default(OPEN)
+  postedById       String
+  postedBy         User             @relation("PostedJobs", fields: [postedById], references: [id])
+  applications     JobApplication[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@index([status, targetDistrict])
+  @@index([postedById])
+}
+
+model JobApplication {
+  id                    String            @id @default(cuid())
+  jobPostId             String
+  jobPost               JobPost           @relation(fields: [jobPostId], references: [id], onDelete: Cascade)
+  agentId               String
+  agent                 User              @relation("AgentApplications", fields: [agentId], references: [id])
+  bidAmount             Int               // in poisha
+  estimatedDeliveryDays Int
+  note                  String?
+  status                ApplicationStatus @default(PENDING)
+  createdAt             DateTime          @default(now())
+
+  @@unique([jobPostId, agentId])
+  @@index([agentId])
 }
 
 // ---------------------------------------------------------------------------

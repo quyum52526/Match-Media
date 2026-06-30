@@ -68,6 +68,47 @@ export async function getEditableProfile(
   };
 }
 
+/**
+ * Fetch a client profile for editing by a MEDIA agency.
+ * Returns null if the profile doesn't exist or isn't owned by this agency —
+ * callers must treat null as a 403 / not-found.
+ */
+export async function getClientEditableProfile(
+  agencyUserId: string,
+  clientProfileId: string,
+): Promise<EditableProfile | null> {
+  const profile = await prisma.profile.findUnique({
+    where: { id: clientProfileId },
+  });
+  // Ownership check: must be a managed profile referred by this specific agency.
+  if (
+    !profile ||
+    !profile.managedByAgency ||
+    profile.referredById !== agencyUserId
+  ) {
+    return null;
+  }
+
+  return {
+    fullName: profile.fullName ?? "",
+    gender: profile.gender ?? "",
+    dateOfBirth: profile.dateOfBirth
+      ? profile.dateOfBirth.toISOString().slice(0, 10)
+      : "",
+    district: profile.district ?? "",
+    upazila: profile.upazila ?? "",
+    profession: profile.profession ?? "",
+    education: profile.education ?? "",
+    maritalStatus: profile.maritalStatus ?? "",
+    height: profile.height ?? "",
+    weight: profile.weight ?? "",
+    childrenStatus: profile.childrenStatus ?? "",
+    familyDetails: profile.familyDetails ?? "",
+    bio: profile.bio ?? "",
+    nameHidden: profile.nameHidden,
+  };
+}
+
 /** Search/filter criteria (all optional; values are canonical English). */
 export interface SearchFilters {
   gender?: string;
@@ -90,16 +131,56 @@ function yearsAgo(years: number): Date {
 }
 
 /**
+/** Map a manager's accountCategory to the badge discriminant used on the card. */
+function resolveManagerType(
+  category: string | null,
+): "GUARDIAN" | "MEDIA" | null {
+  if (category === "PARENTS") return "GUARDIAN";
+  if (category === "MEDIA") return "MEDIA";
+  return null;
+}
+
+/**
  * List profiles for the browse/search grid (viewer-scoped). Excludes the
  * viewer's own profile, applies the given filters, and includes the viewer's
  * current photo-access state per card. Photos always start blurred in the
  * payload; only the viewer's access state is exposed, not the image keys.
+ *
+ * MEDIA agencies and ADMINs see all profiles including agency-managed ones
+ * (userId = null). Regular users only see profiles backed by a User account.
  */
 export async function getBrowseProfiles(
   viewerId: string,
   filters: SearchFilters = {},
+  viewerRole?: string | null,
+  viewerCategory?: string | null,
 ): Promise<ProfileSummary[]> {
-  const where: Prisma.ProfileWhereInput = { userId: { not: viewerId } };
+  const isPrivilegedViewer =
+    viewerRole === "ADMIN" || viewerCategory === "MEDIA" || viewerCategory === "PARENTS";
+
+  // Only true candidate profiles belong in the browse feed:
+  //   • managed profiles (userId = null) — created by MEDIA agencies or PARENTS
+  //   • self-registered candidates (user.accountCategory = "SELF")
+  //
+  // Manager/system accounts (PARENTS, MEDIA, AGENT, ADMIN) must never appear
+  // as candidates even if they have a stale Profile row in the DB.
+  //
+  // Privileged viewers (MEDIA/PARENTS/ADMIN) see both arms.
+  // Regular users only see the SELF arm — managed profiles (userId = null) are
+  // hidden from them. We must use an explicit OR rather than `NOT: { userId: viewerId }`
+  // because SQL treats `NULL != $id` as NULL (not TRUE), silently dropping those rows.
+  const selfCandidateArm: Prisma.ProfileWhereInput = {
+    userId: { not: null },
+    NOT: { userId: viewerId },
+    user: { accountCategory: "SELF" },
+  };
+
+  // Managed profiles (userId = null, created by PARENTS/MEDIA agencies) are
+  // always included in the browse feed for every viewer. The isPrivilegedViewer
+  // flag only widens *other* access controls — it must not gate managed profiles.
+  const where: Prisma.ProfileWhereInput = {
+    OR: [{ userId: null }, selfCandidateArm],
+  };
   if (filters.gender) where.gender = filters.gender;
   if (filters.district) where.district = filters.district;
   if (filters.upazila) where.upazila = filters.upazila;
@@ -125,19 +206,33 @@ export async function getBrowseProfiles(
     where,
     orderBy: { createdAt: "asc" },
     include: {
-      user: { select: { isPro: true, isMobileVerified: true } },
+      user: {
+        select: {
+          isPro: true,
+          isMobileVerified: true,
+          accountCategory: true,
+          nidVerificationStatus: true,
+          selfieVerificationStatus: true,
+        },
+      },
+      // For managed profiles (userId = null), fetch the manager's category so we
+      // can show the correct "Managed by Parents / Agency" badge on the card.
+      referredBy: { select: { accountCategory: true } },
       // Only an APPROVED primary photo is ever shown to other viewers
       // (pre-moderation: PENDING/REJECTED photos never leave the server).
       images: { where: { isPrimary: true, moderationStatus: "APPROVED" }, take: 1 },
     },
   });
 
-  // The viewer's photo-access state toward each listed owner.
-  const ownerIds = profiles.map((p) => p.userId);
-  const requests = await prisma.photoAccessRequest.findMany({
-    where: { viewerId, ownerId: { in: ownerIds } },
-    select: { ownerId: true, status: true },
-  });
+  // Photo-access state only applies to profiles that have a User account.
+  // Managed profiles (userId = null) have no ownerId, so they always show as "NONE".
+  const ownerIds = profiles.map((p) => p.userId).filter((id): id is string => id !== null);
+  const requests = ownerIds.length
+    ? await prisma.photoAccessRequest.findMany({
+        where: { viewerId, ownerId: { in: ownerIds } },
+        select: { ownerId: true, status: true },
+      })
+    : [];
   const statusByOwner = new Map(
     requests.map((r) => [r.ownerId, r.status as PhotoAccessState]),
   );
@@ -149,19 +244,24 @@ export async function getBrowseProfiles(
   for (const p of profiles) {
     const img = p.images[0];
     if (!img) continue;
-    const access = statusByOwner.get(p.userId) ?? "NONE";
+    const access = p.userId ? (statusByOwner.get(p.userId) ?? "NONE") : "NONE";
     const revealed = img.privacy === "PUBLIC" || access === "APPROVED";
     keyToSign.push(revealed ? img.originalKey : img.blurredKey);
   }
   const signed = await signUrls(keyToSign);
 
   return profiles.map((p) => {
+    // For managed profiles (userId = null) use the Profile.id as the card
+    // identifier so they get a unique, stable key in the grid.
+    const cardId = p.userId ?? p.id;
     const img = p.images[0];
-    const access = statusByOwner.get(p.userId) ?? "NONE";
+    const access: PhotoAccessState = p.userId
+      ? (statusByOwner.get(p.userId) ?? "NONE")
+      : "NONE";
     const revealed = !!img && (img.privacy === "PUBLIC" || access === "APPROVED");
     const key = img ? (revealed ? img.originalKey : img.blurredKey) : undefined;
     return {
-      id: p.userId,
+      id: cardId,
       displayName: p.nameHidden || !p.fullName ? HIDDEN_NAME : p.fullName,
       nameHidden: p.nameHidden,
       gender: p.gender,
@@ -169,14 +269,21 @@ export async function getBrowseProfiles(
       district: p.district ?? "",
       upazila: p.upazila ?? "",
       isVerified: p.isVerified,
-      isPro: p.user.isPro,
+      isPro: p.user?.isPro ?? false,
+      managedBy: resolveManagerType(p.referredBy?.accountCategory ?? null),
       primaryImagePrivacy: (img?.privacy as ImagePrivacy) ?? "BLURRED",
       imageUrl: key ? signed.get(key) : undefined,
       photoAccess: access,
-      // 4 verification slots: photo (isVerified) + mobile + email* + NID*
-      // *email and NID are not yet implemented — always 0 until APIs are wired.
+      // 4 trust signals × 25 pts: verified badge, mobile OTP, NID approved, selfie approved
       trustScore: Math.round(
-        ([p.isVerified, p.user.isMobileVerified, false, false].filter(Boolean).length / 4) * 100,
+        (
+          [
+            p.isVerified,
+            p.user?.isMobileVerified ?? false,
+            p.user?.nidVerificationStatus === "APPROVED",
+            p.user?.selfieVerificationStatus === "APPROVED",
+          ].filter(Boolean).length / 4
+        ) * 100,
       ),
     };
   });
@@ -208,10 +315,10 @@ export interface ProfileViewAccess {
  */
 export async function getProfileViewAccess(
   viewerId: string,
-  ownerUserId: string,
+  profileId: string,
 ): Promise<ProfileViewAccess> {
   const unlimited = { allowed: true, unlimited: true, used: 0, limit: FREE_DAILY_LIMIT };
-  if (viewerId === ownerUserId) return unlimited;
+  if (viewerId === profileId) return unlimited;
 
   const viewer = await prisma.user.findUnique({
     where: { id: viewerId },
@@ -222,9 +329,9 @@ export async function getProfileViewAccess(
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
 
-  // Already viewed this profile today? Then re-opening is free.
-  const owner = await prisma.profile.findUnique({
-    where: { userId: ownerUserId },
+  // Resolve the Profile row by userId OR profile.id (managed profiles have no userId).
+  const owner = await prisma.profile.findFirst({
+    where: { OR: [{ userId: profileId }, { id: profileId }] },
     select: { id: true },
   });
   if (owner) {
@@ -250,78 +357,96 @@ export async function getProfileViewAccess(
 }
 
 export async function getProfileForViewer(
-  ownerUserId: string,
+  profileId: string,
   viewerId: string,
 ): Promise<ProfileDetailView | null> {
-  const profile = await prisma.profile.findUnique({
-    where: { userId: ownerUserId },
+  // Look up by userId OR profile.id — managed profiles have userId = null and
+  // are identified by their profile.id in the browse feed.
+  const profile = await prisma.profile.findFirst({
+    where: { OR: [{ userId: profileId }, { id: profileId }] },
     include: {
       user: true,
+      referredBy: { select: { accountCategory: true } },
       // Pre-moderation: only an APPROVED primary photo is served to viewers.
       images: { where: { isPrimary: true, moderationStatus: "APPROVED" }, take: 1 },
     },
   });
   if (!profile) return null;
 
-  // Log a daily-unique profile view (skip self-views). The @@unique on
-  // (viewer, profile, date) makes this idempotent per day via upsert.
-  if (viewerId !== ownerUserId) {
+  // For managed profiles userId is null; profileUser may be null.
+  const profileUser = profile.user;
+
+  // Social actions (interest, photo-access, messages) target the account that
+  // owns this profile. For managed profiles (userId = null) we route to the
+  // parent/agency's User account via referredById, so they receive the interest
+  // or message on their child's/client's behalf.
+  const ownerUserId = profile.userId ?? profile.referredById ?? null;
+
+  // Log a daily-unique profile view (skip self-views and managed profiles with
+  // no user account, since there's no meaningful "owner" to attribute the view to).
+  if (ownerUserId && viewerId !== ownerUserId) {
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
-    await prisma.profileViewLog.upsert({
-      where: {
-        viewerId_viewedProfileId_date: {
-          viewerId,
-          viewedProfileId: profile.id,
-          date: today,
+    try {
+      await prisma.profileViewLog.upsert({
+        where: {
+          viewerId_viewedProfileId_date: {
+            viewerId,
+            viewedProfileId: profile.id,
+            date: today,
+          },
         },
-      },
-      create: { viewerId, viewedProfileId: profile.id, date: today },
-      update: {},
-    });
+        create: { viewerId, viewedProfileId: profile.id, date: today },
+        update: {},
+      });
+    } catch (e: unknown) {
+      // P2002 = unique constraint violation: a concurrent request already logged
+      // this view for today. Safe to ignore — the record exists, view is counted.
+      if ((e as { code?: string })?.code !== "P2002") throw e;
+    }
   }
 
-  const viewer =
-    viewerId === ownerUserId
-      ? profile.user
-      : await prisma.user.findUnique({ where: { id: viewerId } });
+  const viewer = ownerUserId
+    ? viewerId === ownerUserId
+      ? profileUser
+      : await prisma.user.findUnique({ where: { id: viewerId } })
+    : await prisma.user.findUnique({ where: { id: viewerId } });
 
-  const [photoReq, sentInterest, acceptedInterest] = await Promise.all([
-    prisma.photoAccessRequest.findUnique({
-      where: { viewerId_ownerId: { viewerId, ownerId: ownerUserId } },
-    }),
-    prisma.interest.findUnique({
-      where: {
-        senderId_receiverId: { senderId: viewerId, receiverId: ownerUserId },
-      },
-    }),
-    // Mutual consent: an ACCEPTED interest in EITHER direction.
-    prisma.interest.findFirst({
-      where: {
-        status: "ACCEPTED",
-        OR: [
-          { senderId: viewerId, receiverId: ownerUserId },
-          { senderId: ownerUserId, receiverId: viewerId },
-        ],
-      },
-    }),
-  ]);
+  // Social features (photo requests, interests, messaging) require the profile
+  // to have a User account. Managed profiles get neutral/locked defaults.
+  const [photoReq, sentInterest, acceptedInterest] = ownerUserId
+    ? await Promise.all([
+        prisma.photoAccessRequest.findUnique({
+          where: { viewerId_ownerId: { viewerId, ownerId: ownerUserId } },
+        }),
+        prisma.interest.findUnique({
+          where: {
+            senderId_receiverId: { senderId: viewerId, receiverId: ownerUserId },
+          },
+        }),
+        prisma.interest.findFirst({
+          where: {
+            status: "ACCEPTED",
+            OR: [
+              { senderId: viewerId, receiverId: ownerUserId },
+              { senderId: ownerUserId, receiverId: viewerId },
+            ],
+          },
+        }),
+      ])
+    : [null, null, null];
 
   const viewerIsPro = isProActive(viewer);
-  const interestAccepted = Boolean(acceptedInterest);
 
   const viewerState: ViewerState = {
     photoAccess: (photoReq?.status as PhotoAccessState) ?? "NONE",
     interest: (sentInterest?.status as InterestState) ?? "NONE",
     isPro: viewerIsPro,
-    // Mutual consent (either direction) — unlocks in-app messaging + voice calls
-    // (no Pro requirement). Contact details are NEVER revealed (privacy-first).
-    isMatched: interestAccepted,
+    isMatched: Boolean(acceptedInterest),
   };
 
   const primary = profile.images[0];
 
-  // Same gate as the photo overlay: original only when PUBLIC or APPROVED.
   const photoRevealed =
     !!primary &&
     (primary.privacy === "PUBLIC" || photoReq?.status === "APPROVED");
@@ -331,7 +456,9 @@ export async function getProfileForViewer(
     : undefined;
 
   const view: ProfileDetailView = {
-    id: profile.userId,
+    // Use userId when available; fall back to referredById (parent/agency) so
+    // social actions are routed to them, finally to profile.id as a last resort.
+    id: profile.userId ?? profile.referredById ?? profile.id,
     displayName:
       profile.nameHidden || !profile.fullName ? HIDDEN_NAME : profile.fullName,
     nameHidden: profile.nameHidden,
@@ -345,7 +472,8 @@ export async function getProfileForViewer(
     bio: profile.bio ?? "",
     completionScore: profile.completionScore,
     isVerified: profile.isVerified,
-    isPro: isProActive(profile.user),
+    isPro: isProActive(profileUser),
+    managedBy: resolveManagerType(profile.referredBy?.accountCategory ?? null),
     primaryImagePrivacy: (primary?.privacy as ImagePrivacy) ?? "BLURRED",
     imageUrl,
     details: {
@@ -355,10 +483,9 @@ export async function getProfileForViewer(
       family: profile.familyDetails ?? "",
     },
     verifications: {
-      mobile: profile.user.isMobileVerified,
-      // TODO: wire these to real provider APIs when available.
+      mobile: profileUser?.isMobileVerified ?? false,
       email:  false,
-      photo:  profile.isVerified, // admin-granted badge proxies photo identity
+      photo:  profile.isVerified,
       nid:    false,
     },
     viewer: viewerState,

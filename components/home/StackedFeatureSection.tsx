@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
-import { BadgeCheck, Crown, LockKeyhole } from "lucide-react";
+import { BadgeCheck, Crown } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { ShowcaseProfile } from "@/lib/data/showcase";
 
@@ -25,7 +25,16 @@ function CardFace({
   isFront: boolean;
   badgeName: string;
 }) {
-  // Card body: real photo, or pastel placeholder with a lock icon.
+  // Showcase cards are PUBLIC — never show a lock icon here. When a real
+  // signed imageUrl arrives from the server it renders; otherwise fall back
+  // to a branded gradient so the stack looks intentional, not locked.
+  const CARD_HUES = [
+    "from-primary/20 via-accent/10 to-canvas",
+    "from-accent/20 via-primary/10 to-canvas",
+    "from-success/15 via-accent/10 to-canvas",
+  ];
+  const hue = CARD_HUES[Math.abs(badgeName.charCodeAt(0)) % CARD_HUES.length];
+
   const body = profile?.imageUrl ? (
     <div className="relative h-full w-full">
       <Image
@@ -38,9 +47,7 @@ function CardFace({
       />
     </div>
   ) : (
-    <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-accent/30 via-canvas to-primary/20">
-      <LockKeyhole size={28} className="text-primary/30" />
-    </div>
+    <div className={`h-full w-full bg-gradient-to-br ${hue}`} />
   );
 
   // Name badge — only on the front (top) card.

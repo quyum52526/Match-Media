@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/Button";
 const inputClass =
   "h-11 w-full rounded-xl border border-hairline bg-white px-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30";
 
-/** Red asterisk marking a required field. */
 function Req() {
   return <span className="text-red-500"> *</span>;
 }
@@ -20,15 +19,12 @@ export function RegisterForm() {
 
   return (
     <form action={formAction} className="space-y-4">
-      {/* Keep the user in their language after the post-signup redirect. */}
       <input type="hidden" name="locale" value={locale} />
 
       <div className="space-y-1">
         <label htmlFor="fullName" className="text-sm font-medium text-ink">
           {t("fullName")}{" "}
-          <span className="font-normal text-ink/40">
-            ({t("optional")})
-          </span>
+          <span className="font-normal text-ink/40">({t("optional")})</span>
         </label>
         <input
           id="fullName"
@@ -57,9 +53,7 @@ export function RegisterForm() {
       <div className="space-y-1">
         <label htmlFor="mobile" className="text-sm font-medium text-ink">
           {t("mobile")}{" "}
-          <span className="font-normal text-ink/40">
-            ({t("optional")})
-          </span>
+          <span className="font-normal text-ink/40">({t("optional")})</span>
         </label>
         <input
           id="mobile"
@@ -109,17 +103,13 @@ export function RegisterForm() {
             <option value="" disabled>
               {t("genderPlaceholder")}
             </option>
-            {/* Canonical value is English; label follows the locale */}
             <option value="Male">{t("genderMale")}</option>
             <option value="Female">{t("genderFemale")}</option>
           </select>
         </div>
 
         <div className="space-y-1">
-          <label
-            htmlFor="dateOfBirth"
-            className="text-sm font-medium text-ink"
-          >
+          <label htmlFor="dateOfBirth" className="text-sm font-medium text-ink">
             {t("dateOfBirth")}
             <Req />
           </label>

@@ -8,16 +8,7 @@ import { StackedFeatureSection } from "@/components/home/StackedFeatureSection";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { InteractiveMap } from "@/components/home/InteractiveMap";
 import { HomeFooter } from "@/components/home/HomeFooter";
-import { Dashboard } from "@/components/dashboard/Dashboard";
-import { getViewerId } from "@/lib/session";
-import { getDashboardStats } from "@/lib/data/dashboard";
-import { getProfileCompletion } from "@/lib/data/profileCompletion";
-import { getProfileViewers } from "@/lib/data/viewers";
-import { getViewerProStatus } from "@/lib/data/billing";
 import { getHomepageShowcase, getMarqueeProfiles } from "@/lib/data/showcase";
-
-// Viewer cards shown directly on the dashboard before the "See all" link.
-const DASHBOARD_VIEWERS = 6;
 
 export default async function Home({
   params,
@@ -27,28 +18,8 @@ export default async function Home({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // Signed-in users get a personalized dashboard; visitors get the landing page.
-  const viewerId = await getViewerId();
-  if (viewerId) {
-    const [stats, completion, viewers, proStatus] = await Promise.all([
-      getDashboardStats(viewerId),
-      getProfileCompletion(viewerId),
-      getProfileViewers(viewerId, DASHBOARD_VIEWERS),
-      getViewerProStatus(viewerId),
-    ]);
-    return (
-      <Dashboard
-        stats={stats}
-        completion={completion}
-        viewers={viewers}
-        proStatus={proStatus}
-      />
-    );
-  }
-
-  // Signed-out visitors: all three fetches run in parallel. getHomepageShowcase
-  // internally sequences its sub-queries for mutual exclusion, but the marquee
-  // and translations have no ordering dependency so they race alongside it.
+  // Public homepage renders for everyone — signed-in users reach their
+  // personal dashboard via the "Dashboard" link in the nav.
   const [tf, { premiumProfiles, newProfiles, verifiedProfiles }, marqueeProfiles] =
     await Promise.all([
       getTranslations("Home.featured"),
