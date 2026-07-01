@@ -67,6 +67,10 @@ export function ApplyModal({
   }
 
   const budgetBdt = (budgetAmount / 100).toLocaleString("en-BD");
+  const bidValue = parseFloat(bidAmount);
+  const hasValidBid = !!bidValue && bidValue > 0;
+  const platformFee = hasValidBid ? bidValue * 0.2 : 0;
+  const agentShare = hasValidBid ? bidValue - platformFee : 0;
 
   return (
     <Modal open={open} onClose={handleClose} title={`Apply — ${jobTitle}`}>
@@ -105,6 +109,12 @@ export function ApplyModal({
               placeholder="e.g. 400"
               className={inputClass}
             />
+            {hasValidBid && (
+              <p className="text-xs text-ink/50">
+                Platform fee (20%): ৳{platformFee.toLocaleString("en-BD")} · You receive: ৳
+                {agentShare.toLocaleString("en-BD")}
+              </p>
+            )}
           </div>
 
           <div className="space-y-1">

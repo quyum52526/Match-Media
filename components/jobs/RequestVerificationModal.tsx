@@ -5,6 +5,7 @@ import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { requestVerification } from "@/lib/actions/jobs";
 import { DISTRICTS, upazilasFor } from "@/lib/constants/bdGeo";
+import { MIN_VERIFICATION_BUDGET_BDT } from "@/lib/constants/jobs";
 
 interface RequestVerificationModalProps {
   open: boolean;
@@ -46,6 +47,7 @@ export function RequestVerificationModal({
   const [district, setDistrict] = useState("");
   const [upazila, setUpazila] = useState("");
   const [details, setDetails] = useState(() => buildVerificationMessage("", ""));
+  const [budget, setBudget] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -72,6 +74,7 @@ export function RequestVerificationModal({
     setDistrict("");
     setUpazila("");
     setDetails(buildVerificationMessage("", ""));
+    setBudget("");
     messageEditedRef.current = false;
     setError(null);
     setSuccess(false);
@@ -99,16 +102,21 @@ export function RequestVerificationModal({
       setError("Please provide at least 20 characters of detail.");
       return;
     }
+    const budgetBdt = parseFloat(budget);
+    if (!budgetBdt || budgetBdt < MIN_VERIFICATION_BUDGET_BDT) {
+      setError(`Minimum budget for verification is ৳${MIN_VERIFICATION_BUDGET_BDT}.`);
+      return;
+    }
     startTransition(async () => {
-      const result = await requestVerification(district, details);
+      const result = await requestVerification(district, details, budgetBdt);
       if (result.ok) {
         setSuccess(true);
+      } else if (result.error === "MIN_BUDGET") {
+        setError(`Minimum budget for verification is ৳${MIN_VERIFICATION_BUDGET_BDT}.`);
+      } else if (result.error === "INVALID") {
+        setError("Please fill in all fields.");
       } else {
-        setError(
-          result.error === "INVALID"
-            ? "Please fill in all fields."
-            : "You must be logged in to submit a request.",
-        );
+        setError("You must be logged in to submit a request.");
       }
     });
   }
@@ -185,6 +193,27 @@ export function RequestVerificationModal({
                 ))}
               </select>
             </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-ink">
+              Your budget (৳) <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              min={MIN_VERIFICATION_BUDGET_BDT}
+              step="1"
+              required
+              value={budget}
+              onChange={(e) => setBudget(e.target.value)}
+              placeholder={`e.g. ${MIN_VERIFICATION_BUDGET_BDT}`}
+              className={inputClass}
+            />
+            {budget !== "" && parseFloat(budget) < MIN_VERIFICATION_BUDGET_BDT && (
+              <p className="text-xs font-medium text-red-600">
+                Minimum budget for verification is ৳{MIN_VERIFICATION_BUDGET_BDT}.
+              </p>
+            )}
           </div>
 
           <div className="space-y-1">

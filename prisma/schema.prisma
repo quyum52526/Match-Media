@@ -519,7 +519,9 @@ model JobApplication {
   jobPost               JobPost           @relation(fields: [jobPostId], references: [id], onDelete: Cascade)
   agentId               String
   agent                 User              @relation("AgentApplications", fields: [agentId], references: [id])
-  bidAmount             Int               // in poisha
+  bidAmount             Int               // in poisha (total bid, gross)
+  platformFee           Int               // in poisha (20% of bidAmount)
+  agentShare            Int               // in poisha (bidAmount - platformFee)
   estimatedDeliveryDays Int
   note                  String?
   status                ApplicationStatus @default(PENDING)

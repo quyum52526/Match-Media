@@ -1,0 +1,1 @@
+export const MIN_VERIFICATION_BUDGET_BDT = 1000;

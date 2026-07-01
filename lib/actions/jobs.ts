@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getViewerId } from "@/lib/session";
+import { MIN_VERIFICATION_BUDGET_BDT } from "@/lib/constants/jobs";
 
 // ── Apply to a job ────────────────────────────────────────────────────────────
 
@@ -34,12 +35,18 @@ export async function applyToJob(
   const job = await prisma.jobPost.findUnique({ where: { id: jobId } });
   if (!job || job.status !== "OPEN") return { ok: false, error: "JOB_CLOSED" };
 
+  const bidAmountPoisha = Math.round(bidAmount * 100); // convert ৳ → poisha
+  const platformFee = Math.round(bidAmountPoisha * 0.2);
+  const agentShare = bidAmountPoisha - platformFee;
+
   try {
     await prisma.jobApplication.create({
       data: {
         jobPostId: jobId,
         agentId: viewerId,
-        bidAmount: Math.round(bidAmount * 100), // convert ৳ → poisha
+        bidAmount: bidAmountPoisha,
+        platformFee,
+        agentShare,
         estimatedDeliveryDays,
         note: note.trim() || null,
       },
@@ -60,25 +67,27 @@ export async function applyToJob(
 
 export type RequestVerificationResult =
   | { ok: true; jobId: string }
-  | { ok: false; error: "UNAUTHORIZED" | "INVALID" };
+  | { ok: false; error: "UNAUTHORIZED" | "INVALID" | "MIN_BUDGET" };
 
 export async function requestVerification(
   targetDistrict: string,
   details: string,
+  budgetBdt: number,
 ): Promise<RequestVerificationResult> {
   const viewerId = await getViewerId();
   if (!viewerId) return { ok: false, error: "UNAUTHORIZED" };
 
   const district = targetDistrict.trim();
   const description = details.trim();
-  if (!district || !description) return { ok: false, error: "INVALID" };
+  if (!district || !description || !budgetBdt) return { ok: false, error: "INVALID" };
+  if (budgetBdt < MIN_VERIFICATION_BUDGET_BDT) return { ok: false, error: "MIN_BUDGET" };
 
   const job = await prisma.jobPost.create({
     data: {
       title: `Verification Request — ${district}`,
       description,
       targetDistrict: district,
-      budgetAmount: 50000, // ৳500 default; agents bid their own price
+      budgetAmount: Math.round(budgetBdt * 100), // ৳ → poisha
       postedById: viewerId,
     },
   });
