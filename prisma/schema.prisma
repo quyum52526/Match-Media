@@ -414,6 +414,8 @@ model Interest {
   receiverId String
   receiver   User           @relation("InterestsReceived", fields: [receiverId], references: [id], onDelete: Cascade)
   status     InterestStatus @default(SENT)
+  /// Optional introductory note sent along with the interest (max 200 chars, enforced in the server action).
+  note       String?
   createdAt  DateTime       @default(now())
 
   @@unique([senderId, receiverId])

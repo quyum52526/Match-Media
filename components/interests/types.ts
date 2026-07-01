@@ -12,6 +12,8 @@ export interface ReceivedInterest {
   /** The person who expressed interest. */
   person: RequestPerson;
   status: InterestInboxStatus;
+  /** Optional introductory note the sender attached (max 200 chars). */
+  note: string | null;
   /** ISO timestamp. */
   createdAt: string;
 }

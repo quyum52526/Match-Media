@@ -227,7 +227,12 @@
       "express": "Express Interest",
       "sent": "Interest sent",
       "accepted": "Interest accepted",
-      "declined": "Interest declined"
+      "declined": "Interest declined",
+      "modalTitle": "Express Interest",
+      "modalBody": "Add a short introductory note, or send without one.",
+      "notePlaceholder": "Say something nice to introduce yourself…",
+      "cancel": "Cancel",
+      "send": "Send Interest"
     },
     "photo": {
       "blurredNotice": "Photo is blurred to protect privacy",
@@ -752,18 +757,9 @@
     "missionBody": "We believe matchmaking should protect your privacy, verify who you're really talking to, and put you in control of every step — from the first hint of interest to the first phone call.",
     "valuesTitle": "What We Stand For",
     "values": [
-      {
-        "title": "Privacy by default",
-        "body": "Photos, contact details, and personal information stay hidden until you choose to share them."
-      },
-      {
-        "title": "Verified members",
-        "body": "Mobile verification and manual review keep the community genuine."
-      },
-      {
-        "title": "No pressure",
-        "body": "Browse, connect, and decide at your own pace — there's no rush and no spam."
-      }
+      { "title": "Privacy by default", "body": "Photos, contact details, and personal information stay hidden until you choose to share them." },
+      { "title": "Verified members", "body": "Mobile verification and manual review keep the community genuine." },
+      { "title": "No pressure", "body": "Browse, connect, and decide at your own pace — there's no rush and no spam." }
     ]
   },
   "Contact": {
@@ -782,107 +778,42 @@
     "title": "Terms and Conditions",
     "intro": "By using MatchMedia, you agree to the following terms. Please read them carefully.",
     "sections": [
-      {
-        "heading": "1. Acceptance of Terms",
-        "body": "By creating an account, you agree to these terms and to use the platform honestly and respectfully."
-      },
-      {
-        "heading": "2. Account Responsibility",
-        "body": "You are responsible for the accuracy of the information on your profile and for keeping your login details secure."
-      },
-      {
-        "heading": "3. Privacy",
-        "body": "We only share your photos and contact information with your explicit consent, as described in our Privacy Policy."
-      },
-      {
-        "heading": "4. Prohibited Conduct",
-        "body": "Harassment, impersonation, and posting false information are not allowed and may result in account suspension."
-      },
-      {
-        "heading": "5. Changes to These Terms",
-        "body": "We may update these terms from time to time. Continued use of the platform means you accept the updated terms."
-      }
+      { "heading": "1. Acceptance of Terms", "body": "By creating an account, you agree to these terms and to use the platform honestly and respectfully." },
+      { "heading": "2. Account Responsibility", "body": "You are responsible for the accuracy of the information on your profile and for keeping your login details secure." },
+      { "heading": "3. Privacy", "body": "We only share your photos and contact information with your explicit consent, as described in our Privacy Policy." },
+      { "heading": "4. Prohibited Conduct", "body": "Harassment, impersonation, and posting false information are not allowed and may result in account suspension." },
+      { "heading": "5. Changes to These Terms", "body": "We may update these terms from time to time. Continued use of the platform means you accept the updated terms." }
     ]
   },
   "Blog": {
     "title": "Blog",
     "intro": "Stories, advice, and updates from the MatchMedia team.",
     "posts": [
-      {
-        "title": "5 Tips for a Trustworthy Matrimony Profile",
-        "date": "2026-05-12",
-        "excerpt": "Simple ways to make your profile clear, honest, and appealing to serious matches."
-      },
-      {
-        "title": "Why Verification Matters in Online Matchmaking",
-        "date": "2026-04-28",
-        "excerpt": "A look at how mobile and photo verification keep the community safe."
-      },
-      {
-        "title": "From First Message to First Meeting",
-        "date": "2026-04-03",
-        "excerpt": "A gentle guide to moving a conversation forward with confidence and care."
-      }
+      { "title": "5 Tips for a Trustworthy Matrimony Profile", "date": "2026-05-12", "excerpt": "Simple ways to make your profile clear, honest, and appealing to serious matches." },
+      { "title": "Why Verification Matters in Online Matchmaking", "date": "2026-04-28", "excerpt": "A look at how mobile and photo verification keep the community safe." },
+      { "title": "From First Message to First Meeting", "date": "2026-04-03", "excerpt": "A gentle guide to moving a conversation forward with confidence and care." }
     ]
   },
   "Events": {
     "title": "Events",
     "intro": "Meetups, webinars, and community sessions hosted by MatchMedia.",
     "items": [
-      {
-        "title": "Matchmaking Q&A Webinar",
-        "date": "2026-07-15",
-        "location": "Online",
-        "description": "Live session answering your questions about profiles, privacy, and verification."
-      },
-      {
-        "title": "Dhaka Community Meetup",
-        "date": "2026-08-02",
-        "location": "Dhaka",
-        "description": "An in-person meetup for verified members to meet the MatchMedia team."
-      },
-      {
-        "title": "Safe Matchmaking Workshop",
-        "date": "2026-08-20",
-        "location": "Online",
-        "description": "Practical guidance on staying safe while getting to know a potential match."
-      }
+      { "title": "Matchmaking Q&A Webinar", "date": "2026-07-15", "location": "Online", "description": "Live session answering your questions about profiles, privacy, and verification." },
+      { "title": "Dhaka Community Meetup", "date": "2026-08-02", "location": "Dhaka", "description": "An in-person meetup for verified members to meet the MatchMedia team." },
+      { "title": "Safe Matchmaking Workshop", "date": "2026-08-20", "location": "Online", "description": "Practical guidance on staying safe while getting to know a potential match." }
     ]
   },
   "UserGuide": {
     "title": "User Guide",
     "intro": "New to MatchMedia? Here's how to get started in a few simple steps.",
     "steps": [
-      {
-        "title": "1. Create Your Profile",
-        "body": "Sign up and fill in your details — the more complete your profile, the better your matches."
-      },
-      {
-        "title": "2. Get Verified",
-        "body": "Verify your mobile number to unlock messaging and calling with your matches."
-      },
-      {
-        "title": "3. Browse & Filter",
-        "body": "Use filters like age, district, and profession to find profiles that match what you're looking for."
-      },
-      {
-        "title": "4. Send an Interest",
-        "body": "Found someone promising? Send an interest to let them know you'd like to connect — you can include a short introductory note (up to 200 characters) to say something about yourself."
-      },
-      {
-        "title": "5. Chat & Call",
-        "body": "Messaging and voice calls unlock only after the other person accepts your Interest — that's what makes you a match. Once accepted, message and call directly inside MatchMedia, no phone number needed.",
-        "linkLabel": "Manage your sent & received interests",
-        "linkHref": "/interests"
-      },
-      {
-        "title": "6. How to Earn",
-        "body": "Registered agents can earn by completing verification tasks for the platform — reviewing and confirming member details, then getting paid per completed task from the verification budget set on each request."
-      },
-      {
-        "title": "7. Profile Types",
-        "body": "Profiles can carry two trust badges. \"Verified\" means the member's ID and location have been confirmed. \"Premium Verified\" means the member has gone through additional background checks on top of standard verification."
-      }
+      { "title": "1. Create Your Profile", "body": "Sign up and fill in your details — the more complete your profile, the better your matches." },
+      { "title": "2. Get Verified", "body": "Verify your mobile number to unlock messaging and calling with your matches." },
+      { "title": "3. Browse & Filter", "body": "Use filters like age, district, and profession to find profiles that match what you're looking for." },
+      { "title": "4. Send an Interest", "body": "Found someone promising? Send an interest to let them know you'd like to connect — you can include a short introductory note (up to 200 characters) to say something about yourself." },
+      { "title": "5. Chat & Call", "body": "Messaging and voice calls unlock only after the other person accepts your Interest — that's what makes you a match. Once accepted, message and call directly inside MatchMedia, no phone number needed.", "linkLabel": "Manage your sent & received interests", "linkHref": "/interests" },
+      { "title": "6. How to Earn", "body": "Registered agents can earn by completing verification tasks for the platform — reviewing and confirming member details, then getting paid per completed task from the verification budget set on each request." },
+      { "title": "7. Profile Types", "body": "Profiles can carry two trust badges. \"Verified\" means the member's ID and location have been confirmed. \"Premium Verified\" means the member has gone through additional background checks on top of standard verification." }
     ]
   }
 }

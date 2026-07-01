@@ -32,6 +32,7 @@ export async function getReceivedInterests(
         id: r.id,
         person,
         status: toInterestStatus(r.status),
+        note: r.note,
         createdAt: r.createdAt.toISOString(),
       },
     ];

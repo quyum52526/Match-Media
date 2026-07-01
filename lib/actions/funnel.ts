@@ -142,10 +142,15 @@ export async function respondToPhotoRequest(
 
 // --- Interest ----------------------------------------------------------------
 
-/** Viewer expresses interest in a profile. */
-export async function sendInterest(receiverId: string): Promise<void> {
+/** Viewer expresses interest in a profile, with an optional introductory note (max 200 chars). */
+export async function sendInterest(
+  receiverId: string,
+  note?: string,
+): Promise<void> {
   const senderId = await getViewerId();
   if (!senderId || !receiverId || receiverId === senderId) return;
+
+  const trimmedNote = note?.trim().slice(0, 200) || null;
 
   const existing = await prisma.interest.findUnique({
     where: { senderId_receiverId: { senderId, receiverId } },
@@ -154,8 +159,8 @@ export async function sendInterest(receiverId: string): Promise<void> {
 
   await prisma.interest.upsert({
     where: { senderId_receiverId: { senderId, receiverId } },
-    update: { status: "SENT" },
-    create: { senderId, receiverId, status: "SENT" },
+    update: { status: "SENT", note: trimmedNote },
+    create: { senderId, receiverId, status: "SENT", note: trimmedNote },
   });
 
   // Notify the receiver only the first time interest is sent (not on re-sends).

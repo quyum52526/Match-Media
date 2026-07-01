@@ -47,7 +47,7 @@ export function InterestInbox({ interests }: { interests: ReceivedInterest[] }) 
           key={i.id}
           className="flex flex-col gap-3 rounded-2xl border border-ink/10 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
         >
-          <PersonInfo person={i.person} createdAt={i.createdAt} />
+          <PersonInfo person={i.person} createdAt={i.createdAt} note={i.note} />
 
           <div className="shrink-0 sm:pl-4">
             {i.status === "SENT" ? (
@@ -84,9 +84,11 @@ export function InterestInbox({ interests }: { interests: ReceivedInterest[] }) 
 function PersonInfo({
   person,
   createdAt,
+  note,
 }: {
   person: RequestPerson;
   createdAt: string;
+  note?: string | null;
 }) {
   const t = useTranslations("Interests");
   const locale = useLocale();
@@ -128,6 +130,9 @@ function PersonInfo({
         <p className="mt-0.5 text-xs text-ink/40">
           {t("meta.receivedOn", { date: formatDate(createdAt) })}
         </p>
+        {note && (
+          <p className="mt-1 text-xs italic text-ink/60">&ldquo;{note}&rdquo;</p>
+        )}
       </div>
     </div>
   );
