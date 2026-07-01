@@ -33,6 +33,7 @@ import { useCallControls } from "@/components/calls/CallProvider";
 import { computeCompletion } from "@/lib/utils";
 import { localize } from "@/lib/constants/labels";
 import { BlurredImage } from "./BlurredImage";
+import { ExpressInterestModal } from "./ExpressInterestModal";
 import { ReportButton } from "./ReportButton";
 import { TrustCard } from "./TrustCard";
 import type { ProfileDetailView, ViewerState } from "./types";
@@ -60,7 +61,6 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
   const { placeCall, canCall } = useCallControls();
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [interestModalOpen, setInterestModalOpen] = useState(false);
-  const [interestNote, setInterestNote] = useState("");
   const [isPending, startTransition] = useTransition();
   const [quota, setQuota] = useState(initialQuota);
 
@@ -100,11 +100,10 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
     });
   }
 
-  function confirmExpressInterest() {
+  function confirmExpressInterest(note: string) {
     startTransition(async () => {
-      await sendInterestAction(data.id, interestNote);
+      await sendInterestAction(data.id, note);
       setInterestModalOpen(false);
-      setInterestNote("");
     });
   }
 
@@ -313,43 +312,12 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
       </Modal>
 
       {/* Express Interest modal — optional introductory note */}
-      <Modal
+      <ExpressInterestModal
         open={interestModalOpen}
         onClose={() => setInterestModalOpen(false)}
-        title={t("interest.modalTitle")}
-      >
-        <p className="text-sm text-ink/60">{t("interest.modalBody")}</p>
-        <textarea
-          value={interestNote}
-          onChange={(e) => setInterestNote(e.target.value.slice(0, 200))}
-          maxLength={200}
-          rows={3}
-          placeholder={t("interest.notePlaceholder")}
-          className="mt-3 w-full rounded-xl border border-hairline bg-white px-3 py-2 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
-        />
-        <p className="mt-1 text-right text-xs text-ink/40">
-          {interestNote.length}/200
-        </p>
-        <div className="mt-4 flex justify-end gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setInterestModalOpen(false)}
-            disabled={isPending}
-          >
-            {t("interest.cancel")}
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={confirmExpressInterest}
-            disabled={isPending}
-          >
-            <HeartIcon width={16} height={16} />
-            {t("interest.send")}
-          </Button>
-        </div>
-      </Modal>
+        onConfirm={confirmExpressInterest}
+        pending={isPending}
+      />
     </main>
   );
 }
