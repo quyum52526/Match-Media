@@ -848,5 +848,41 @@
         "description": "Practical guidance on staying safe while getting to know a potential match."
       }
     ]
+  },
+  "UserGuide": {
+    "title": "User Guide",
+    "intro": "New to MatchMedia? Here's how to get started in a few simple steps.",
+    "steps": [
+      {
+        "title": "1. Create Your Profile",
+        "body": "Sign up and fill in your details — the more complete your profile, the better your matches."
+      },
+      {
+        "title": "2. Get Verified",
+        "body": "Verify your mobile number to unlock messaging and calling with your matches."
+      },
+      {
+        "title": "3. Browse & Filter",
+        "body": "Use filters like age, district, and profession to find profiles that match what you're looking for."
+      },
+      {
+        "title": "4. Send an Interest",
+        "body": "Found someone promising? Send an interest to let them know you'd like to connect — you can include a short introductory note (up to 200 characters) to say something about yourself."
+      },
+      {
+        "title": "5. Chat & Call",
+        "body": "Messaging and voice calls unlock only after the other person accepts your Interest — that's what makes you a match. Once accepted, message and call directly inside MatchMedia, no phone number needed.",
+        "linkLabel": "Manage your sent & received interests",
+        "linkHref": "/interests"
+      },
+      {
+        "title": "6. How to Earn",
+        "body": "Registered agents can earn by completing verification tasks for the platform — reviewing and confirming member details, then getting paid per completed task from the verification budget set on each request."
+      },
+      {
+        "title": "7. Profile Types",
+        "body": "Profiles can carry two trust badges. \"Verified\" means the member's ID and location have been confirmed. \"Premium Verified\" means the member has gone through additional background checks on top of standard verification."
+      }
+    ]
   }
 }

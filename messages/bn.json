@@ -848,5 +848,41 @@
         "description": "সম্ভাব্য পাত্র-পাত্রীর সাথে পরিচিত হওয়ার সময় নিরাপদ থাকার ব্যবহারিক পরামর্শ।"
       }
     ]
+  },
+  "UserGuide": {
+    "title": "ব্যবহার নির্দেশিকা",
+    "intro": "MatchMedia-তে নতুন? কয়েকটি সহজ ধাপে শুরু করুন।",
+    "steps": [
+      {
+        "title": "১. প্রোফাইল তৈরি করুন",
+        "body": "Sign up করুন এবং তথ্য পূরণ করুন — প্রোফাইল যত সম্পূর্ণ হবে, match তত ভালো হবে।"
+      },
+      {
+        "title": "২. Verified হন",
+        "body": "মোবাইল নম্বর verify করে messaging এবং calling চালু করুন আপনার match-দের সাথে।"
+      },
+      {
+        "title": "৩. Browse ও Filter করুন",
+        "body": "বয়স, জেলা, পেশা ইত্যাদি filter ব্যবহার করে আপনার পছন্দের প্রোফাইল খুঁজুন।"
+      },
+      {
+        "title": "৪. Interest পাঠান",
+        "body": "সম্ভাবনাময় কাউকে পেলেন? তাঁকে জানাতে একটি interest পাঠান — চাইলে নিজের সম্পর্কে সংক্ষিপ্ত একটি introductory note (সর্বোচ্চ ২০০ অক্ষর) যোগ করতে পারেন।"
+      },
+      {
+        "title": "৫. Chat ও Call করুন",
+        "body": "অন্য পক্ষ আপনার Interest accept করলেই কেবল messaging ও voice call চালু হয় — এটিই আপনাদের match করে তোলে। Accept হয়ে গেলে MatchMedia-এর ভেতরেই সরাসরি মেসেজ ও কল করুন — ফোন নম্বরের দরকার নেই।",
+        "linkLabel": "আপনার পাঠানো ও পাওয়া Interest দেখুন",
+        "linkHref": "/interests"
+      },
+      {
+        "title": "৬. আয় করুন",
+        "body": "রেজিস্টার্ড Agent-রা platform-এর জন্য verification task সম্পন্ন করে আয় করতে পারেন — সদস্যদের তথ্য review ও নিশ্চিত করে, প্রতিটি সম্পন্ন task-এর জন্য request-এ নির্ধারিত verification budget থেকে পারিশ্রমিক পাওয়া যায়।"
+      },
+      {
+        "title": "৭. প্রোফাইলের ধরন",
+        "body": "প্রোফাইলে দুই ধরনের trust badge থাকতে পারে। \"Verified\" মানে সদস্যের ID ও অবস্থান নিশ্চিত করা হয়েছে। \"Premium Verified\" মানে standard verification-এর পাশাপাশি অতিরিক্ত background check সম্পন্ন হয়েছে।"
+      }
+    ]
   }
 }
