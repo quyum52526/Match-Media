@@ -1,12 +1,17 @@
 import { Card, CardBody, CardTitle } from "@/components/ui/Card";
+import { ProfileImageUploader } from "@/components/profile/ProfileImageUploader";
+import { uploadAgentAvatar } from "@/lib/actions/agentAssignments";
 
 interface Props {
   isVerified: boolean;
   email: string;
   mobile: string | null;
+  avatarUrl: string | null;
 }
 
-export function AgentStatusCard({ isVerified, email, mobile }: Props) {
+export function AgentStatusCard({ isVerified, email, mobile, avatarUrl }: Props) {
+  const initial = email[0]?.toUpperCase() ?? "?";
+
   return (
     <div className="space-y-4">
       {/* Verification status */}
@@ -39,7 +44,16 @@ export function AgentStatusCard({ isVerified, email, mobile }: Props) {
       {/* Service info */}
       <Card>
         <CardBody className="space-y-4">
-          <CardTitle>Agent Account Details</CardTitle>
+          <div className="flex items-center gap-4">
+            <ProfileImageUploader
+              initialImageUrl={avatarUrl}
+              fallbackLabel={initial}
+              uploadAction={uploadAgentAvatar}
+              alt="Agent profile photo"
+              hint="Click to upload photo"
+            />
+            <CardTitle>Agent Account Details</CardTitle>
+          </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="rounded-card bg-canvas px-4 py-3">

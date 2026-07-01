@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { requestVerification } from "@/lib/actions/jobs";
-import { DISTRICTS } from "@/lib/constants/bdGeo";
+import { DISTRICTS, upazilasFor } from "@/lib/constants/bdGeo";
 
 interface RequestVerificationModalProps {
   open: boolean;
@@ -14,22 +14,78 @@ interface RequestVerificationModalProps {
 const inputClass =
   "h-11 w-full rounded-xl border border-hairline bg-white px-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30";
 
+const DISTRICT_PLACEHOLDER = "[District]";
+const UPAZILA_PLACEHOLDER = "[Upozela]";
+
+/** Builds the default verification-details message from the selected district/upazila. */
+function buildVerificationMessage(district: string, upazila: string): string {
+  const districtText = district || DISTRICT_PLACEHOLDER;
+  const upazilaText = upazila || UPAZILA_PLACEHOLDER;
+  return `I am looking for detailed information regarding a person residing in ${upazilaText}, ${districtText}. Please verify their residence and background. For more details, contact me.`;
+}
+
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Wraps every occurrence of the district/upazila (resolved or placeholder) in a highlight span. */
+function highlightMessage(text: string, district: string, upazila: string): string {
+  const terms = [district || DISTRICT_PLACEHOLDER, upazila || UPAZILA_PLACEHOLDER].filter(Boolean);
+  const pattern = new RegExp(`(${terms.map(escapeRegExp).join("|")})`, "g");
+  return escapeHtml(text).replace(pattern, '<span class="text-blue-600 font-semibold">$1</span>');
+}
+
 export function RequestVerificationModal({
   open,
   onClose,
 }: RequestVerificationModalProps) {
   const [district, setDistrict] = useState("");
-  const [details, setDetails] = useState("");
+  const [upazila, setUpazila] = useState("");
+  const [details, setDetails] = useState(() => buildVerificationMessage("", ""));
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
 
+  const editorRef = useRef<HTMLDivElement>(null);
+  // Tracks whether the user has hand-edited the message, so district/upazila
+  // changes stop overwriting their custom wording — we just re-highlight it.
+  const messageEditedRef = useRef(false);
+
+  // Regenerate (or re-highlight) the message whenever the district/upazila
+  // selection changes, or when the modal is freshly reopened (editorRef is a
+  // new DOM node at that point since Modal unmounts its children on close).
+  useEffect(() => {
+    if (!editorRef.current) return;
+    const next = messageEditedRef.current
+      ? details
+      : buildVerificationMessage(district, upazila);
+    editorRef.current.innerHTML = highlightMessage(next, district, upazila);
+    setDetails(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [district, upazila, open]);
+
   function handleClose() {
     setDistrict("");
-    setDetails("");
+    setUpazila("");
+    setDetails(buildVerificationMessage("", ""));
+    messageEditedRef.current = false;
     setError(null);
     setSuccess(false);
     onClose();
+  }
+
+  function handleDistrictChange(value: string) {
+    setDistrict(value);
+    setUpazila(""); // reset upazila — it may not belong to the new district
+  }
+
+  function handleDetailsInput(e: React.FormEvent<HTMLDivElement>) {
+    messageEditedRef.current = true;
+    setDetails(e.currentTarget.textContent ?? "");
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -93,37 +149,57 @@ export function RequestVerificationModal({
             will bid to help you. You review bids and choose who to work with.
           </p>
 
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-ink">
-              Target district <span className="text-red-500">*</span>
-            </label>
-            <select
-              required
-              value={district}
-              onChange={(e) => setDistrict(e.target.value)}
-              className={inputClass}
-            >
-              <option value="">Select district…</option>
-              {DISTRICTS.map((d) => (
-                <option key={d.value} value={d.value}>
-                  {d.value} — {d.bn}
-                </option>
-              ))}
-            </select>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-ink">
+                Target district <span className="text-red-500">*</span>
+              </label>
+              <select
+                required
+                value={district}
+                onChange={(e) => handleDistrictChange(e.target.value)}
+                className={inputClass}
+              >
+                <option value="">Select district…</option>
+                {DISTRICTS.map((d) => (
+                  <option key={d.value} value={d.value}>
+                    {d.value} — {d.bn}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-ink">Upazila</label>
+              <select
+                value={upazila}
+                onChange={(e) => setUpazila(e.target.value)}
+                disabled={!district}
+                className={`${inputClass} disabled:cursor-not-allowed disabled:bg-ink/5 disabled:text-ink/40`}
+              >
+                <option value="">{district ? "Any" : "Select district first"}</option>
+                {upazilasFor(district).map((u) => (
+                  <option key={u.value} value={u.value}>
+                    {u.value} — {u.bn}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="space-y-1">
             <label className="text-sm font-medium text-ink">
               Verification details <span className="text-red-500">*</span>
             </label>
-            <textarea
-              rows={4}
-              required
-              minLength={20}
-              value={details}
-              onChange={(e) => setDetails(e.target.value)}
-              placeholder="e.g. Please verify the residence and family background of the person at the following address…"
-              className="w-full rounded-xl border border-hairline bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+            <div
+              ref={editorRef}
+              contentEditable
+              suppressContentEditableWarning
+              onInput={handleDetailsInput}
+              role="textbox"
+              aria-multiline="true"
+              aria-label="Verification details"
+              className="min-h-[110px] w-full rounded-xl border border-hairline bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
             />
             <p className="text-right text-xs text-ink/40">
               {details.trim().length} / 20 min

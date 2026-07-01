@@ -241,6 +241,8 @@ model User {
   agencyName               String?
   contactPerson            String?
   agencyDistrict           String?
+  // Storage key (not a URL) of the agent's profile photo; signed at read time.
+  agentAvatarKey           String?
   // Storage key (not a URL) of the agency's logo in Supabase; signed at read time.
   agencyLogo               String?
   // Storage key of the uploaded trade license document.

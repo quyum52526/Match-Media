@@ -1,5 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
+import { signUrl } from "@/lib/storage/supabase";
 
 export type AssignmentStatus =
   | "PENDING"
@@ -23,6 +24,7 @@ export interface AssignmentSummary {
 
 export interface AgentDashboardData {
   isVerified: boolean;
+  avatarUrl: string | null;
   assignments: AssignmentSummary[];
   /** Sum of agentShare across VERIFIED assignments, in poisha. */
   totalEarned: number;
@@ -36,7 +38,7 @@ export async function getAgentDashboardData(
   const [user, assignments] = await Promise.all([
     prisma.user.findUnique({
       where: { id: agentUserId },
-      select: { role: true },
+      select: { role: true, agentAvatarKey: true },
     }),
     prisma.verificationAssignment.findMany({
       where: { agentId: agentUserId },
@@ -54,6 +56,7 @@ export async function getAgentDashboardData(
   ]);
 
   const isVerified = user?.role === "AGENT";
+  const avatarUrl = user?.agentAvatarKey ? await signUrl(user.agentAvatarKey) : null;
 
   const summaries: AssignmentSummary[] = assignments.map((a) => ({
     id: a.id,
@@ -80,5 +83,5 @@ export async function getAgentDashboardData(
     (a) => a.status === "VERIFIED" || a.status === "CANCELLED",
   ).length;
 
-  return { isVerified, assignments: summaries, totalEarned, pendingCount, completedCount };
+  return { isVerified, avatarUrl, assignments: summaries, totalEarned, pendingCount, completedCount };
 }

@@ -30,7 +30,12 @@ export async function AgentDashboard({
   return (
     <div className="space-y-6">
       {/* Verification status + account info */}
-      <AgentStatusCard isVerified={data.isVerified} email={email} mobile={mobile} />
+      <AgentStatusCard
+        isVerified={data.isVerified}
+        email={email}
+        mobile={mobile}
+        avatarUrl={data.avatarUrl}
+      />
 
       {/* Earnings summary chips */}
       <div className="grid grid-cols-3 gap-3">
