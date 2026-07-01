@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import {
   FacebookIcon,
   InstagramIcon,
@@ -12,17 +13,17 @@ import {
  * blueprint, English translation in the `en` locale) + copyright. Server
  * component.
  *
- * NOTE: link/social hrefs are placeholders ("#") until the real Contact /
- * Privacy / Terms pages + social accounts are wired up.
+ * NOTE: social hrefs are placeholders ("#") until real accounts are wired up.
+ * Privacy Policy has no page yet, so it stays a placeholder too.
  */
 export async function HomeFooter() {
   const t = await getTranslations("Footer");
   const year = new Date().getFullYear();
 
   const links = [
-    { label: t("contact"), href: "#" },
+    { label: t("contact"), href: "/contact" },
     { label: t("privacy"), href: "#" },
-    { label: t("terms"), href: "#" },
+    { label: t("terms"), href: "/terms" },
   ];
 
   const socials = [
@@ -66,15 +67,25 @@ export async function HomeFooter() {
               <span className="text-xs font-medium uppercase tracking-wide text-canvas/40">
                 {t("colLegal")}
               </span>
-              {links.map((l) => (
-                <a
-                  key={l.label}
-                  href={l.href}
-                  className="text-sm font-normal text-canvas/70 transition-colors duration-150 ease-out hover:text-canvas"
-                >
-                  {l.label}
-                </a>
-              ))}
+              {links.map((l) =>
+                l.href === "#" ? (
+                  <a
+                    key={l.label}
+                    href={l.href}
+                    className="text-sm font-normal text-canvas/70 transition-colors duration-150 ease-out hover:text-canvas"
+                  >
+                    {l.label}
+                  </a>
+                ) : (
+                  <Link
+                    key={l.label}
+                    href={l.href}
+                    className="text-sm font-normal text-canvas/70 transition-colors duration-150 ease-out hover:text-canvas"
+                  >
+                    {l.label}
+                  </Link>
+                ),
+              )}
             </div>
           </nav>
         </div>

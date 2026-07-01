@@ -7,7 +7,6 @@ import { BellIcon } from "@/components/ui/icons";
 interface NavLinksProps {
   unread: number;
   unreadNotifications: number;
-  isAdmin: boolean;
   isAgent: boolean;
   labels: {
     home: string;
@@ -17,8 +16,6 @@ interface NavLinksProps {
     interests: string;
     messages: string;
     notifications: string;
-    editProfile: string;
-    admin: string;
     jobs: string;
   };
 }
@@ -45,7 +42,6 @@ function iconLink(pathname: string, href: string): string {
 export function NavLinks({
   unread,
   unreadNotifications,
-  isAdmin,
   isAgent,
   labels,
 }: NavLinksProps) {
@@ -89,23 +85,9 @@ export function NavLinks({
           </span>
         )}
       </Link>
-      <Link href="/profile/edit" className={navLink(pathname, "/profile/edit")}>
-        {labels.editProfile}
-      </Link>
-      {(isAgent || isAdmin) && (
+      {isAgent && (
         <Link href="/jobs" className={navLink(pathname, "/jobs")}>
           {labels.jobs}
-        </Link>
-      )}
-      {isAdmin && (
-        <Link
-          href="/admin"
-          className={
-            navLink(pathname, "/admin") +
-            " !text-primary hover:!text-primary/80"
-          }
-        >
-          {labels.admin}
         </Link>
       )}
     </nav>

@@ -13,7 +13,17 @@
     "notifications": "Notifications",
     "dashboard": "Dashboard",
     "admin": "Admin",
-    "jobs": "Job Board"
+    "jobs": "Job Board",
+    "company": "Company",
+    "resources": "Resources",
+    "about": "About Us",
+    "contact": "Contact Us",
+    "terms": "Terms and Conditions",
+    "blog": "Blog",
+    "events": "Events",
+    "userGuide": "User Guide",
+    "menu": "Menu",
+    "account": "Account"
   },
   "Home": {
     "title": "MatchMedia",
@@ -734,5 +744,109 @@
   },
   "LocaleSwitcher": {
     "label": "Language"
+  },
+  "About": {
+    "title": "About Us",
+    "intro": "MatchMedia is a privacy-first, nationwide matrimonial platform built for Bangladeshi families who want a safer, more dignified way to find a life partner.",
+    "missionTitle": "Our Mission",
+    "missionBody": "We believe matchmaking should protect your privacy, verify who you're really talking to, and put you in control of every step — from the first hint of interest to the first phone call.",
+    "valuesTitle": "What We Stand For",
+    "values": [
+      {
+        "title": "Privacy by default",
+        "body": "Photos, contact details, and personal information stay hidden until you choose to share them."
+      },
+      {
+        "title": "Verified members",
+        "body": "Mobile verification and manual review keep the community genuine."
+      },
+      {
+        "title": "No pressure",
+        "body": "Browse, connect, and decide at your own pace — there's no rush and no spam."
+      }
+    ]
+  },
+  "Contact": {
+    "title": "Contact Us",
+    "intro": "Have a question, feedback, or need help with your account? Reach out — we're happy to help.",
+    "emailLabel": "Email",
+    "email": "support@matchmedia.com.bd",
+    "phoneLabel": "Phone",
+    "phone": "+880 1XXX-XXXXXX",
+    "hoursLabel": "Support Hours",
+    "hours": "Saturday – Thursday, 10:00 AM – 6:00 PM (BST)",
+    "addressLabel": "Office",
+    "address": "Dhaka, Bangladesh"
+  },
+  "Terms": {
+    "title": "Terms and Conditions",
+    "intro": "By using MatchMedia, you agree to the following terms. Please read them carefully.",
+    "sections": [
+      {
+        "heading": "1. Acceptance of Terms",
+        "body": "By creating an account, you agree to these terms and to use the platform honestly and respectfully."
+      },
+      {
+        "heading": "2. Account Responsibility",
+        "body": "You are responsible for the accuracy of the information on your profile and for keeping your login details secure."
+      },
+      {
+        "heading": "3. Privacy",
+        "body": "We only share your photos and contact information with your explicit consent, as described in our Privacy Policy."
+      },
+      {
+        "heading": "4. Prohibited Conduct",
+        "body": "Harassment, impersonation, and posting false information are not allowed and may result in account suspension."
+      },
+      {
+        "heading": "5. Changes to These Terms",
+        "body": "We may update these terms from time to time. Continued use of the platform means you accept the updated terms."
+      }
+    ]
+  },
+  "Blog": {
+    "title": "Blog",
+    "intro": "Stories, advice, and updates from the MatchMedia team.",
+    "posts": [
+      {
+        "title": "5 Tips for a Trustworthy Matrimony Profile",
+        "date": "2026-05-12",
+        "excerpt": "Simple ways to make your profile clear, honest, and appealing to serious matches."
+      },
+      {
+        "title": "Why Verification Matters in Online Matchmaking",
+        "date": "2026-04-28",
+        "excerpt": "A look at how mobile and photo verification keep the community safe."
+      },
+      {
+        "title": "From First Message to First Meeting",
+        "date": "2026-04-03",
+        "excerpt": "A gentle guide to moving a conversation forward with confidence and care."
+      }
+    ]
+  },
+  "Events": {
+    "title": "Events",
+    "intro": "Meetups, webinars, and community sessions hosted by MatchMedia.",
+    "items": [
+      {
+        "title": "Matchmaking Q&A Webinar",
+        "date": "2026-07-15",
+        "location": "Online",
+        "description": "Live session answering your questions about profiles, privacy, and verification."
+      },
+      {
+        "title": "Dhaka Community Meetup",
+        "date": "2026-08-02",
+        "location": "Dhaka",
+        "description": "An in-person meetup for verified members to meet the MatchMedia team."
+      },
+      {
+        "title": "Safe Matchmaking Workshop",
+        "date": "2026-08-20",
+        "location": "Online",
+        "description": "Practical guidance on staying safe while getting to know a potential match."
+      }
+    ]
   }
 }
