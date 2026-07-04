@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
@@ -73,15 +72,15 @@ export async function Header() {
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-canvas/80 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <div className="flex min-w-0 items-center gap-4">
-          {/* Brand wordmark — links home in every locale */}
+          {/* Brand wordmark — links home in every locale. Wide horizontal
+              lockup (~10.5:1); kept compact so the packed admin nav row stays
+              on one line (see the overflow fix in this file's history). */}
           <Link href="/" aria-label={t("name")} className="shrink-0">
-            <Image
-              src="/MM Match Media Logo-02.png"
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/matchmedia-logo-home.svg"
               alt="MatchMedia Logo"
-              width={150}
-              height={30}
-              priority
-              className="h-7 w-auto sm:h-8"
+              className="h-3.5 w-auto sm:h-4 lg:h-3.5 xl:h-4"
             />
           </Link>
           {/* Full nav row needs lg+ to fit (admins carry the most items);
