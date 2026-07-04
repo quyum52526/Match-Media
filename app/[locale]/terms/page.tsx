@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Card, CardBody } from "@/components/ui/Card";
+import { TermsBody, type TermsSection } from "@/components/terms/TermsBody";
 
 export const metadata = {
   title: "Terms and Conditions · MatchMedia",
@@ -13,10 +13,10 @@ export default async function TermsPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Terms");
-  const sections = t.raw("sections") as { heading: string; body: string }[];
+  const sections = t.raw("sections") as TermsSection[];
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10">
+    <main className="mx-auto max-w-5xl px-4 py-10">
       <h1 className="font-display text-2xl font-semibold text-ink">
         {t("title")}
       </h1>
@@ -24,20 +24,8 @@ export default async function TermsPage({
         {t("intro")}
       </p>
 
-      <Card className="mt-8">
-        <CardBody className="space-y-5">
-          {sections.map((section) => (
-            <div key={section.heading}>
-              <h2 className="text-sm font-semibold text-ink">
-                {section.heading}
-              </h2>
-              <p className="mt-1.5 text-sm leading-relaxed text-ink/70">
-                {section.body}
-              </p>
-            </div>
-          ))}
-        </CardBody>
-      </Card>
+      {/* Single-page document: anchor nav + scrollspy live in the client body. */}
+      <TermsBody sections={sections} />
     </main>
   );
 }

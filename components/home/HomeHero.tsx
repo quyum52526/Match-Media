@@ -7,11 +7,14 @@ import { HeroMarquee } from "./HeroMarquee";
 import type { ShowcaseProfile } from "@/lib/data/showcase";
 
 /**
- * Public landing hero — Brand v1.0. Uses a single static background image
- * (public/hero-bg.jpeg) for the canvas. A soft, neutral Ivory scrim sits over
- * the photo so the dark foreground text stays fully legible while the image
- * remains clearly visible. Content cascades in (staggered Stripe-style reveal);
- * an infinite mini-profile marquee runs along the bottom edge.
+ * Public landing hero — Brand v1.0. A looping background video
+ * (public/videos/match-media-hero-bg.mp4) fills the canvas; the old static
+ * photo (public/hero-bg.jpeg) doubles as the poster and the CSS-background
+ * fallback, so the first paint is instant and the section still looks right
+ * if the video can't play. A soft, neutral Ivory scrim sits over the video so
+ * the dark foreground text stays fully legible. Content cascades in
+ * (staggered Stripe-style reveal); an infinite mini-profile marquee runs
+ * along the bottom edge.
  * Server component — interactive bits (QuickFilter, Reveal) are nested clients.
  */
 export async function HomeHero({ marqueeProfiles }: { marqueeProfiles: ShowcaseProfile[] }) {
@@ -19,7 +22,21 @@ export async function HomeHero({ marqueeProfiles }: { marqueeProfiles: ShowcaseP
 
   return (
     <section className="relative flex min-h-[80vh] flex-col overflow-hidden bg-[url('/hero-bg.jpeg')] bg-cover bg-center bg-no-repeat font-body antialiased">
-      {/* Legibility scrim over the photo (neutral Ivory tint, not a brand gradient) */}
+      {/* Background video loop. muted+playsInline are required for mobile
+          autoplay; the poster keeps the frame filled while it buffers. */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        poster="/hero-bg.jpeg"
+        aria-hidden
+        className="absolute inset-0 h-full w-full object-cover"
+      >
+        <source src="/videos/match-media-hero-bg.mp4" type="video/mp4" />
+      </video>
+
+      {/* Legibility scrim over the video (neutral Ivory tint, not a brand gradient) */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"

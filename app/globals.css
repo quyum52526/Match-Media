@@ -5,6 +5,11 @@
 /* Brand v1.0 — headings use the display serif (Fraunces / Noto Serif Bengali)
    app-wide; body text inherits the body stack from <body> (set in the layout). */
 @layer base {
+  /* In-page anchor navigation (e.g. Terms sidebar) slides instead of jumping. */
+  html {
+    scroll-behavior: smooth;
+  }
+
   h1,
   h2,
   h3,

@@ -48,6 +48,15 @@ const notoSerifBengali = Noto_Serif_Bengali({
 export const metadata: Metadata = {
   title: "MatchMedia",
   description: "Privacy-first nationwide matrimonial platform.",
+  // Brand favicon (MM monogram). A sized PNG entry plus shortcut/apple
+  // aliases covers modern browsers, legacy favicon lookups and iOS home-screen.
+  icons: {
+    icon: [
+      { url: "/Artboard 1 copy 3.png", type: "image/png", sizes: "512x512" },
+    ],
+    shortcut: "/Artboard 1 copy 3.png",
+    apple: "/Artboard 1 copy 3.png",
+  },
 };
 
 // NOTE: We intentionally do NOT export generateStaticParams. Pre-enumerating

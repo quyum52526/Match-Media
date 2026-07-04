@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
@@ -70,16 +71,22 @@ export async function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-canvas/80 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-        <div className="flex items-center gap-6">
-          {/* Brand name stays English in every locale */}
-          <Link
-            href="/"
-            className="font-body text-lg font-bold tracking-tight text-ink"
-          >
-            {t("name")}
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
+        <div className="flex min-w-0 items-center gap-4">
+          {/* Brand wordmark — links home in every locale */}
+          <Link href="/" aria-label={t("name")} className="shrink-0">
+            <Image
+              src="/MM Match Media Logo-02.png"
+              alt="MatchMedia Logo"
+              width={150}
+              height={30}
+              priority
+              className="h-7 w-auto sm:h-8"
+            />
           </Link>
-          <div className="hidden items-center gap-4 md:flex">
+          {/* Full nav row needs lg+ to fit (admins carry the most items);
+              below that the hamburger menu takes over. */}
+          <div className="hidden items-center gap-2 lg:flex">
             {session && (
               <NavLinks
                 unread={unread}
@@ -103,7 +110,9 @@ export async function Header() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Right controls: never squeezed (shrink-0) and stacked above any
+            overflowing nav content (z-10) so EN/BN stays clickable. */}
+        <div className="relative z-10 flex shrink-0 items-center gap-3">
           <MobileMenu
             menuLabel={nav("menu")}
             navItems={mobileNavItems}
@@ -141,7 +150,7 @@ export async function Header() {
             )}
           </MobileMenu>
           <LocaleSwitcher />
-          <div className="hidden md:flex">
+          <div className="hidden lg:flex">
             {session?.user ? (
               <UserMenu
                 email={session.user.email ?? ""}

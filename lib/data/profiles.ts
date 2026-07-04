@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { calcAge } from "@/lib/utils";
 import { signUrl, signUrls } from "@/lib/storage/supabase";
 import { isProActive } from "@/lib/billing";
+import { maskEmail, maskPhone } from "@/lib/privacy";
 import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
 import { heightsInRange } from "@/lib/constants/profileOptions";
 import type {
@@ -489,6 +490,14 @@ export async function getProfileForViewer(
       nid:    false,
     },
     viewer: viewerState,
+    // STRICT PRIVACY: only masked strings ever leave the server — the raw
+    // phone/email are never serialized to the client, matched or not.
+    maskedContact: profileUser
+      ? {
+          phone: profileUser.mobile ? maskPhone(profileUser.mobile) : undefined,
+          email: maskEmail(profileUser.email),
+        }
+      : undefined,
   };
 
   return view;

@@ -30,6 +30,7 @@ import {
   UsersIcon,
 } from "@/components/ui/icons";
 import { useCallControls } from "@/components/calls/CallProvider";
+import { MaskedContact } from "@/components/privacy/MaskedContact";
 import { computeCompletion } from "@/lib/utils";
 import { localize } from "@/lib/constants/labels";
 import { BlurredImage } from "./BlurredImage";
@@ -281,8 +282,8 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
           {/* Trust & Verifications breakdown */}
           <TrustCard verifications={data.verifications} />
 
-          {/* Privacy-first: phone & email are never shown. Connect in-app. */}
-          <PrivacyNote />
+          {/* Privacy-first: phone & email are shown masked only, never raw. */}
+          <PrivacyNote contact={data.maskedContact} />
 
           {/* Trust & safety: report this profile */}
           <div className="flex justify-end pt-1">
@@ -422,9 +423,14 @@ function CompletionMeter({ score }: { score: number }) {
 /**
  * Privacy-first: phone numbers and emails are never exposed on the platform.
  * This card replaces the old contact-reveal section and steers users to the
- * on-platform channels (in-app message + voice call).
+ * on-platform channels (in-app message + voice call). The masked rows are a
+ * trust signal — the values arrive from the server ALREADY masked.
  */
-function PrivacyNote() {
+function PrivacyNote({
+  contact,
+}: {
+  contact?: { phone?: string; email?: string };
+}) {
   const t = useTranslations("Profile.privacyNote");
   return (
     <Card>
@@ -438,6 +444,26 @@ function PrivacyNote() {
             <p className="mt-0.5 text-sm text-ink/60">{t("body")}</p>
           </div>
         </div>
+        {(contact?.phone || contact?.email) && (
+          <dl className="mt-4 grid grid-cols-1 gap-3 border-t border-hairline pt-4 sm:grid-cols-2">
+            {contact.phone && (
+              <div>
+                <dt className="text-xs text-ink/50">{t("phone")}</dt>
+                <dd className="mt-0.5">
+                  <MaskedContact value={contact.phone} />
+                </dd>
+              </div>
+            )}
+            {contact.email && (
+              <div>
+                <dt className="text-xs text-ink/50">{t("email")}</dt>
+                <dd className="mt-0.5">
+                  <MaskedContact value={contact.email} />
+                </dd>
+              </div>
+            )}
+          </dl>
+        )}
       </CardBody>
     </Card>
   );

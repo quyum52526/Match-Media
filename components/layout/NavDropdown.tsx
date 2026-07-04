@@ -47,7 +47,7 @@ export function NavDropdown({ label, items }: NavDropdownProps) {
         aria-expanded={open}
         aria-haspopup="menu"
         className={cn(
-          "flex items-center gap-1 text-sm font-medium text-ink/60 transition-colors duration-150 hover:text-ink",
+          "flex items-center gap-1 whitespace-nowrap text-sm font-medium text-ink/60 transition-colors duration-150 hover:text-ink",
           open && "text-ink",
         )}
       >

@@ -156,4 +156,11 @@ export interface ProfileDetailView {
   details: ProfileFullDetails;
   verifications: ProfileVerifications;
   viewer: ViewerState;
+  /**
+   * Pre-masked contact hints ("018****3456" / "a***@gmail.com"), shown as a
+   * trust signal. Masked SERVER-SIDE — raw phone/email are never serialized
+   * to the client regardless of match state (connect happens in-app).
+   * Absent for managed profiles with no User account.
+   */
+  maskedContact?: { phone?: string; email?: string };
 }

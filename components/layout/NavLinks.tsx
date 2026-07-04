@@ -24,7 +24,7 @@ function navLink(pathname: string, href: string): string {
   const active =
     href === "/" ? pathname === "/" : pathname.startsWith(href);
   return [
-    "relative text-sm font-medium transition-colors duration-150",
+    "relative whitespace-nowrap text-sm font-medium transition-colors duration-150",
     active
       ? "text-primary font-semibold after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-full after:rounded-full after:bg-primary"
       : "text-ink/60 hover:text-ink",
@@ -48,10 +48,10 @@ export function NavLinks({
   const pathname = usePathname();
 
   return (
-    <nav className="flex items-center gap-4">
-      <Link href="/" className={navLink(pathname, "/")}>
-        {labels.home}
-      </Link>
+    <nav className="flex items-center gap-2 xl:gap-3">
+      {/* No Home text link on desktop — the logo links home, and the row
+          needs every pixel for the admin/agent item set. (Home stays in the
+          hamburger menu below lg.) */}
       <Link href="/dashboard" className={navLink(pathname, "/dashboard")}>
         {labels.dashboard}
       </Link>
@@ -86,7 +86,13 @@ export function NavLinks({
         )}
       </Link>
       {isAgent && (
-        <Link href="/jobs" className={navLink(pathname, "/jobs")}>
+        // Lower-priority link: only shown when the row has room to spare
+        // (xl+). Below lg it lives in the hamburger menu; agents also reach
+        // jobs from their dashboard.
+        <Link
+          href="/jobs"
+          className={`${navLink(pathname, "/jobs")} max-xl:hidden`}
+        >
           {labels.jobs}
         </Link>
       )}

@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { LockIcon, ClockIcon, CheckIcon } from "@/components/ui/icons";
+import { PrivacyBlur } from "@/components/privacy/PrivacyBlur";
 import type { ImagePrivacy, PhotoAccessState } from "./types";
 
 interface BlurredImageProps {
@@ -35,17 +36,14 @@ export function BlurredImage({
 
   return (
     <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-ink/5">
-      {/* Photo (or decorative stand-in when no src is provided) */}
+      {/* Photo (or decorative stand-in when no src is provided). The lock
+          badge is suppressed — the request-access overlay below has its own. */}
       {src ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <PrivacyBlur
           src={src}
           alt={t("alt", { name })}
-          className={
-            revealed
-              ? "h-full w-full object-cover"
-              : "h-full w-full object-cover blur-2xl scale-110"
-          }
+          isUnlocked={revealed}
+          showLock={false}
         />
       ) : (
         <div

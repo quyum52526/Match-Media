@@ -254,7 +254,9 @@
     },
     "privacyNote": {
       "title": "Contact details stay private",
-      "body": "For your safety, phone numbers and emails are never shared. Connect through in-app messaging and voice calls once you match."
+      "body": "For your safety, phone numbers and emails are never shared. Connect through in-app messaging and voice calls once you match.",
+      "phone": "Phone",
+      "email": "Email"
     },
     "card": {
       "request": "Request",
@@ -778,11 +780,13 @@
     "title": "Terms and Conditions",
     "intro": "By using MatchMedia, you agree to the following terms. Please read them carefully.",
     "sections": [
-      { "heading": "1. Acceptance of Terms", "body": "By creating an account, you agree to these terms and to use the platform honestly and respectfully." },
-      { "heading": "2. Account Responsibility", "body": "You are responsible for the accuracy of the information on your profile and for keeping your login details secure." },
-      { "heading": "3. Privacy", "body": "We only share your photos and contact information with your explicit consent, as described in our Privacy Policy." },
-      { "heading": "4. Prohibited Conduct", "body": "Harassment, impersonation, and posting false information are not allowed and may result in account suspension." },
-      { "heading": "5. Changes to These Terms", "body": "We may update these terms from time to time. Continued use of the platform means you accept the updated terms." }
+      { "id": "acceptance-of-terms", "heading": "1. Acceptance of Terms", "body": "MatchMedia is an online introduction and matchmaking platform that helps members and their families discover, evaluate and connect with potential life partners. By creating an account you confirm that you are at least 18 years old, legally able to enter into an agreement, and that you accept these Terms and Conditions in full. MatchMedia acts solely as a facilitator: we provide the tools for discovery, verification and communication, but every decision about a relationship or marriage rests entirely with you and your family. We may update these terms from time to time as the platform evolves; when we make material changes we will notify you in the app, and your continued use of MatchMedia after an update means you accept the revised terms." },
+      { "id": "account-responsibility", "heading": "2. Account Responsibility", "body": "You are responsible for the accuracy and honesty of every piece of information on your profile — including your age, education, profession, marital status and family details — and for keeping it up to date. Keep your login credentials confidential and notify us immediately if you suspect unauthorised access to your account. Each member may hold only one personal account. Where a profile is managed on behalf of a candidate — by parents or by a registered matchmaking organisation (Media) — the manager must have the candidate's informed consent and remains fully responsible for the profile's accuracy and conduct. Accounts that repeatedly publish false or misleading information may be suspended or permanently removed." },
+      { "id": "privacy", "heading": "3. Privacy", "body": "Your privacy is the foundation of MatchMedia. We collect only the information needed to operate the service, and we never sell your personal data. Your photos and personal details are shared with other members only in the ways you control: photos remain blurred until you approve a viewing request, and your contact details are never displayed to anyone (see the Data Privacy & Masking Policy below). Communication with your matches happens through MatchMedia's own messaging and calling features, so you never need to hand out a phone number or email address. Data required for payments is processed securely by our payment partner and is never visible to other members. You may request deletion of your account and associated data at any time." },
+      { "id": "verification", "heading": "4. Verification", "body": "Trust on MatchMedia is built through verification. Our network of registered Verification Agents — trained, independently verified field agents — review and confirm member details such as identity documents (NID), locality and stated profession. Agents are compensated per completed task from the verification budget attached to each request, which keeps the process independent and accountable. Profiles that pass these checks receive the \"Verified\" badge, and those that complete additional background checks receive \"Premium Verified\". Verification significantly raises the reliability of a profile, but it is not a guarantee of character or intent: members and their families should always exercise their own judgment before advancing a relationship." },
+      { "id": "prohibited-conduct", "heading": "5. Prohibited Conduct", "body": "MatchMedia is a respectful, family-oriented community, and conduct that undermines it is prohibited. This includes harassment or abusive language toward any member; impersonation or the creation of fake profiles; publishing false or misleading information; attempting to obtain another member's phone number, email or other contact details outside the platform or to circumvent the masking and photo-privacy protections; requesting money, gifts or financial information from any member; and any commercial solicitation unrelated to legitimate matchmaking. Violations may lead to content removal, suspension or a permanent ban, and where the law requires it we will cooperate with the authorities. Please report suspicious behaviour with the in-app Report tool — our moderation team reviews every report." },
+      { "id": "liability", "heading": "6. Liability", "body": "MatchMedia is an introduction platform, not a marriage bureau or a party to any relationship. We do not arrange, broker or guarantee marriages, and we make no promises about the number or quality of matches, responses or outcomes. While verification and moderation substantially reduce risk, we cannot vouch for the character, conduct or intentions of any member, and we are not responsible for interactions that take place outside the platform, including in-person meetings. You are responsible for your own due diligence: meet first in safe public places, involve your family early, and never send money to anyone you meet on the platform. To the maximum extent permitted by the laws of Bangladesh, MatchMedia's total liability for any claim arising from the use of the service is limited to the fees you have paid to us." },
+      { "id": "masking-policy", "heading": "7. Data Privacy & Masking Policy", "body": "We protect member data with masking and blurring by default. Profile photos are stored privately and served only as blurred previews until the owner approves a viewing request; every photo is also reviewed by our moderation team before it becomes visible to anyone. Phone numbers and email addresses are never displayed to other members — on profile pages they appear only in masked form (for example 018****3456 or a***@gmail.com), and this masking is applied on our servers, so the real values never even reach another member's device. Matched members connect through MatchMedia's built-in messaging and voice calling instead of exchanging contact details. Your full contact details are never sold, shared with third parties or revealed to other members; unmasked data is used only to operate your account — login, OTP verification and secure payment processing." }
     ]
   },
   "Blog": {
@@ -801,19 +805,6 @@
       { "title": "Matchmaking Q&A Webinar", "date": "2026-07-15", "location": "Online", "description": "Live session answering your questions about profiles, privacy, and verification." },
       { "title": "Dhaka Community Meetup", "date": "2026-08-02", "location": "Dhaka", "description": "An in-person meetup for verified members to meet the MatchMedia team." },
       { "title": "Safe Matchmaking Workshop", "date": "2026-08-20", "location": "Online", "description": "Practical guidance on staying safe while getting to know a potential match." }
-    ]
-  },
-  "UserGuide": {
-    "title": "User Guide",
-    "intro": "New to MatchMedia? Here's how to get started in a few simple steps.",
-    "steps": [
-      { "title": "1. Create Your Profile", "body": "Sign up and fill in your details — the more complete your profile, the better your matches." },
-      { "title": "2. Get Verified", "body": "Verify your mobile number to unlock messaging and calling with your matches." },
-      { "title": "3. Browse & Filter", "body": "Use filters like age, district, and profession to find profiles that match what you're looking for." },
-      { "title": "4. Send an Interest", "body": "Found someone promising? Send an interest to let them know you'd like to connect — you can include a short introductory note (up to 200 characters) to say something about yourself." },
-      { "title": "5. Chat & Call", "body": "Messaging and voice calls unlock only after the other person accepts your Interest — that's what makes you a match. Once accepted, message and call directly inside MatchMedia, no phone number needed.", "linkLabel": "Manage your sent & received interests", "linkHref": "/interests" },
-      { "title": "6. How to Earn", "body": "Registered agents can earn by completing verification tasks for the platform — reviewing and confirming member details, then getting paid per completed task from the verification budget set on each request." },
-      { "title": "7. Profile Types", "body": "Profiles can carry two trust badges. \"Verified\" means the member's ID and location have been confirmed. \"Premium Verified\" means the member has gone through additional background checks on top of standard verification." }
     ]
   }
 }
