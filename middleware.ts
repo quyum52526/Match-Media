@@ -7,17 +7,27 @@ const intlMiddleware = createMiddleware(routing);
 /**
  * Return the correct public origin for this server.
  *
- * Why not request.nextUrl.origin?
- * Next.js builds nextUrl from the HTTP Host header. On Windows with `next dev`,
- * Node delivers Host: localhost (no port), so nextUrl.origin is also
- * "http://localhost" — the same portless value next-intl uses for its redirect.
- * Comparing them is always equal, so the fix is silently skipped.
+ * In production (Vercel or any reverse proxy), the platform sets the
+ * `x-forwarded-host` / `x-forwarded-proto` headers to the real public origin,
+ * so we derive it dynamically from the request. We must NOT use APP_URL here:
+ * APP_URL may legitimately hold a localhost dev value, and trusting it in
+ * production would redirect live users to localhost.
  *
- * APP_URL is the authoritative source: it's already in .env for payment
- * callbacks and is always correct. We fall back to nextUrl.origin only when
- * APP_URL is absent (e.g. CI environments that don't set it).
+ * APP_URL is only a *local-dev* fallback. On Windows with `next dev`, Node
+ * delivers `Host: localhost` (no port), so `request.nextUrl.origin` becomes a
+ * portless "http://localhost" — the same value next-intl uses for its redirect,
+ * making the comparison below a no-op. APP_URL (e.g. http://localhost:3000)
+ * supplies the correct dev origin in that case.
  */
 function getCorrectOrigin(request: NextRequest): string {
+  // Production / proxied: trust the forwarded headers, never APP_URL.
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  if (forwardedHost) {
+    const proto = request.headers.get("x-forwarded-proto") ?? "https";
+    return `${proto}://${forwardedHost}`;
+  }
+
+  // Local-dev fallback only (no forwarded headers present).
   if (process.env.APP_URL) {
     try {
       return new URL(process.env.APP_URL).origin;
