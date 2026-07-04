@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import {
@@ -39,16 +38,19 @@ export async function HomeFooter() {
         <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
           {/* Brand + socials */}
           <div className="max-w-sm">
-            {/* Brand lockup — the white/garnet variant is made for dark
-                surfaces, so it sits directly on the Midnight Ink footer.
-                Links home. */}
-            <Link href="/" aria-label="MatchMedia" className="inline-block">
-              <Image
-                src="/match-media-logo-maine.png"
-                alt="MatchMedia Logo"
-                width={229}
-                height={80}
-                className="h-16 w-auto sm:h-20"
+            {/* Brand lockup on a clean white card — the logo's navy ink reads
+                as near-invisible on the dark footer, so the light backing keeps
+                it legible. Links home. */}
+            <Link
+              href="/"
+              aria-label="MatchMedia"
+              className="inline-block rounded-card bg-surface px-5 py-3 shadow-card"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/match-media-footer-logo.svg"
+                alt="Match Media"
+                className="h-10 w-auto sm:h-12"
               />
             </Link>
             <p className="mt-3 font-body text-xs text-canvas/40">

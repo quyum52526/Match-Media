@@ -48,14 +48,12 @@ const notoSerifBengali = Noto_Serif_Bengali({
 export const metadata: Metadata = {
   title: "MatchMedia",
   description: "Privacy-first nationwide matrimonial platform.",
-  // Brand favicon (MM monogram). A sized PNG entry plus shortcut/apple
-  // aliases covers modern browsers, legacy favicon lookups and iOS home-screen.
+  // Brand favicon (MM monogram, scalable SVG). shortcut/apple aliases cover
+  // legacy favicon lookups and iOS home-screen; SVG scales to any size.
   icons: {
-    icon: [
-      { url: "/Artboard 1 copy 3.png", type: "image/png", sizes: "512x512" },
-    ],
-    shortcut: "/Artboard 1 copy 3.png",
-    apple: "/Artboard 1 copy 3.png",
+    icon: [{ url: "/matchmedia-favicon.svg", type: "image/svg+xml" }],
+    shortcut: "/matchmedia-favicon.svg",
+    apple: "/matchmedia-favicon.svg",
   },
 };
 
