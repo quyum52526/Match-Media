@@ -28,6 +28,28 @@ export async function createUpgradeOrder(planCode: string, locale: string): Prom
   redirect(localePath(locale, `/pro/checkout/${order.id}`));
 }
 
+/**
+ * One-step checkout for the standalone /subscription page (CheckoutForm).
+ * Creates the order for `planCode` — auto-applying the RENEWAL promo exactly
+ * like createUpgradeOrder, so the amount charged matches the summary the page
+ * rendered from getCheckoutPlans — then goes straight to the gateway, skipping
+ * the intermediate /pro/checkout screen. A fully-discounted (0 due) order
+ * activates immediately. Redirects out on every path (to the gateway, to
+ * /pro/success, or to /login).
+ */
+export async function startPlanCheckout(planCode: string, locale: string): Promise<void> {
+  const viewerId = await requireViewerId(localePath(locale, "/login"));
+  const order = await createOrder(viewerId, planCode, { autoTrigger: "RENEWAL" });
+
+  if (order.finalAmount === 0) {
+    await activateOrder(order.id, { gateway: "promo" });
+    redirect(localePath(locale, `/pro/success?order=${order.id}`));
+  }
+
+  // Reuse the gateway-session + redirect logic (SSLCommerz by default).
+  await initiatePayment(order.id, locale);
+}
+
 /** Begin payment for a PENDING order: open a gateway session and redirect. */
 export async function initiatePayment(orderId: string, locale: string): Promise<void> {
   const viewerId = await requireViewerId(localePath(locale, "/login"));
