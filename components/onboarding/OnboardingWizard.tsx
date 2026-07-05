@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Container } from "@/components/ui/Container";
 import { StepCategorySelect, type AccountCategory } from "./steps/StepCategorySelect";
 import { StepBasicDetails } from "./steps/StepBasicDetails";
 import { StepMediaDetails } from "./steps/StepMediaDetails";
@@ -154,7 +155,8 @@ export function OnboardingWizard() {
   return (
     <>
       {toastEl}
-    <div className="mx-auto w-full max-w-lg px-4 py-10">
+    <Container as="div" className="py-10">
+    <div className="mx-auto w-full max-w-lg">
       {/* Header */}
       <div className="mb-8 text-center">
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">
@@ -235,6 +237,7 @@ export function OnboardingWizard() {
         )}
       </div>
     </div>
+    </Container>
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Card, CardBody } from "@/components/ui/Card";
+import { Container } from "@/components/ui/Container";
 import { MockPay } from "@/components/billing/MockPay";
 import { formatTaka } from "@/lib/billing/pricing";
 import { getOrderForViewer } from "@/lib/data/billing";
@@ -28,7 +29,8 @@ export default async function MockPayPage({
   if (!order) notFound();
 
   return (
-    <main className="mx-auto max-w-md px-4 py-12">
+    <Container className="py-12">
+      <div className="mx-auto max-w-md">
       <Card>
         <CardBody className="space-y-4 text-center">
           <p className="text-xs uppercase tracking-wide text-ink/40">
@@ -46,6 +48,7 @@ export default async function MockPayPage({
           <MockPay orderId={order.id} locale={locale} />
         </CardBody>
       </Card>
-    </main>
+      </div>
+    </Container>
   );
 }

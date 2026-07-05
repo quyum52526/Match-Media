@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Card, CardBody } from "@/components/ui/Card";
+import { Container } from "@/components/ui/Container";
 import { LoginForm } from "@/components/auth/LoginForm";
 
 export const metadata = {
@@ -17,7 +18,8 @@ export default async function LoginPage({
   const t = await getTranslations("Auth");
 
   return (
-    <main className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-10">
+    <Container className="flex min-h-[70vh] flex-col justify-center py-10">
+      <div className="mx-auto w-full max-w-md">
       <h1 className="mb-6 text-center text-2xl font-bold text-ink">
         {t("title")}
       </h1>
@@ -35,6 +37,7 @@ export default async function LoginPage({
           {t("registerLink")}
         </Link>
       </p>
-    </main>
+      </div>
+    </Container>
   );
 }

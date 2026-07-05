@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Button } from "@/components/ui/Button";
+import { Container } from "@/components/ui/Container";
 import { CheckIcon } from "@/components/ui/icons";
 import { formatTaka } from "@/lib/billing/pricing";
 import { getOrderForViewer, getViewerProStatus } from "@/lib/data/billing";
@@ -30,7 +31,8 @@ export default async function ProSuccessPage({
   const homeHref = locale === "en" ? "/en" : "/";
 
   return (
-    <main className="mx-auto flex max-w-lg flex-col items-center px-4 py-16 text-center">
+    <Container className="flex flex-col items-center py-16 text-center">
+      <div className="mx-auto flex w-full max-w-lg flex-col items-center">
       <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
         <CheckIcon width={30} height={30} />
       </span>
@@ -54,6 +56,7 @@ export default async function ProSuccessPage({
       <Link href={homeHref} className="mt-6">
         <Button variant="primary">{t("cta")}</Button>
       </Link>
-    </main>
+      </div>
+    </Container>
   );
 }

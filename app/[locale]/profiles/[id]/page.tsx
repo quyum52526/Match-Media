@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ProfileDetail } from "@/components/profile/ProfileDetail";
 import { Button } from "@/components/ui/Button";
+import { Container } from "@/components/ui/Container";
 import { LockIcon, StarIcon } from "@/components/ui/icons";
 import { getProfileForViewer, getProfileViewAccess } from "@/lib/data/profiles";
 import { getPhotoRequestQuota } from "@/lib/data/billing";
@@ -30,7 +31,8 @@ export default async function ProfilePage({
     const t = await getTranslations("Pro.viewLimit");
     const proHref = locale === "en" ? "/en/pro" : "/pro";
     return (
-      <main className="mx-auto flex max-w-lg flex-col items-center px-4 py-16 text-center">
+      <Container className="flex flex-col items-center py-16 text-center">
+        <div className="mx-auto flex w-full max-w-lg flex-col items-center">
         <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent">
           <LockIcon width={26} height={26} />
         </span>
@@ -44,7 +46,8 @@ export default async function ProfilePage({
             {t("cta")}
           </Button>
         </Link>
-      </main>
+        </div>
+      </Container>
     );
   }
 

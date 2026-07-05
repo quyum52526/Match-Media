@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Container } from "@/components/ui/Container";
 import { WhoViewedMe } from "@/components/profile/WhoViewedMe";
 import { getProfileViewers } from "@/lib/data/viewers";
 import { requireViewerId } from "@/lib/session";
@@ -20,7 +21,7 @@ export default async function ViewersPage({
   const { viewers, total, gated } = await getProfileViewers(viewerId);
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-6 sm:py-10">
+    <Container className="py-6 sm:py-10">
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-ink">{t("title")}</h1>
         <p className="mt-1 text-sm text-ink/60">
@@ -32,6 +33,6 @@ export default async function ViewersPage({
       </header>
 
       <WhoViewedMe viewers={viewers} />
-    </main>
+    </Container>
   );
 }

@@ -1,4 +1,5 @@
 import { setRequestLocale } from "next-intl/server";
+import { Container } from "@/components/ui/Container";
 import { UserGuide, type GuideLang } from "@/components/guide/UserGuide";
 
 export const metadata = {
@@ -14,10 +15,10 @@ export default async function UserGuidePage({
   setRequestLocale(locale);
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10">
+    <Container className="py-10">
       {/* Guide content is self-contained with its own EN/BN toggle; the
           route locale only seeds the initial language. */}
       <UserGuide initialLang={locale === "bn" ? "bn" : ("en" as GuideLang)} />
-    </main>
+    </Container>
   );
 }
