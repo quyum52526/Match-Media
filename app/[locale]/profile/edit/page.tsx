@@ -1,5 +1,7 @@
+import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { AuthBackground } from "@/components/auth/AuthBackground";
 import { ProfileEditForm } from "@/components/profile/ProfileEditForm";
 import { PhotoManager } from "@/components/profile/PhotoManager";
 import { AgentDashboard } from "@/components/agent/AgentDashboard";
@@ -81,6 +83,12 @@ export default async function ProfileEditPage({
   const t = await getTranslations("ProfileEdit");
   const isWelcome = welcome === "1";
 
+  // Every branch of this route shares the same subtle brand background (bg-03),
+  // keeping the page visually consistent with the auth forms.
+  const withBg = (node: ReactNode) => (
+    <AuthBackground bgImage="/match-media-bg-03-b.svg">{node}</AuthBackground>
+  );
+
   const [userMeta, initial] = await Promise.all([
     getUserMeta(viewerId),
     getEditableProfile(viewerId),
@@ -98,7 +106,7 @@ export default async function ProfileEditPage({
   // ── AGENT ─────────────────────────────────────────────────────────────────
   if (category === "AGENT") {
     const agentData = await getAgentDashboardData(viewerId);
-    return (
+    return withBg(
       <Container className="py-6 sm:py-10"><div className="mx-auto max-w-2xl">
         <header className="mb-6">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">
@@ -127,7 +135,7 @@ export default async function ProfileEditPage({
 
     const clientName = clientProfile.fullName || "Client Profile";
 
-    return (
+    return withBg(
       <Container className="py-6 sm:py-10"><div className="mx-auto max-w-2xl">
         <header className="mb-6">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">
@@ -154,7 +162,7 @@ export default async function ProfileEditPage({
   // ── MEDIA — agency dashboard ───────────────────────────────────────────────
   if (category === "MEDIA") {
     const mediaData = await getMediaDashboardData(viewerId);
-    return (
+    return withBg(
       <Container className="py-6 sm:py-10"><div className="mx-auto max-w-3xl">
         <header className="mb-6">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">
@@ -182,7 +190,7 @@ export default async function ProfileEditPage({
 
     const childName = clientProfile.fullName || "Child Profile";
 
-    return (
+    return withBg(
       <Container className="py-6 sm:py-10"><div className="mx-auto max-w-2xl">
         <header className="mb-6">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">
@@ -209,7 +217,7 @@ export default async function ProfileEditPage({
   // ── PARENTS — guardian dashboard ───────────────────────────────────────────
   if (category === "PARENTS") {
     const guardianData = await getGuardianDashboardData(viewerId);
-    return (
+    return withBg(
       <Container className="py-6 sm:py-10"><div className="mx-auto max-w-3xl">
         <header className="mb-6">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">
@@ -226,7 +234,7 @@ export default async function ProfileEditPage({
   const hasProfile = initial.gender !== "";
   const photos = hasProfile ? await getOwnPhotos(viewerId) : [];
 
-  return (
+  return withBg(
     <Container className="py-6 sm:py-10"><div className="mx-auto max-w-2xl">
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-ink">
