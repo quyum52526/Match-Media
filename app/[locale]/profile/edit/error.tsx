@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { Button } from "@/components/ui/Button";
+import { Container } from "@/components/ui/Container";
 
 export default function ProfileEditError({
   error,
@@ -15,7 +16,7 @@ export default function ProfileEditError({
   }, [error]);
 
   return (
-    <main className="mx-auto flex min-h-[60vh] max-w-lg flex-col items-center justify-center gap-4 px-4 text-center">
+    <Container className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center">
       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
         <svg
           className="h-7 w-7 text-red-500"
@@ -52,6 +53,6 @@ export default function ProfileEditError({
           Go home
         </Button>
       </div>
-    </main>
+    </Container>
   );
 }

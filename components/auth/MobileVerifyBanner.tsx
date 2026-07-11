@@ -22,7 +22,8 @@ export async function MobileVerifyBanner() {
 
   return (
     <div className="border-b border-amber-300/40 bg-amber-50">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-2">
+      {/* max-w-6xl matches the Header/Container rail so edges line up. */}
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2">
         <div className="flex items-center gap-2 text-sm text-amber-900">
           <ShieldCheckIcon width={18} height={18} className="shrink-0" />
           <span>{t("message")}</span>

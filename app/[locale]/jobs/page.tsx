@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getViewerId } from "@/lib/session";
 import { getJobBoard } from "@/lib/data/jobs";
 import { JobBoard } from "@/components/jobs/JobBoard";
+import { Container } from "@/components/ui/Container";
 
 export const metadata = {
   title: "Job Board · MatchMedia",
@@ -38,7 +39,7 @@ export default async function JobsPage({
   const jobs = await getJobBoard(userId);
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8 sm:py-12">
+    <Container className="py-8 sm:py-12">
       <header className="mb-8">
         <h1 className="font-display text-2xl font-semibold text-ink sm:text-3xl">
           Job Board
@@ -50,6 +51,6 @@ export default async function JobsPage({
       </header>
 
       <JobBoard jobs={jobs} />
-    </main>
+    </Container>
   );
 }

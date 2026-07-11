@@ -754,9 +754,9 @@
   },
   "About": {
     "title": "About Us",
-    "intro": "MatchMedia is a privacy-first, nationwide matrimonial platform built for Bangladeshi families who want a safer, more dignified way to find a life partner.",
+    "intro": "Welcome to Match Media — a nationwide matrimonial platform built around one core principle: matchmaking should be safe, dignified, and grounded in trust. We understand that privacy is non-negotiable when it comes to something this personal, which is why we've created a dedicated space for Bangladeshi families to pursue meaningful, long-term connections with confidence.",
     "missionTitle": "Our Mission",
-    "missionBody": "We believe matchmaking should protect your privacy, verify who you're really talking to, and put you in control of every step — from the first hint of interest to the first phone call.",
+    "missionBody": "We believe matchmaking should never be a guessing game. Our mission is simple: protect your privacy, and give you complete clarity about who you're truly connecting with. From your first expression of interest to the moment you decide to make that first call, you remain in full control of your journey — every step of the way.",
     "valuesTitle": "What We Stand For",
     "values": [
       { "title": "Privacy by default", "body": "Photos, contact details, and personal information stay hidden until you choose to share them." },
@@ -793,10 +793,52 @@
     "title": "Blog",
     "intro": "Stories, advice, and updates from the MatchMedia team.",
     "posts": [
-      { "title": "5 Tips for a Trustworthy Matrimony Profile", "date": "2026-05-12", "excerpt": "Simple ways to make your profile clear, honest, and appealing to serious matches." },
-      { "title": "Why Verification Matters in Online Matchmaking", "date": "2026-04-28", "excerpt": "A look at how mobile and photo verification keep the community safe." },
-      { "title": "From First Message to First Meeting", "date": "2026-04-03", "excerpt": "A gentle guide to moving a conversation forward with confidence and care." }
-    ]
+      {
+        "title": "5 Tips for a Trustworthy Matrimony Profile",
+        "date": "2026-05-12",
+        "excerpt": "Simple ways to make your profile clear, honest, and appealing to serious matches.",
+        "body": {
+          "intro": "In the world of digital matchmaking, your profile is your first impression. If you want serious, quality matches, start by getting authenticity and clarity right.",
+          "points": [
+            { "heading": "Use real, recent photos.", "text": "Choose clear, well-lit photos that reflect how you look today. Avoid group photos and heavy filters — people want to know who they're actually talking to." },
+            { "heading": "Be honest about your details.", "text": "Profession, education, lifestyle — state them accurately. Trust begins right here." },
+            { "heading": "Write a bio that says something.", "text": "Not just a list of facts — bring out your values, your personality, and what sets you apart from everyone else. That's what people connect with." },
+            { "heading": "Be clear about what you're looking for.", "text": "Vague expectations lead to vague matches. Being specific saves everyone's time." },
+            { "heading": "Stay active.", "text": "A profile that never updates sends its own signal — that you're not serious. Keep yours regularly updated." }
+          ]
+        }
+      },
+      {
+        "title": "Why Verification Matters in Online Matchmaking",
+        "date": "2026-04-28",
+        "excerpt": "A look at how mobile and photo verification keep the community safe.",
+        "body": {
+          "intro": "When you're searching for a life partner, safety isn't optional — it's the entire foundation. Verification isn't just a checkbox; it's what makes everything else work.",
+          "points": [
+            { "heading": "It reduces fraud.", "text": "Mobile and photo verification mean fewer fake profiles and less catfishing — the person on the other side is real." },
+            { "heading": "It creates room for honest conversation.", "text": "When people know the person on the other side is verified too, they open up. That's where good connections begin." },
+            { "heading": "It keeps the platform credible.", "text": "Safety-first isn't just a policy — it's what tells people this is a place worth trusting." },
+            { "heading": "It protects your privacy too.", "text": "A good verification system confirms your legitimacy without exposing your personal information to the world." }
+          ]
+        }
+      },
+      {
+        "title": "From First Message to First Meeting",
+        "date": "2026-04-03",
+        "excerpt": "A gentle guide to moving a conversation forward with confidence and care.",
+        "body": {
+          "intro": "Going from the chat screen to a face-to-face coffee table is a big step. Here's how to make it a smooth one:",
+          "points": [
+            { "heading": "Skip the generic opener.", "text": "Messages like \"Hi, how are you\" get ignored. Mention something specific from their profile — it shows you actually read it instead of just chatting." },
+            { "heading": "Keep it light at first.", "text": "Match the energy of the other person's messages — if they write short replies, don't send paragraphs. Balance is everything." },
+            { "heading": "Know when to move forward.", "text": "A few days of good conversation is enough. Don't stay pen pals — chemistry only really shows itself in person." },
+            { "heading": "Propose a specific plan.", "text": "\"Let's meet sometime\" goes nowhere. \"Coffee at [place] on Saturday afternoon?\" makes saying yes easy." },
+            { "heading": "Respect their time.", "text": "If they need longer, be patient, keep the conversation going, and trust your intuition." }
+          ]
+        }
+      }
+    ],
+    "readMore": "Read"
   },
   "Events": {
     "title": "Events",

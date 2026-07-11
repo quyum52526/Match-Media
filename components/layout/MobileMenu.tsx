@@ -49,7 +49,7 @@ export function MobileMenu({
 
       {open && (
         <div className="absolute left-0 top-full z-30 w-full border-b border-hairline bg-canvas shadow-card">
-          <div className="mx-auto max-w-5xl px-4 py-3">
+          <div className="mx-auto max-w-6xl px-4 py-3">
             {navItems.length > 0 && (
               <MobileSection items={navItems} onNavigate={close} />
             )}

@@ -25,6 +25,9 @@ export default async function ConversationPage({
   if (!data) notFound();
 
   return (
+    // Deliberate exception to the global Container: the chat thread is an
+    // app-like screen that runs edge-to-edge on mobile (no px-4 gutter), so
+    // it keeps its own narrow wrapper instead of the standard page rail.
     <main className="mx-auto max-w-2xl">
       <MessageThread data={data} />
     </main>

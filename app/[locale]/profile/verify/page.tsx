@@ -3,6 +3,7 @@ import { setRequestLocale } from "next-intl/server";
 import { requireViewerId } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { VerificationCenter } from "@/components/verification/VerificationCenter";
+import { Container } from "@/components/ui/Container";
 
 export const metadata = {
   title: "Verification Center · MatchMedia",
@@ -37,8 +38,10 @@ export default async function VerifyPage({
   if (!user) redirect(`/${locale}/login`);
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-10">
-      <VerificationCenter user={user} />
-    </main>
+    <Container className="py-10">
+      <div className="mx-auto max-w-2xl">
+        <VerificationCenter user={user} />
+      </div>
+    </Container>
   );
 }

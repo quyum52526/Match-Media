@@ -13,6 +13,7 @@ import type { PhotoQuota } from "@/lib/data/billing";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardBody, CardTitle } from "@/components/ui/Card";
+import { Container } from "@/components/ui/Container";
 import { Modal } from "@/components/ui/Modal";
 import {
   ShieldCheckIcon,
@@ -116,7 +117,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-6 sm:py-10">
+    <Container className="py-6 sm:py-10">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[360px,1fr]">
         {/* ---------- Left: photo + primary actions ---------- */}
         <div className="space-y-4">
@@ -319,7 +320,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
         onConfirm={confirmExpressInterest}
         pending={isPending}
       />
-    </main>
+    </Container>
   );
 }
 

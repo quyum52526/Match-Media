@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Container } from "@/components/ui/Container";
 import { PlanCards } from "@/components/billing/PlanCards";
 import { getCheckoutPlans, getViewerProStatus } from "@/lib/data/billing";
 import { requireViewerId } from "@/lib/session";
@@ -25,7 +26,7 @@ export default async function ProPage({
   ]);
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8 sm:py-12">
+    <Container className="py-8 sm:py-12">
       <header className="mb-8 text-center">
         <h1 className="text-3xl font-bold text-ink">{t("title")}</h1>
         <p className="mx-auto mt-2 max-w-xl text-sm text-ink/70">
@@ -51,6 +52,6 @@ export default async function ProPage({
         <li>• {t("perks.reveal")}</li>
         <li>• {t("perks.priority")}</li>
       </ul>
-    </main>
+    </Container>
   );
 }

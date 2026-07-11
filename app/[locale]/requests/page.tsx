@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Container } from "@/components/ui/Container";
 import { RequestInbox } from "@/components/requests/RequestInbox";
 import { getReceivedRequests, getSentRequests } from "@/lib/data/requests";
 import { requireViewerId } from "@/lib/session";
@@ -24,12 +25,12 @@ export default async function RequestsPage({
   ]);
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-6 sm:py-10">
+    <Container className="py-6 sm:py-10">
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-ink">{t("title")}</h1>
       </header>
 
       <RequestInbox received={received} sent={sent} />
-    </main>
+    </Container>
   );
 }

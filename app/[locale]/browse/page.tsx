@@ -1,5 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { Container } from "@/components/ui/Container";
 import { ProfileGrid } from "@/components/profile/ProfileGrid";
 import { FilterBar } from "@/components/profile/FilterBar";
 import { ProfileCompletionBanner } from "@/components/profile/ProfileCompletionBanner";
@@ -73,7 +74,7 @@ export default async function BrowsePage({
   ]);
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-6 sm:py-10">
+    <Container className="py-6 sm:py-10">
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-ink">{t("title")}</h1>
         <p className="mt-1 text-sm text-ink/60">{t("subtitle")}</p>
@@ -120,6 +121,6 @@ export default async function BrowsePage({
       ) : (
         <p className="text-sm text-ink/60">{t("empty")}</p>
       )}
-    </main>
+    </Container>
   );
 }

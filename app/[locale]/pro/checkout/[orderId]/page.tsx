@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Card, CardBody } from "@/components/ui/Card";
+import { Container } from "@/components/ui/Container";
 import { CheckoutActions } from "@/components/billing/CheckoutActions";
 import { formatTaka } from "@/lib/billing/pricing";
 import { getOrderForViewer } from "@/lib/data/billing";
@@ -31,7 +32,8 @@ export default async function CheckoutPage({
   const proHref = locale === "en" ? "/en/pro" : "/pro";
 
   return (
-    <main className="mx-auto max-w-lg px-4 py-10">
+    <Container className="py-10">
+      <div className="mx-auto max-w-lg">
       <h1 className="mb-6 text-2xl font-bold text-ink">{t("title")}</h1>
 
       <Card>
@@ -94,6 +96,7 @@ export default async function CheckoutPage({
           )}
         </CardBody>
       </Card>
-    </main>
+      </div>
+    </Container>
   );
 }
