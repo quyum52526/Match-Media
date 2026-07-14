@@ -61,6 +61,33 @@ function resolvePreferredAge(
 }
 
 /**
+ * Fallback recommendations: the most-complete recent candidates, unscored
+ * (matchScore 0 -> no "% Match" badge). Used when personalised scoring yields
+ * nothing — either a sparse/narrow scored pass, or a viewer with no profile to
+ * score against (MEDIA/ADMIN/PARENTS). `preferredGender` gates the set when
+ * known, otherwise the fallback spans everyone.
+ */
+async function fallbackRecommendations(
+  viewerId: string,
+  candidateArm: Prisma.ProfileWhereInput,
+  preferredGender: string | null,
+): Promise<RecommendationResult> {
+  const where: Prisma.ProfileWhereInput = { ...candidateArm };
+  if (preferredGender) where.gender = preferredGender;
+  const rows = await prisma.profile.findMany({
+    where,
+    orderBy: [{ completionScore: "desc" }, { createdAt: "desc" }],
+    take: RECOMMENDED_LIMIT,
+    include: BROWSE_CARD_INCLUDE,
+  });
+  const cards = await hydrateProfileCards(rows, viewerId);
+  return {
+    kind: "fallback",
+    profiles: cards.map((card) => ({ ...card, matchScore: 0 })),
+  };
+}
+
+/**
  * "Recommended for You" — the top {@link RECOMMENDED_LIMIT} profiles ranked by
  * weighted match score.
  *
@@ -74,15 +101,26 @@ function resolvePreferredAge(
  *   2. Hydrate ONLY the top 20 through the shared card pipeline, so expensive
  *      URL signing never touches the full candidate set.
  *
- * Returns kind "scored" with an empty list for viewers without a candidate
- * profile (MEDIA/ADMIN/PARENTS), so the caller can omit or prompt as needed.
+ * Never returns an empty section: viewers with no profile to personalise
+ * against (MEDIA/ADMIN/PARENTS) get a gender-agnostic "fallback" set of the
+ * most-complete recent candidates, so the carousel is populated for everyone.
  */
 export async function getRecommendedProfiles(
   viewerId: string,
   filters: SearchFilters = {},
 ): Promise<RecommendationResult> {
+  // Candidate visibility mirrors the browse feed for a regular viewer:
+  //   • managed profiles (userId = null), OR
+  //   • self-registered candidates (accountCategory = "SELF"), excluding self.
+  const candidateArm: Prisma.ProfileWhereInput = {
+    OR: [
+      { userId: null },
+      { userId: { not: null }, NOT: { userId: viewerId }, user: { accountCategory: "SELF" } },
+    ],
+  };
+
   // The viewer's own profile is the preference baseline. Managers/admins have
-  // none -> no recommendations.
+  // none -> show the gender-agnostic fallback instead of nothing.
   const viewer = await prisma.profile.findUnique({
     where: { userId: viewerId },
     select: {
@@ -94,7 +132,7 @@ export async function getRecommendedProfiles(
       maritalStatus: true,
     },
   });
-  if (!viewer) return { kind: "scored", profiles: [] };
+  if (!viewer) return fallbackRecommendations(viewerId, candidateArm, null);
 
   const viewerAge = calcAge(viewer.dateOfBirth);
   const preferredAge = resolvePreferredAge(filters, viewerAge);
@@ -107,16 +145,6 @@ export async function getRecommendedProfiles(
     education: filters.education ?? viewer.education,
     profession: filters.profession ?? viewer.profession,
     maritalStatus: filters.maritalStatus ?? viewer.maritalStatus,
-  };
-
-  // Candidate visibility mirrors the browse feed for a regular viewer:
-  //   • managed profiles (userId = null), OR
-  //   • self-registered candidates (accountCategory = "SELF"), excluding self.
-  const candidateArm: Prisma.ProfileWhereInput = {
-    OR: [
-      { userId: null },
-      { userId: { not: null }, NOT: { userId: viewerId }, user: { accountCategory: "SELF" } },
-    ],
   };
 
   // Index-backed gate: opposite gender + a generous age window. Bounds how many
@@ -169,21 +197,8 @@ export async function getRecommendedProfiles(
   if (ranked.length === 0) {
     // No scored matches (sparse profile or narrow criteria). Rather than vanish,
     // fall back to the most-complete opposite-gender candidates so there's still
-    // someone to explore. These are unscored, so they carry matchScore 0 (no
-    // "% Match" badge) and the caller labels the section as a fallback.
-    const fallbackWhere: Prisma.ProfileWhereInput = { ...candidateArm };
-    if (preferredGender) fallbackWhere.gender = preferredGender;
-    const fallbackRows = await prisma.profile.findMany({
-      where: fallbackWhere,
-      orderBy: [{ completionScore: "desc" }, { createdAt: "desc" }],
-      take: RECOMMENDED_LIMIT,
-      include: BROWSE_CARD_INCLUDE,
-    });
-    const fallbackCards = await hydrateProfileCards(fallbackRows, viewerId);
-    return {
-      kind: "fallback",
-      profiles: fallbackCards.map((card) => ({ ...card, matchScore: 0 })),
-    };
+    // someone to explore.
+    return fallbackRecommendations(viewerId, candidateArm, preferredGender);
   }
 
   const scoreById = new Map(ranked.map((r) => [r.id, r.score]));
