@@ -21,9 +21,9 @@ export function VerificationList({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
-  function toggle(userId: string, value: boolean) {
+  function toggle(profileId: string, value: boolean) {
     startTransition(async () => {
-      const res = await setVerified(userId, value);
+      const res = await setVerified(profileId, value);
       if (res.ok) router.refresh();
     });
   }
@@ -41,7 +41,7 @@ export function VerificationList({
     <ul className="space-y-3">
       {profiles.map((p) => (
         <li
-          key={p.userId}
+          key={p.profileId}
           className="flex items-center justify-between gap-3 rounded-2xl border border-ink/10 bg-white p-4"
         >
           <div className="min-w-0">
@@ -54,13 +54,16 @@ export function VerificationList({
                   {t("verified")}
                 </Badge>
               )}
+              {p.managedByAgency && (
+                <Badge variant="neutral">{t("managedByAgency")}</Badge>
+              )}
             </div>
             <p className="truncate font-body text-xs text-ink/50">{p.email}</p>
             <p className="mt-0.5 text-xs text-ink/40">
               <span className="font-body">{p.age}</span>
               {p.district ? ` · ${localize(p.district, locale)}` : ""} ·{" "}
               <Link
-                href={`/profiles/${p.userId}`}
+                href={`/profiles/${p.userId ?? p.profileId}`}
                 className="font-medium text-primary hover:underline"
               >
                 {t("viewProfile")}
@@ -72,7 +75,7 @@ export function VerificationList({
             <Button
               size="sm"
               variant="outline"
-              onClick={() => toggle(p.userId, false)}
+              onClick={() => toggle(p.profileId, false)}
               disabled={pending}
             >
               {t("revoke")}
@@ -81,7 +84,7 @@ export function VerificationList({
             <Button
               size="sm"
               variant="primary"
-              onClick={() => toggle(p.userId, true)}
+              onClick={() => toggle(p.profileId, true)}
               disabled={pending}
             >
               <ShieldCheckIcon width={16} height={16} />

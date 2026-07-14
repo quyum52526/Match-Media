@@ -458,7 +458,8 @@
       "revoke": "প্রত্যাহার",
       "viewProfile": "প্রোফাইল দেখুন",
       "filterUnverified": "যাচাই-না-করা",
-      "filterAll": "সব"
+      "filterAll": "সব",
+      "managedByAgency": "এজেন্সি পরিচালিত"
     }
   },
   "Messages": {

@@ -90,23 +90,26 @@ export async function rejectPhoto(
   return ok;
 }
 
-/** Grant or revoke a profile's Verified trust badge. */
+/** Grant or revoke a profile's Verified trust badge. Keyed by Profile id so
+ *  agency-managed profiles (userId = null) can be verified too. */
 export async function setVerified(
-  userId: string,
+  profileId: string,
   value: boolean,
 ): Promise<AdminResult> {
   const adminId = await assertAdmin();
   if (!adminId) return err("FORBIDDEN");
 
-  await prisma.profile.update({
-    where: { userId },
+  const updated = await prisma.profile.update({
+    where: { id: profileId },
     data: { isVerified: value },
+    select: { userId: true },
   });
 
-  // Tell the user when their badge is granted (not on revoke).
-  if (value) {
+  // Tell the user when their badge is granted (not on revoke). Agency-managed
+  // profiles have no login account, so there's nobody to notify.
+  if (value && updated.userId) {
     await notify({
-      userId,
+      userId: updated.userId,
       type: "VERIFIED_BADGE",
       actorId: adminId,
       link: "/profile/edit",

@@ -458,7 +458,8 @@
       "revoke": "Revoke",
       "viewProfile": "View profile",
       "filterUnverified": "Unverified",
-      "filterAll": "All"
+      "filterAll": "All",
+      "managedByAgency": "Managed by Agency"
     }
   },
   "Messages": {

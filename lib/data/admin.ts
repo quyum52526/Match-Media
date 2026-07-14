@@ -148,22 +148,26 @@ export async function getVerificationProfiles(
     orderBy: { createdAt: "desc" },
     take: 100,
     select: {
+      id: true,
       userId: true,
       fullName: true,
       district: true,
       dateOfBirth: true,
       isVerified: true,
+      managedByAgency: true,
       user: { select: { email: true } },
     },
   });
-  return profiles
-    .filter((p) => p.userId !== null) // skip agency profiles with no login account
-    .map((p) => ({
-      userId: p.userId as string,
-      name: realName(p.fullName),
-      email: p.user?.email ?? "",
-      district: p.district ?? "",
-      age: calcAge(p.dateOfBirth),
-      isVerified: p.isVerified,
-    }));
+  // Include agency-managed profiles (userId = null) too — they still need
+  // verification and are keyed by their Profile id, matching the overview count.
+  return profiles.map((p) => ({
+    profileId: p.id,
+    userId: p.userId,
+    name: realName(p.fullName),
+    email: p.user?.email ?? (p.managedByAgency ? "(agency client)" : ""),
+    district: p.district ?? "",
+    age: calcAge(p.dateOfBirth),
+    isVerified: p.isVerified,
+    managedByAgency: p.managedByAgency,
+  }));
 }
