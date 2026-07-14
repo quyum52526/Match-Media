@@ -50,10 +50,16 @@ export interface AdminUser {
 
 /** A profile row for the verification list. */
 export interface VerificationProfile {
-  userId: string;
+  /** Stable identifier — the Profile row id. Present for every profile,
+   *  including agency-managed ones that have no user account (userId = null). */
+  profileId: string;
+  /** The subject's login account, or null for agency-managed client profiles. */
+  userId: string | null;
   name: string;
   email: string;
   district: string;
   age: number;
   isVerified: boolean;
+  /** True when created by a MEDIA agency for a client with no login account. */
+  managedByAgency: boolean;
 }
