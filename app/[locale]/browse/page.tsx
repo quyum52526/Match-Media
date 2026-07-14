@@ -2,11 +2,13 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/Container";
 import { ProfileGrid } from "@/components/profile/ProfileGrid";
+import { RecommendedProfiles } from "@/components/profile/RecommendedProfiles";
 import { FilterBar } from "@/components/profile/FilterBar";
 import { ProfileCompletionBanner } from "@/components/profile/ProfileCompletionBanner";
 import { Button } from "@/components/ui/Button";
 import { SearchIcon } from "@/components/ui/icons";
 import { getBrowseProfiles, type SearchFilters } from "@/lib/data/profiles";
+import { getRecommendedProfiles, type RecommendationResult } from "@/lib/data/recommend";
 import { getProfileCompletion } from "@/lib/data/profileCompletion";
 import { getPhotoRequestQuota, getProfileViewQuota } from "@/lib/data/billing";
 import { QuotaNote } from "@/components/billing/PhotoQuota";
@@ -65,8 +67,13 @@ export default async function BrowsePage({
   };
   const hasFilters = Object.values(filters).some((v) => v !== undefined);
 
-  const [profiles, completion, quota, viewQuota] = await Promise.all([
+  const [profiles, recommended, completion, quota, viewQuota] = await Promise.all([
     getBrowseProfiles(viewerId, filters, viewerRole, viewerCategory),
+    // Recommendations are scored against the viewer's own profile (+ filters),
+    // so they only apply to candidate viewers. Privileged accounts have none.
+    isPrivilegedViewer
+      ? Promise.resolve<RecommendationResult>({ kind: "scored", profiles: [] })
+      : getRecommendedProfiles(viewerId, filters),
     // MEDIA/ADMIN users have no personal profile, so skip the completion fetch.
     isPrivilegedViewer ? Promise.resolve(null) : getProfileCompletion(viewerId),
     getPhotoRequestQuota(viewerId),
@@ -91,6 +98,26 @@ export default async function BrowsePage({
       <div className="mb-6">
         <FilterBar />
       </div>
+
+      {/* Recommendations apply only to candidate viewers with a profile;
+          privileged accounts (MEDIA/ADMIN/PARENTS) have none, so skip entirely.
+          When there are no scored matches the recommender returns a "fallback"
+          set (most-complete members) — we relabel the subtitle so it's honest,
+          and only fall back to the text empty state when even that is empty
+          (viewer has no profile to personalise against). */}
+      {!isPrivilegedViewer && (
+        <RecommendedProfiles
+          profiles={recommended.profiles}
+          quota={quota}
+          title={t("recommended.title")}
+          subtitle={
+            recommended.kind === "fallback"
+              ? t("recommended.fallbackSubtitle")
+              : t("recommended.subtitle")
+          }
+          emptyText={t("recommended.empty")}
+        />
+      )}
 
       <p className="mb-4 font-body text-sm text-ink/50">
         {t("resultCount", {

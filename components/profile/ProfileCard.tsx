@@ -12,25 +12,40 @@ import {
   StarIcon,
   UsersIcon,
   BriefcaseIcon,
+  SparklesIcon,
 } from "@/components/ui/icons";
 import { requestPhotoAccess as requestPhotoAccessAction } from "@/lib/actions/funnel";
 import { usePhotoQuota } from "@/components/billing/PhotoQuota";
 import { localize } from "@/lib/constants/labels";
+import { toMatchPercent } from "@/lib/matching/score";
+import { MATCH_BADGE_MIN_PERCENT } from "@/lib/matching/weights";
 import type { ProfileSummary, PhotoAccessState } from "./types";
 
 interface ProfileCardProps {
   profile: ProfileSummary;
+  /**
+   * Weighted match score (0..MAX_MATCH_SCORE). Passed ONLY by the "Recommended
+   * for You" carousel — when present the card shows a "% Match" badge. The main
+   * grid omits it, so the badge never appears there.
+   */
+  matchScore?: number;
 }
 
 function isRevealed(profile: ProfileSummary, state: PhotoAccessState): boolean {
   return profile.primaryImagePrivacy === "PUBLIC" || state === "APPROVED";
 }
 
-export function ProfileCard({ profile }: ProfileCardProps) {
+export function ProfileCard({ profile, matchScore }: ProfileCardProps) {
   const t = useTranslations("Profile");
   const locale = useLocale();
   const [isSubmitting, startTransition] = useTransition();
   const quotaCtx = usePhotoQuota();
+
+  // Recommendation cards carry a match score; the grid does not. The badge is
+  // hidden below MATCH_BADGE_MIN_PERCENT so weak matches don't show a low number.
+  const matchPercent = matchScore != null ? toMatchPercent(matchScore) : null;
+  const showMatchBadge =
+    matchPercent != null && matchPercent >= MATCH_BADGE_MIN_PERCENT;
 
   // Photo-access state comes from the server; the action + revalidate refresh it.
   const revealed = isRevealed(profile, profile.photoAccess);
@@ -97,16 +112,26 @@ export function ProfileCard({ profile }: ProfileCardProps) {
           </span>
         )}
 
-        {profile.isPro && (
-          <span className="absolute right-2.5 top-2.5">
-            <Badge
-              variant="gold"
-              className="bg-accent text-white"
-              icon={<StarIcon width={13} height={13} />}
-            >
-              {t("vip")}
-            </Badge>
-          </span>
+        {/* Top-right stack: the "% Match" badge (recommendations only) sits
+            above the VIP badge so the two never overlap. */}
+        {(showMatchBadge || profile.isPro) && (
+          <div className="absolute right-2.5 top-2.5 flex flex-col items-end gap-1.5">
+            {showMatchBadge && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-primary shadow-sm ring-1 ring-primary/15 backdrop-blur-sm">
+                <SparklesIcon width={12} height={12} className="text-accent" />
+                {t("card.matchBadge", { n: String(matchPercent) })}
+              </span>
+            )}
+            {profile.isPro && (
+              <Badge
+                variant="gold"
+                className="bg-accent text-white"
+                icon={<StarIcon width={13} height={13} />}
+              >
+                {t("vip")}
+              </Badge>
+            )}
+          </div>
         )}
 
         {profile.managedBy === "GUARDIAN" && (

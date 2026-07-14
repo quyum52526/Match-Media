@@ -365,6 +365,13 @@ model Profile {
 
   @@index([referredById])
   @@index([district, upazila])
+  // Matchmaking recommendation gate: opposite-gender + age-window scans
+  // (WHERE gender = $g AND dateOfBirth BETWEEN $lo AND $hi). Keeps the
+  // scored candidate set bounded and index-backed as the table grows.
+  @@index([gender, dateOfBirth])
+  // Lets a recommendation scan narrow to the viewer's district (heaviest weight)
+  // before scoring, complementing [district, upazila].
+  @@index([gender, district])
 }
 
 model ProfileImage {
