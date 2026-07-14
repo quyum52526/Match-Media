@@ -142,6 +142,110 @@ function resolveManagerType(
 }
 
 /**
+ * Shared Prisma `include` for a browse/recommendation card. Kept as one const
+ * so the main grid and the "Recommended for You" strip fetch identical shapes
+ * and hydrate through the same code path (hydrateProfileCards).
+ */
+export const BROWSE_CARD_INCLUDE = {
+  user: {
+    select: {
+      isPro: true,
+      isMobileVerified: true,
+      accountCategory: true,
+      nidVerificationStatus: true,
+      selfieVerificationStatus: true,
+    },
+  },
+  // For managed profiles (userId = null), fetch the manager's category so we
+  // can show the correct "Managed by Parents / Agency" badge on the card.
+  referredBy: { select: { accountCategory: true } },
+  // Only an APPROVED primary photo is ever shown to other viewers
+  // (pre-moderation: PENDING/REJECTED photos never leave the server).
+  images: { where: { isPrimary: true, moderationStatus: "APPROVED" }, take: 1 },
+} satisfies Prisma.ProfileInclude;
+
+/** A Profile row fetched with BROWSE_CARD_INCLUDE. */
+export type BrowseCardRow = Prisma.ProfileGetPayload<{
+  include: typeof BROWSE_CARD_INCLUDE;
+}>;
+
+/**
+ * Turn fetched Profile rows into presentation-ready cards: resolves the
+ * viewer's photo-access state and signs only the viewer-appropriate key per
+ * card (ORIGINAL when PUBLIC/APPROVED, else the blurred teaser). Because the
+ * caller controls which rows come in, signing scales with what's shown — the
+ * recommender hydrates just its top 20, never the whole candidate scan.
+ */
+export async function hydrateProfileCards(
+  profiles: BrowseCardRow[],
+  viewerId: string,
+): Promise<ProfileSummary[]> {
+  // Photo-access state only applies to profiles that have a User account.
+  // Managed profiles (userId = null) have no ownerId, so they always show as "NONE".
+  const ownerIds = profiles.map((p) => p.userId).filter((id): id is string => id !== null);
+  const requests = ownerIds.length
+    ? await prisma.photoAccessRequest.findMany({
+        where: { viewerId, ownerId: { in: ownerIds } },
+        select: { ownerId: true, status: true },
+      })
+    : [];
+  const statusByOwner = new Map(
+    requests.map((r) => [r.ownerId, r.status as PhotoAccessState]),
+  );
+
+  // Pick the viewer-appropriate storage key per profile: the ORIGINAL only when
+  // the photo is PUBLIC or the viewer is APPROVED, otherwise the blurred teaser.
+  // The original key is never signed (and so never leaks) for gated viewers.
+  const keyToSign: string[] = [];
+  for (const p of profiles) {
+    const img = p.images[0];
+    if (!img) continue;
+    const access = p.userId ? (statusByOwner.get(p.userId) ?? "NONE") : "NONE";
+    const revealed = img.privacy === "PUBLIC" || access === "APPROVED";
+    keyToSign.push(revealed ? img.originalKey : img.blurredKey);
+  }
+  const signed = await signUrls(keyToSign);
+
+  return profiles.map((p) => {
+    // For managed profiles (userId = null) use the Profile.id as the card
+    // identifier so they get a unique, stable key in the grid.
+    const cardId = p.userId ?? p.id;
+    const img = p.images[0];
+    const access: PhotoAccessState = p.userId
+      ? (statusByOwner.get(p.userId) ?? "NONE")
+      : "NONE";
+    const revealed = !!img && (img.privacy === "PUBLIC" || access === "APPROVED");
+    const key = img ? (revealed ? img.originalKey : img.blurredKey) : undefined;
+    return {
+      id: cardId,
+      displayName: p.nameHidden || !p.fullName ? HIDDEN_NAME : p.fullName,
+      nameHidden: p.nameHidden,
+      gender: p.gender,
+      age: calcAge(p.dateOfBirth),
+      district: p.district ?? "",
+      upazila: p.upazila ?? "",
+      isVerified: p.isVerified,
+      isPro: p.user?.isPro ?? false,
+      managedBy: resolveManagerType(p.referredBy?.accountCategory ?? null),
+      primaryImagePrivacy: (img?.privacy as ImagePrivacy) ?? "BLURRED",
+      imageUrl: key ? signed.get(key) : undefined,
+      photoAccess: access,
+      // 4 trust signals × 25 pts: verified badge, mobile OTP, NID approved, selfie approved
+      trustScore: Math.round(
+        (
+          [
+            p.isVerified,
+            p.user?.isMobileVerified ?? false,
+            p.user?.nidVerificationStatus === "APPROVED",
+            p.user?.selfieVerificationStatus === "APPROVED",
+          ].filter(Boolean).length / 4
+        ) * 100,
+      ),
+    };
+  });
+}
+
+/**
  * List profiles for the browse/search grid (viewer-scoped). Excludes the
  * viewer's own profile, applies the given filters, and includes the viewer's
  * current photo-access state per card. Photos always start blurred in the
@@ -206,88 +310,10 @@ export async function getBrowseProfiles(
   const profiles = await prisma.profile.findMany({
     where,
     orderBy: { createdAt: "asc" },
-    include: {
-      user: {
-        select: {
-          isPro: true,
-          isMobileVerified: true,
-          accountCategory: true,
-          nidVerificationStatus: true,
-          selfieVerificationStatus: true,
-        },
-      },
-      // For managed profiles (userId = null), fetch the manager's category so we
-      // can show the correct "Managed by Parents / Agency" badge on the card.
-      referredBy: { select: { accountCategory: true } },
-      // Only an APPROVED primary photo is ever shown to other viewers
-      // (pre-moderation: PENDING/REJECTED photos never leave the server).
-      images: { where: { isPrimary: true, moderationStatus: "APPROVED" }, take: 1 },
-    },
+    include: BROWSE_CARD_INCLUDE,
   });
 
-  // Photo-access state only applies to profiles that have a User account.
-  // Managed profiles (userId = null) have no ownerId, so they always show as "NONE".
-  const ownerIds = profiles.map((p) => p.userId).filter((id): id is string => id !== null);
-  const requests = ownerIds.length
-    ? await prisma.photoAccessRequest.findMany({
-        where: { viewerId, ownerId: { in: ownerIds } },
-        select: { ownerId: true, status: true },
-      })
-    : [];
-  const statusByOwner = new Map(
-    requests.map((r) => [r.ownerId, r.status as PhotoAccessState]),
-  );
-
-  // Pick the viewer-appropriate storage key per profile: the ORIGINAL only when
-  // the photo is PUBLIC or the viewer is APPROVED, otherwise the blurred teaser.
-  // The original key is never signed (and so never leaks) for gated viewers.
-  const keyToSign: string[] = [];
-  for (const p of profiles) {
-    const img = p.images[0];
-    if (!img) continue;
-    const access = p.userId ? (statusByOwner.get(p.userId) ?? "NONE") : "NONE";
-    const revealed = img.privacy === "PUBLIC" || access === "APPROVED";
-    keyToSign.push(revealed ? img.originalKey : img.blurredKey);
-  }
-  const signed = await signUrls(keyToSign);
-
-  return profiles.map((p) => {
-    // For managed profiles (userId = null) use the Profile.id as the card
-    // identifier so they get a unique, stable key in the grid.
-    const cardId = p.userId ?? p.id;
-    const img = p.images[0];
-    const access: PhotoAccessState = p.userId
-      ? (statusByOwner.get(p.userId) ?? "NONE")
-      : "NONE";
-    const revealed = !!img && (img.privacy === "PUBLIC" || access === "APPROVED");
-    const key = img ? (revealed ? img.originalKey : img.blurredKey) : undefined;
-    return {
-      id: cardId,
-      displayName: p.nameHidden || !p.fullName ? HIDDEN_NAME : p.fullName,
-      nameHidden: p.nameHidden,
-      gender: p.gender,
-      age: calcAge(p.dateOfBirth),
-      district: p.district ?? "",
-      upazila: p.upazila ?? "",
-      isVerified: p.isVerified,
-      isPro: p.user?.isPro ?? false,
-      managedBy: resolveManagerType(p.referredBy?.accountCategory ?? null),
-      primaryImagePrivacy: (img?.privacy as ImagePrivacy) ?? "BLURRED",
-      imageUrl: key ? signed.get(key) : undefined,
-      photoAccess: access,
-      // 4 trust signals × 25 pts: verified badge, mobile OTP, NID approved, selfie approved
-      trustScore: Math.round(
-        (
-          [
-            p.isVerified,
-            p.user?.isMobileVerified ?? false,
-            p.user?.nidVerificationStatus === "APPROVED",
-            p.user?.selfieVerificationStatus === "APPROVED",
-          ].filter(Boolean).length / 4
-        ) * 100,
-      ),
-    };
-  });
+  return hydrateProfileCards(profiles, viewerId);
 }
 
 /**

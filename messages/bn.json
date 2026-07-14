@@ -157,6 +157,12 @@
     "title": "Profile Browse করুন",
     "subtitle": "Request পাঠানোর আগ পর্যন্ত Photo blurred থাকবে",
     "empty": "কোনো Profile পাওয়া যায়নি",
+    "recommended": {
+      "title": "আপনার জন্য সুপারিশকৃত",
+      "subtitle": "আপনার প্রোফাইল ও পছন্দের সাথে মিলিয়ে",
+      "fallbackSubtitle": "এখনো শক্তিশালী ম্যাচ নেই — দেখে নিন নতুন প্রোফাইলগুলো",
+      "empty": "এখনো সুপারিশ করার মতো কোনো ম্যাচ নেই। আপনার প্রোফাইল সম্পূর্ণ করুন বা ফিল্টার প্রসারিত করুন যাতে আপনার পছন্দের সাথে মেলে এমন প্রোফাইল দেখা যায়।"
+    },
     "resultCount": "{count, plural, =0 {কোনো match নেই} other {{n} টি profile}}",
     "filters": {
       "heading": "Filters",
@@ -262,7 +268,8 @@
       "request": "Request",
       "requested": "Requested",
       "viewProfile": "Profile দেখুন",
-      "ageLocation": "<n>{age}</n> · {upazila}, {district}"
+      "ageLocation": "<n>{age}</n> · {upazila}, {district}",
+      "matchBadge": "{n}% মিল"
     }
   },
   "Requests": {

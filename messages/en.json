@@ -157,6 +157,12 @@
     "title": "Browse profiles",
     "subtitle": "Photos stay blurred until you send a Request",
     "empty": "No profiles found",
+    "recommended": {
+      "title": "Recommended for You",
+      "subtitle": "Matched to your profile and preferences",
+      "fallbackSubtitle": "No strong matches yet — here are new profiles worth exploring",
+      "empty": "No matches to recommend just yet. Complete your profile or widen your filters to see people who fit your preferences."
+    },
     "resultCount": "{count, plural, =0 {No matches} one {{n} profile} other {{n} profiles}}",
     "filters": {
       "heading": "Filters",
@@ -262,7 +268,8 @@
       "request": "Request",
       "requested": "Requested",
       "viewProfile": "View Profile",
-      "ageLocation": "<n>{age}</n> · {upazila}, {district}"
+      "ageLocation": "<n>{age}</n> · {upazila}, {district}",
+      "matchBadge": "{n}% Match"
     }
   },
   "Requests": {
