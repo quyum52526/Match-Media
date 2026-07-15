@@ -8,7 +8,7 @@ import { ProfileCompletionBanner } from "@/components/profile/ProfileCompletionB
 import { Button } from "@/components/ui/Button";
 import { SearchIcon } from "@/components/ui/icons";
 import { getBrowseProfiles, type SearchFilters } from "@/lib/data/profiles";
-import { getRecommendedProfiles, type RecommendationResult } from "@/lib/data/recommend";
+import { getRecommendedProfiles } from "@/lib/data/recommend";
 import { getProfileCompletion } from "@/lib/data/profileCompletion";
 import { getPhotoRequestQuota, getProfileViewQuota } from "@/lib/data/billing";
 import { QuotaNote } from "@/components/billing/PhotoQuota";
@@ -69,11 +69,10 @@ export default async function BrowsePage({
 
   const [profiles, recommended, completion, quota, viewQuota] = await Promise.all([
     getBrowseProfiles(viewerId, filters, viewerRole, viewerCategory),
-    // Recommendations are scored against the viewer's own profile (+ filters),
-    // so they only apply to candidate viewers. Privileged accounts have none.
-    isPrivilegedViewer
-      ? Promise.resolve<RecommendationResult>({ kind: "scored", profiles: [] })
-      : getRecommendedProfiles(viewerId, filters),
+    // Recommendations are shown to every authenticated viewer. Candidate viewers
+    // get scored matches against their own profile (+ filters); profile-less
+    // viewers (MEDIA/ADMIN/PARENTS) get a gender-agnostic fallback set.
+    getRecommendedProfiles(viewerId, filters),
     // MEDIA/ADMIN users have no personal profile, so skip the completion fetch.
     isPrivilegedViewer ? Promise.resolve(null) : getProfileCompletion(viewerId),
     getPhotoRequestQuota(viewerId),
@@ -99,25 +98,22 @@ export default async function BrowsePage({
         <FilterBar />
       </div>
 
-      {/* Recommendations apply only to candidate viewers with a profile;
-          privileged accounts (MEDIA/ADMIN/PARENTS) have none, so skip entirely.
-          When there are no scored matches the recommender returns a "fallback"
-          set (most-complete members) — we relabel the subtitle so it's honest,
-          and only fall back to the text empty state when even that is empty
-          (viewer has no profile to personalise against). */}
-      {!isPrivilegedViewer && (
-        <RecommendedProfiles
-          profiles={recommended.profiles}
-          quota={quota}
-          title={t("recommended.title")}
-          subtitle={
-            recommended.kind === "fallback"
-              ? t("recommended.fallbackSubtitle")
-              : t("recommended.subtitle")
-          }
-          emptyText={t("recommended.empty")}
-        />
-      )}
+      {/* Recommendations are shown to every authenticated viewer, admins
+          included. When there are no scored matches the recommender returns a
+          "fallback" set (most-complete members) — we relabel the subtitle so
+          it's honest, and only fall back to the text empty state when even that
+          is empty (no candidates at all). */}
+      <RecommendedProfiles
+        profiles={recommended.profiles}
+        quota={quota}
+        title={t("recommended.title")}
+        subtitle={
+          recommended.kind === "fallback"
+            ? t("recommended.fallbackSubtitle")
+            : t("recommended.subtitle")
+        }
+        emptyText={t("recommended.empty")}
+      />
 
       <p className="mb-4 font-body text-sm text-ink/50">
         {t("resultCount", {

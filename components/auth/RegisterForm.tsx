@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { register } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/Button";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 
 const inputClass =
   "h-11 w-full rounded-xl border border-hairline bg-white px-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30";
@@ -72,15 +73,13 @@ export function RegisterForm() {
           {t("password")}
           <Req />
         </label>
-        <input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           required
           minLength={8}
           autoComplete="new-password"
           aria-describedby="password-hint"
-          className={inputClass}
         />
         <p id="password-hint" className="font-body text-xs text-ink/50">
           {t("passwordHint")}

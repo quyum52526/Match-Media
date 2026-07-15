@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { authenticate } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/Button";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 
 export function LoginForm() {
   const t = useTranslations("Auth");
@@ -29,13 +30,11 @@ export function LoginForm() {
         <label htmlFor="password" className="text-sm font-medium text-ink">
           {t("password")}
         </label>
-        <input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           required
           autoComplete="current-password"
-          className="h-11 w-full rounded-xl border border-hairline bg-white px-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
         />
       </div>
 
