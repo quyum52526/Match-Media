@@ -506,6 +506,8 @@
     "title": "Login করুন",
     "email": "Email",
     "password": "Password",
+    "showPassword": "Password দেখান",
+    "hidePassword": "Password লুকান",
     "submit": "Login",
     "error": "Email বা Password ভুল",
     "login": "Login",

@@ -506,6 +506,8 @@
     "title": "Log in",
     "email": "Email",
     "password": "Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "submit": "Log in",
     "error": "Invalid email or password",
     "login": "Log in",
