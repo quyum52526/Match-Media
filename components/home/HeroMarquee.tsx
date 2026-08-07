@@ -9,7 +9,31 @@ import type { ShowcaseProfile } from "@/lib/data/showcase";
  * fallback when no public photo exists. Two copies of the list shift by -50%
  * (CSS `marquee` keyframe) for a seamless loop; edges fade via mask. Pure CSS
  * animation, no JS. Honors prefers-reduced-motion.
+ *
+ * Every chip dimension is driven by SCALE below. These go through inline
+ * styles rather than Tailwind size classes on purpose: Tailwind's scanner
+ * only picks up complete class strings that appear literally in source, so
+ * a computed class like `h-[${n}px]` would silently fail to generate CSS.
+ * rounded-pill (999px) is left as a Tailwind class — it's already a fixed
+ * large radius, so it stays a full pill at any scale without needing to
+ * track it here.
  */
+const SCALE = 1.25;
+
+const BASE = {
+  avatar: 28, // px — avatar diameter
+  padX: 12, // px — pill horizontal padding (was px-3)
+  padY: 8, // px — pill vertical padding (was py-2)
+  cardGap: 12, // px — gap between cards in the track (was gap-3)
+  innerGap: 10, // px — gap between avatar and text block (was gap-2.5)
+  lineGap: 4, // px — gap between icon and label within a line (was gap-1)
+  nameSize: 12, // px — name text (was text-xs)
+  activeSize: 10, // px — "Active now" text (was text-[10px])
+  tickIcon: 12, // px — verified tick icon
+  statusDot: 6, // px — pulsing status dot
+} as const;
+
+const s = (n: number) => Math.round(n * SCALE);
 
 const FALLBACK_HUES: readonly string[] = [
   "from-rose-200 to-amber-100",
@@ -25,14 +49,18 @@ const FALLBACK_HUES: readonly string[] = [
 ];
 
 function Avatar({ profile, hue }: { profile: ShowcaseProfile; hue: string }) {
+  const size = s(BASE.avatar);
   if (profile.imageUrl) {
     return (
-      <span className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full">
+      <span
+        className="relative shrink-0 overflow-hidden rounded-full"
+        style={{ width: size, height: size }}
+      >
         <Image
           src={profile.imageUrl}
           alt=""
           fill
-          sizes="28px"
+          sizes={`${size}px`}
           className="object-cover"
         />
       </span>
@@ -40,7 +68,8 @@ function Avatar({ profile, hue }: { profile: ShowcaseProfile; hue: string }) {
   }
   return (
     <span
-      className={`h-7 w-7 shrink-0 rounded-full bg-gradient-to-br ${hue} blur-[2px]`}
+      className={`shrink-0 rounded-full bg-gradient-to-br ${hue} blur-[2px]`}
+      style={{ width: size, height: size }}
     />
   );
 }
@@ -63,25 +92,44 @@ export async function HeroMarquee({ profiles }: { profiles: ShowcaseProfile[] })
     const hue = FALLBACK_HUES[index % FALLBACK_HUES.length];
     const label = profile.displayName !== "Member" ? profile.displayName.split(" ")[0] : t("verified");
 
+    const dotSize = s(BASE.statusDot);
+
     return (
       <Link
         href="/browse"
         aria-hidden={ariaHidden}
         tabIndex={ariaHidden ? -1 : undefined}
-        className="flex shrink-0 items-center gap-2.5 rounded-pill border border-hairline bg-surface/90 px-3 py-2 shadow-card backdrop-blur-sm cursor-pointer transition-transform hover:scale-105"
+        className="flex shrink-0 items-center rounded-pill border border-hairline bg-surface/90 shadow-card backdrop-blur-sm cursor-pointer transition-transform hover:scale-105"
+        style={{
+          gap: s(BASE.innerGap),
+          padding: `${s(BASE.padY)}px ${s(BASE.padX)}px`,
+        }}
       >
         <Avatar profile={profile} hue={hue} />
         <div className="leading-tight">
-          <p className="flex items-center gap-1 whitespace-nowrap text-xs font-medium text-ink">
+          <p
+            className="flex items-center whitespace-nowrap font-medium text-ink"
+            style={{ gap: s(BASE.lineGap), fontSize: s(BASE.nameSize) }}
+          >
             {label}
             {profile.isVerified && (
-              <ShieldCheckIcon width={12} height={12} className="text-success" />
+              <ShieldCheckIcon
+                width={s(BASE.tickIcon)}
+                height={s(BASE.tickIcon)}
+                className="text-success"
+              />
             )}
           </p>
-          <p className="flex items-center gap-1 whitespace-nowrap text-[10px] text-muted">
-            <span className="relative flex h-1.5 w-1.5">
+          <p
+            className="flex items-center whitespace-nowrap text-muted"
+            style={{ gap: s(BASE.lineGap), fontSize: s(BASE.activeSize) }}
+          >
+            <span className="relative flex" style={{ width: dotSize, height: dotSize }}>
               <span className="absolute inline-flex h-full w-full rounded-full bg-success/70 animate-pulse-ring" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-success" />
+              <span
+                className="relative inline-flex rounded-full bg-success"
+                style={{ width: dotSize, height: dotSize }}
+              />
             </span>
             {t("active")}
           </p>
@@ -103,7 +151,10 @@ export async function HeroMarquee({ profiles }: { profiles: ShowcaseProfile[] })
       }}
     >
       {/* Two copies → -50% shift loops seamlessly; second copy is decorative. */}
-      <div className="flex w-max items-center gap-3 animate-marquee motion-reduce:animate-none">
+      <div
+        className="flex w-max items-center animate-marquee motion-reduce:animate-none"
+        style={{ gap: s(BASE.cardGap) }}
+      >
         {items.map((p, i) => (
           <Pill key={`a-${p.id}`} profile={p} index={i} />
         ))}

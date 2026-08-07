@@ -21,20 +21,17 @@
  */
 
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 
-// --- Testimonial content ---
-const INFLUENCER = {
-  name: "Giyanna Rose",
-  designation: "Social Media Influencer",
-  imageSrc: "/giyanna-rose.png",
-  quote:
-    "MatchMedia redefined what discretion means to me. I found a genuine connection — private, secure, and refreshingly human — without ever compromising who I am.",
-};
+// Portrait is decorative brand content, not user data — stays hardcoded.
+const INFLUENCER_IMAGE_SRC = "/giyanna-rose.png";
 
-export function FeaturedInfluencer() {
+export async function FeaturedInfluencer() {
+  const t = await getTranslations("Home.influencer");
+
   return (
     <section
-      aria-label="Featured influencer testimonial"
+      aria-label={t("ariaLabel")}
       className="relative w-full overflow-hidden bg-secondary antialiased"
       style={{
         // Base deep-ink tone + layered Garnet/Champagne radial mesh for depth.
@@ -62,7 +59,7 @@ export function FeaturedInfluencer() {
             <span aria-hidden className="text-[0.7rem] leading-none">
               ✦
             </span>
-            Featured Influencer
+            {t("eyebrow")}
           </span>
         </div>
 
@@ -90,8 +87,8 @@ export function FeaturedInfluencer() {
               />
 
               <Image
-                src={INFLUENCER.imageSrc}
-                alt={INFLUENCER.name}
+                src={INFLUENCER_IMAGE_SRC}
+                alt={t("name")}
                 fill
                 sizes="(max-width: 1024px) 100vw, 33vw"
                 className="object-cover object-top"
@@ -116,15 +113,15 @@ export function FeaturedInfluencer() {
                   &ldquo;
                 </span>
                 <blockquote className="-mt-2 font-display text-xl font-normal italic leading-relaxed text-[rgba(251,247,242,0.92)] sm:text-2xl sm:leading-relaxed">
-                  {INFLUENCER.quote}
+                  {t("quote")}
                 </blockquote>
 
                 <figcaption className="mt-6 border-t border-[rgba(251,247,242,0.12)] pt-5">
                   <div className="font-display text-lg font-semibold text-white sm:text-xl">
-                    {INFLUENCER.name}
+                    {t("name")}
                   </div>
                   <div className="mt-1 font-body text-sm font-medium uppercase tracking-[0.14em] text-accent">
-                    {INFLUENCER.designation}
+                    {t("designation")}
                   </div>
                 </figcaption>
               </div>

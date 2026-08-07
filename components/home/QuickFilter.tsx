@@ -52,7 +52,7 @@ export function QuickFilter() {
 
   return (
     <div
-      className="mx-auto w-full max-w-3xl rounded-card border border-hairline bg-surface p-2 font-body shadow-card transition-all duration-150 ease-in-out hover:shadow-md"
+      className="mx-auto w-full rounded-card border border-hairline bg-surface p-2 font-body shadow-card transition-all duration-150 ease-in-out hover:shadow-md"
       role="search"
     >
       <div className="flex flex-col gap-1 md:flex-row md:items-stretch md:gap-0 md:divide-x md:divide-hairline">

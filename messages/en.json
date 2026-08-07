@@ -110,6 +110,13 @@
         "new": "New joiner",
         "popular": "High interest"
       }
+    },
+    "influencer": {
+      "ariaLabel": "Featured influencer testimonial",
+      "eyebrow": "Featured Influencer",
+      "quote": "MatchMedia redefined what discretion means to me. I found a genuine connection — private, secure, and refreshingly human — without ever compromising who I am.",
+      "name": "Giyanna Rose",
+      "designation": "Social Media Influencer"
     }
   },
   "Dashboard": {
