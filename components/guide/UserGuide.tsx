@@ -53,7 +53,7 @@ const UI_TEXT: Record<string, Localized> = {
 const GUIDE_SECTIONS: GuideSection[] = [
   {
     id: 1,
-    videoId: PLACEHOLDER_VIDEO_ID,
+    videoId: "I7b7Scwg8Ws",
     title: { en: "1. Create Your Profile", bn: "১. প্রোফাইল তৈরি করুন" },
     body: {
       en: "Sign up with your name, email and mobile number, then complete your profile — photos, education, profession, family details and what you're looking for in a partner. The more complete your profile, the better your matches.",

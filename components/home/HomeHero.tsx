@@ -62,12 +62,21 @@ export async function HomeHero({ marqueeProfiles }: { marqueeProfiles: ShowcaseP
           <QuickFilter />
         </Reveal>
 
-        {/* Secondary, low-emphasis path */}
+        {/* Secondary, low-emphasis path. Sits directly on the DolnaHero
+            artwork, which can be anything from pale background to the
+            saree's gold depending on where the crop/zoom math lands — a
+            plain text-primary link measured as low as 3.1:1 against the
+            gold. The rgba() scrim (not a Tailwind /opacity class: this
+            app's color tokens have no <alpha-value> slot, so those
+            modifiers silently no-op) plus primary-dark text holds ≥5.7:1
+            against the darkest pixel found anywhere in the artwork, by
+            construction — see conversation for the pixel sampling. */}
         <Reveal delay={320} className="mt-5">
           <p className="text-sm font-normal text-muted">
             <Link
               href="/profiles/demo"
-              className="font-medium text-primary underline-offset-4 transition-all duration-150 ease-in-out hover:underline"
+              className="inline-block rounded-[6px] px-2.5 py-1 font-medium text-primary-dark underline-offset-4 transition-all duration-150 ease-in-out hover:underline"
+              style={{ backgroundColor: "rgba(251,247,242,0.85)" }}
             >
               {t("viewSample")}
             </Link>

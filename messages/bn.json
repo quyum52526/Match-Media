@@ -112,11 +112,11 @@
       }
     },
     "influencer": {
-      "ariaLabel": "Featured influencer testimonial",
-      "eyebrow": "Featured Influencer",
-      "quote": "MatchMedia redefined what discretion means to me. I found a genuine connection — private, secure, and refreshingly human — without ever compromising who I am.",
+      "ariaLabel": "ফিচার্ড ইনফ্লুয়েন্সারের মতামত",
+      "eyebrow": "ফিচার্ড ইনফ্লুয়েন্সার",
+      "quote": "ম্যাচমিডিয়া আমাকে নতুন করে বুঝিয়েছে গোপনীয়তা আসলে কী। নিজের পরিচয়ে এতটুকু ছাড় না দিয়েই আমি এমন একজনকে পেয়েছি — যেখানে সবকিছু ব্যক্তিগত, নিরাপদ, আর সত্যিকারের মানুষের মতো।",
       "name": "Giyanna Rose",
-      "designation": "Social Media Influencer"
+      "designation": "সোশ্যাল মিডিয়া ইনফ্লুয়েন্সার"
     }
   },
   "Dashboard": {
@@ -762,8 +762,8 @@
     "disclaimer": "প্ল্যাটফর্ম শুধুমাত্র একটি যোগাযোগ মাধ্যম; পরিচয়/তথ্য যাচাইয়ের দায়িত্ব ব্যবহারকারীর",
     "colLegal": "লিঙ্ক",
     "contact": "যোগাযোগ",
-    "privacy": "Privacy Policy",
-    "terms": "Terms",
+    "privacy": "গোপনীয়তা নীতি",
+    "terms": "শর্তাবলি",
     "rights": "© {year} MatchMedia। সর্বস্বত্ব সংরক্ষিত।"
   },
   "LocaleSwitcher": {
