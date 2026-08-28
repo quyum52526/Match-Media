@@ -80,3 +80,12 @@ export const config = {
   // Match all pathnames except API routes, Next internals, and static files.
   matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
 };
+
+// NOTE on auth/guest gating: this file only owns next-intl locale routing.
+// Auth (requireViewerId) and guest-preview access (getViewerIdOrGuest, see
+// lib/session.ts) are enforced per-page in Server Components instead — not
+// here. Auth.js's Node-only deps (prisma, bcrypt) can't run on the Edge
+// runtime middleware uses, so there is intentionally no auth check to update
+// in this file for guest mode; browse/profile pages call getViewerIdOrGuest
+// directly, and every mutating action re-checks the real session server-side
+// regardless of what any client/page gate decided.

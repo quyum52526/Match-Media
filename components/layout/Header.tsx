@@ -1,8 +1,10 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { logout } from "@/lib/actions/auth";
+import { enterGuestMode, exitGuestMode } from "@/lib/actions/guest";
 import { getViewerId, getViewerRole } from "@/lib/session";
+import { isGuestSession } from "@/lib/guest";
 import { getUnreadCount } from "@/lib/data/messages";
 import { getUnreadNotificationCount } from "@/lib/data/notifications";
 import { Button } from "@/components/ui/Button";
@@ -16,7 +18,9 @@ export async function Header() {
   const t = await getTranslations("Brand");
   const nav = await getTranslations("Nav");
   const authT = await getTranslations("Auth");
+  const guestT = await getTranslations("GuestGate");
   const adminT = await getTranslations("Admin");
+  const locale = await getLocale();
   const session = await auth();
   // Cosmetic only — routes are gated server-side by requireAdmin / role checks.
   const role = session ? await getViewerRole() : null;
@@ -27,6 +31,8 @@ export async function Header() {
   const unreadNotifications = viewerId
     ? await getUnreadNotificationCount(viewerId)
     : 0;
+  // Guest-preview mode: no session, but the "Explore as Guest" cookie is set.
+  const isGuest = !session && (await isGuestSession());
 
   const companyItems = [
     { href: "/about", label: nav("about") },
@@ -111,7 +117,7 @@ export async function Header() {
 
         {/* Right controls: never squeezed (shrink-0) and stacked above any
             overflowing nav content (z-10) so EN/BN stays clickable. */}
-        <div className="relative z-10 flex shrink-0 items-center gap-3">
+        <div className="relative z-10 flex shrink-0 items-center gap-4">
           <MobileMenu
             menuLabel={nav("menu")}
             navItems={mobileNavItems}
@@ -139,7 +145,22 @@ export async function Header() {
                 </form>
               </div>
             ) : (
-              <div className="border-t border-hairline/70 pt-3">
+              <div className="flex flex-col gap-2 border-t border-hairline/70 pt-3">
+                {isGuest ? (
+                  <form action={exitGuestMode}>
+                    <input type="hidden" name="locale" value={locale} />
+                    <Button type="submit" variant="ghost" size="sm" fullWidth>
+                      {guestT("exit")}
+                    </Button>
+                  </form>
+                ) : (
+                  <form action={enterGuestMode}>
+                    <input type="hidden" name="locale" value={locale} />
+                    <Button type="submit" variant="outline" size="sm" fullWidth>
+                      {guestT("explore")}
+                    </Button>
+                  </form>
+                )}
                 <Link href="/login">
                   <Button variant="outline" size="sm" fullWidth>
                     {authT("login")}
@@ -149,7 +170,7 @@ export async function Header() {
             )}
           </MobileMenu>
           <LocaleSwitcher />
-          <div className="hidden lg:flex">
+          <div className="hidden items-center gap-2.5 lg:flex">
             {session?.user ? (
               <UserMenu
                 email={session.user.email ?? ""}
@@ -158,16 +179,46 @@ export async function Header() {
                 logoutLabel={authT("logout")}
                 logoutAction={logout}
               />
+            ) : isGuest ? (
+              <>
+                <form action={exitGuestMode}>
+                  <input type="hidden" name="locale" value={locale} />
+                  <Button type="submit" variant="ghost" size="sm">
+                    {guestT("exit")}
+                  </Button>
+                </form>
+                <Link href="/login">
+                  <Button variant="outline" size="sm">
+                    {authT("login")}
+                  </Button>
+                </Link>
+              </>
             ) : (
-              <Link href="/login">
-                <Button variant="outline" size="sm">
-                  {authT("login")}
-                </Button>
-              </Link>
+              <>
+                <form action={enterGuestMode}>
+                  <input type="hidden" name="locale" value={locale} />
+                  <Button type="submit" variant="outline" size="sm">
+                    {guestT("explore")}
+                  </Button>
+                </form>
+                <Link href="/login">
+                  <Button variant="outline" size="sm">
+                    {authT("login")}
+                  </Button>
+                </Link>
+              </>
             )}
           </div>
         </div>
       </div>
+      {isGuest && (
+        <div className="border-t border-accent/30 bg-accent/5 px-4 py-1.5 text-center text-xs font-medium text-ink/70">
+          {guestT("banner")}{" "}
+          <Link href="/register" className="font-semibold text-accent underline-offset-2 hover:underline">
+            {guestT("signup")}
+          </Link>
+        </div>
+      )}
     </header>
   );
 }

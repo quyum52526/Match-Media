@@ -5,9 +5,14 @@ import { ProfileDetail } from "@/components/profile/ProfileDetail";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { LockIcon, StarIcon } from "@/components/ui/icons";
-import { getProfileForViewer, getProfileViewAccess } from "@/lib/data/profiles";
+import {
+  getGuestProfilePreview,
+  getProfileForViewer,
+  getProfileViewAccess,
+} from "@/lib/data/profiles";
 import { getPhotoRequestQuota } from "@/lib/data/billing";
-import { requireViewerId } from "@/lib/session";
+import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
+import { getViewerIdOrGuest } from "@/lib/session";
 
 export const metadata = {
   title: "Profile · MatchMedia",
@@ -23,10 +28,23 @@ export default async function ProfilePage({
 }) {
   const { locale, id } = await params;
   setRequestLocale(locale);
-  const viewerId = await requireViewerId(`/${locale}/login`);
+  const { viewerId, isGuest } = await getViewerIdOrGuest(`/${locale}/login`);
+
+  // Guest preview: read-only sample view, no view-log write, no daily cap —
+  // every restricted action (photo unlock, connect, message) is intercepted
+  // client-side by the AuthGateModal instead.
+  if (isGuest) {
+    const profile = await getGuestProfilePreview(id);
+    if (!profile) notFound();
+    // unlimited: true only suppresses the misleading "limit reached" quota
+    // copy — the Request button is still intercepted by the AuthGateModal
+    // (gate()) before any request is ever sent, guest or not.
+    const quota = { unlimited: true, remaining: FREE_DAILY_LIMIT, limit: FREE_DAILY_LIMIT };
+    return <ProfileDetail data={profile} quota={quota} />;
+  }
 
   // Free-tier daily view cap — check BEFORE getProfileForViewer logs the view.
-  const access = await getProfileViewAccess(viewerId, id);
+  const access = await getProfileViewAccess(viewerId!, id);
   if (!access.allowed) {
     const t = await getTranslations("Pro.viewLimit");
     const proHref = locale === "en" ? "/en/pro" : "/pro";
@@ -52,8 +70,8 @@ export default async function ProfilePage({
   }
 
   const [profile, quota] = await Promise.all([
-    getProfileForViewer(id, viewerId),
-    getPhotoRequestQuota(viewerId),
+    getProfileForViewer(id, viewerId!),
+    getPhotoRequestQuota(viewerId!),
   ]);
   if (!profile) notFound();
 

@@ -31,6 +31,7 @@ import {
   UsersIcon,
 } from "@/components/ui/icons";
 import { useCallControls } from "@/components/calls/CallProvider";
+import { useGuestGate } from "@/components/auth/GuestModeContext";
 import { MaskedContact } from "@/components/privacy/MaskedContact";
 import { computeCompletion } from "@/lib/utils";
 import { localize } from "@/lib/constants/labels";
@@ -61,6 +62,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
   const locale = useLocale();
   const router = useRouter();
   const { placeCall, canCall } = useCallControls();
+  const { gate } = useGuestGate();
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [interestModalOpen, setInterestModalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -93,6 +95,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
   ]);
 
   function requestPhotoAccess() {
+    if (gate()) return; // guest -> AuthGateModal shown, no request sent
     if (photoLimitReached) return;
     startTransition(async () => {
       const result = await requestPhotoAccessAction(data.id);
@@ -100,6 +103,11 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
         setQuota((q) => ({ ...q, remaining: result.remaining }));
       }
     });
+  }
+
+  function openExpressInterest() {
+    if (gate()) return; // guest -> AuthGateModal shown, modal never opens
+    setInterestModalOpen(true);
   }
 
   function confirmExpressInterest(note: string) {
@@ -110,10 +118,16 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
   }
 
   function openConversation() {
+    if (gate()) return; // guest -> AuthGateModal shown, no conversation started
     startTransition(async () => {
       const id = await startConversation(data.id);
       if (id) router.push(`${locale === "en" ? "/en" : ""}/messages/${id}`);
     });
+  }
+
+  function callViewer() {
+    if (gate()) return; // guest -> AuthGateModal shown, no call placed
+    placeCall(data.id, data.displayName);
   }
 
   return (
@@ -136,7 +150,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
 
           <InterestAction
             state={viewer.interest}
-            onExpress={() => setInterestModalOpen(true)}
+            onExpress={openExpressInterest}
             pending={isPending}
           />
 
@@ -156,7 +170,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
                 <Button
                   variant="outline"
                   fullWidth
-                  onClick={() => placeCall(data.id, data.displayName)}
+                  onClick={callViewer}
                 >
                   <PhoneIcon width={18} height={18} />
                   {t("call")}

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/icons";
 import { requestPhotoAccess as requestPhotoAccessAction } from "@/lib/actions/funnel";
 import { usePhotoQuota } from "@/components/billing/PhotoQuota";
+import { useGuestGate } from "@/components/auth/GuestModeContext";
 import { localize } from "@/lib/constants/labels";
 import { toMatchPercent } from "@/lib/matching/score";
 import { MATCH_BADGE_MIN_PERCENT } from "@/lib/matching/weights";
@@ -40,6 +41,7 @@ export function ProfileCard({ profile, matchScore }: ProfileCardProps) {
   const locale = useLocale();
   const [isSubmitting, startTransition] = useTransition();
   const quotaCtx = usePhotoQuota();
+  const { gate } = useGuestGate();
 
   // Recommendation cards carry a match score; the grid does not. The badge is
   // hidden below MATCH_BADGE_MIN_PERCENT so weak matches don't show a low number.
@@ -60,6 +62,7 @@ export function ProfileCard({ profile, matchScore }: ProfileCardProps) {
     quotaCtx.quota.remaining <= 0;
 
   function requestPhoto() {
+    if (gate()) return; // guest -> AuthGateModal shown, no request sent
     if (blockedByLimit) return;
     startTransition(async () => {
       const result = await requestPhotoAccessAction(profile.id);

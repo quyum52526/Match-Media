@@ -552,6 +552,17 @@
       }
     }
   },
+  "GuestGate": {
+    "explore": "Explore as Guest",
+    "cardExplore": "Explore as a guest",
+    "divider": "or",
+    "exit": "Exit guest mode",
+    "banner": "You're browsing as a guest — some features are locked.",
+    "title": "Sign in to continue",
+    "body": "Sign in or create an account to connect with profiles.",
+    "login": "Log in",
+    "signup": "Sign up"
+  },
   "Pro": {
     "title": "Go Pro",
     "subtitle": "Unlock unlimited browsing, instant ‘Who viewed me’ reveals, and priority placement in search.",

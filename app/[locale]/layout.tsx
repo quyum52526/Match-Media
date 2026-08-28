@@ -12,6 +12,9 @@ import { routing } from "@/i18n/routing";
 import { Header } from "@/components/layout/Header";
 import { MobileVerifyBanner } from "@/components/auth/MobileVerifyBanner";
 import { CallProviderMount } from "@/components/calls/CallProviderMount";
+import { GuestModeProvider } from "@/components/auth/GuestModeContext";
+import { getViewerId } from "@/lib/session";
+import { isGuestSession } from "@/lib/guest";
 import "../globals.css";
 
 // Bengali body (Hind Siliguri is not a variable font — declare explicit weights)
@@ -80,6 +83,10 @@ export default async function LocaleLayout({
   // Brand v1.0 body font (Plus Jakarta Sans → Hind Siliguri fallback for Bengali).
   const bodyFont = "font-body";
 
+  // A real session always wins over a stale guest cookie.
+  const hasSession = Boolean(await getViewerId());
+  const isGuest = !hasSession && (await isGuestSession());
+
   return (
     <html
       lang={locale}
@@ -87,11 +94,13 @@ export default async function LocaleLayout({
     >
       <body className={`${bodyFont} bg-canvas text-ink antialiased`}>
         <NextIntlClientProvider>
-          <CallProviderMount>
-            <Header />
-            <MobileVerifyBanner />
-            {children}
-          </CallProviderMount>
+          <GuestModeProvider isGuest={isGuest}>
+            <CallProviderMount>
+              <Header />
+              <MobileVerifyBanner />
+              {children}
+            </CallProviderMount>
+          </GuestModeProvider>
         </NextIntlClientProvider>
       </body>
     </html>

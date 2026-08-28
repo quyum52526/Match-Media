@@ -11,8 +11,10 @@ import { getBrowseProfiles, type SearchFilters } from "@/lib/data/profiles";
 import { getRecommendedProfiles } from "@/lib/data/recommend";
 import { getProfileCompletion } from "@/lib/data/profileCompletion";
 import { getPhotoRequestQuota, getProfileViewQuota } from "@/lib/data/billing";
+import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
 import { QuotaNote } from "@/components/billing/PhotoQuota";
-import { requireViewerId } from "@/lib/session";
+import { getViewerIdOrGuest } from "@/lib/session";
+import { GUEST_VIEWER_ID } from "@/lib/guest";
 import { prisma } from "@/lib/prisma";
 
 export const metadata = {
@@ -42,13 +44,19 @@ export default async function BrowsePage({
   const { locale } = await params;
   const sp = await searchParams;
   setRequestLocale(locale);
-  const viewerId = await requireViewerId(`/${locale}/login`);
+  const { viewerId, isGuest } = await getViewerIdOrGuest(`/${locale}/login`);
   const t = await getTranslations("Browse");
 
-  const viewer = await prisma.user.findUnique({
-    where: { id: viewerId },
-    select: { role: true, accountCategory: true },
-  });
+  // Guest preview uses a sentinel id for personalization-free reads only —
+  // see lib/guest.ts for why that's safe here but never for a write path.
+  const effectiveViewerId = viewerId ?? GUEST_VIEWER_ID;
+
+  const viewer = isGuest
+    ? null
+    : await prisma.user.findUnique({
+        where: { id: effectiveViewerId },
+        select: { role: true, accountCategory: true },
+      });
   const viewerRole = viewer?.role ?? null;
   const viewerCategory = viewer?.accountCategory ?? null;
   const isPrivilegedViewer = viewerRole === "ADMIN" || viewerCategory === "MEDIA" || viewerCategory === "PARENTS";
@@ -67,16 +75,23 @@ export default async function BrowsePage({
   };
   const hasFilters = Object.values(filters).some((v) => v !== undefined);
 
+  // A guest has no account to fetch quotas/completion for, so these stay
+  // static rather than hitting the DB. `unlimited: true` here only suppresses
+  // the "N left today" / "limit reached" copy (which would be misleading —
+  // guests haven't "used" a free-tier allowance) — it grants no real access:
+  // every gated button still runs through the AuthGateModal (`gate()`) before
+  // the quota value is ever consulted, so nothing actually unmetered slips through.
+  const guestQuota = { unlimited: true, remaining: FREE_DAILY_LIMIT, limit: FREE_DAILY_LIMIT };
+
   const [profiles, recommended, completion, quota, viewQuota] = await Promise.all([
-    getBrowseProfiles(viewerId, filters, viewerRole, viewerCategory),
-    // Recommendations are shown to every authenticated viewer. Candidate viewers
-    // get scored matches against their own profile (+ filters); profile-less
-    // viewers (MEDIA/ADMIN/PARENTS) get a gender-agnostic fallback set.
-    getRecommendedProfiles(viewerId, filters),
-    // MEDIA/ADMIN users have no personal profile, so skip the completion fetch.
-    isPrivilegedViewer ? Promise.resolve(null) : getProfileCompletion(viewerId),
-    getPhotoRequestQuota(viewerId),
-    getProfileViewQuota(viewerId),
+    getBrowseProfiles(effectiveViewerId, filters, viewerRole, viewerCategory),
+    // Recommendations are shown to every viewer, guests included (guests get
+    // the gender-agnostic fallback set, same as a profile-less MEDIA/ADMIN).
+    getRecommendedProfiles(effectiveViewerId, filters),
+    // MEDIA/ADMIN users and guests have no personal profile to score.
+    isPrivilegedViewer || isGuest ? Promise.resolve(null) : getProfileCompletion(effectiveViewerId),
+    isGuest ? Promise.resolve(guestQuota) : getPhotoRequestQuota(effectiveViewerId),
+    isGuest ? Promise.resolve(guestQuota) : getProfileViewQuota(effectiveViewerId),
   ]);
 
   return (

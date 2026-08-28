@@ -119,7 +119,7 @@ const GUIDE_SECTIONS: GuideSection[] = [
   },
   {
     id: 3,
-    videoId: PLACEHOLDER_VIDEO_ID,
+    videoId: "5Eoi7RAmJCY",
     title: { en: "3. Browse & Filter", bn: "৩. Browse ও Filter করুন" },
     body: {
       en: "Use filters like age, district, profession and education to find profiles that match what you're looking for. The quick filters on the homepage are a fast way to start your first search.",

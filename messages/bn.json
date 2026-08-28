@@ -552,6 +552,17 @@
       }
     }
   },
+  "GuestGate": {
+    "explore": "Guest হিসেবে দেখুন",
+    "cardExplore": "Guest হিসেবে দেখুন",
+    "divider": "অথবা",
+    "exit": "Guest mode থেকে বের হন",
+    "banner": "আপনি Guest হিসেবে দেখছেন — কিছু ফিচার লক করা আছে।",
+    "title": "চালিয়ে যেতে Sign in করুন",
+    "body": "প্রোফাইলের সাথে যোগাযোগ করতে Login করুন অথবা একটি account তৈরি করুন।",
+    "login": "Log in",
+    "signup": "Sign up"
+  },
   "Pro": {
     "title": "Pro নিন",
     "subtitle": "Unlimited browsing, সাথে সাথে ‘কে দেখেছে’ reveal, এবং search-এ priority placement আনলক করুন।",

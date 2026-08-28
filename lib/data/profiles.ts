@@ -528,3 +528,78 @@ export async function getProfileForViewer(
 
   return view;
 }
+
+/**
+ * Profile Detail view for an unauthenticated "Explore as Guest" visitor.
+ *
+ * Deliberately NOT a thin wrapper around `getProfileForViewer`: that function
+ * upserts a `ProfileViewLog` row keyed by the caller's viewerId, and that
+ * column has a foreign-key constraint to a real `User` — there is no viewer
+ * row to attribute a guest's view to. So this reads the same profile fields
+ * but performs no write, and always returns the "brand-new free viewer"
+ * shape (locked photo, no interest, not matched, no daily-view counter) — a
+ * guest never has a photo-access request, a sent interest, or a match to look
+ * up in the first place.
+ */
+export async function getGuestProfilePreview(
+  profileId: string,
+): Promise<ProfileDetailView | null> {
+  const profile = await prisma.profile.findFirst({
+    where: { OR: [{ userId: profileId }, { id: profileId }] },
+    include: {
+      user: true,
+      referredBy: { select: { accountCategory: true } },
+      images: { where: { isPrimary: true, moderationStatus: "APPROVED" }, take: 1 },
+    },
+  });
+  if (!profile) return null;
+
+  const profileUser = profile.user;
+  const primary = profile.images[0];
+  // No photoAccessRequest exists for a guest, so a photo is only ever visible
+  // when the owner made it PUBLIC — never gated-and-approved.
+  const photoRevealed = !!primary && primary.privacy === "PUBLIC";
+  const imageUrl = primary
+    ? (await signUrl(photoRevealed ? primary.originalKey : primary.blurredKey)) ??
+      undefined
+    : undefined;
+
+  return {
+    id: profile.userId ?? profile.referredById ?? profile.id,
+    displayName:
+      profile.nameHidden || !profile.fullName ? HIDDEN_NAME : profile.fullName,
+    nameHidden: profile.nameHidden,
+    gender: profile.gender,
+    age: calcAge(profile.dateOfBirth),
+    district: profile.district ?? "",
+    upazila: profile.upazila ?? "",
+    profession: profile.profession ?? "",
+    education: profile.education ?? "",
+    maritalStatus: profile.maritalStatus ?? "",
+    bio: profile.bio ?? "",
+    completionScore: profile.completionScore,
+    isVerified: profile.isVerified,
+    isPro: isProActive(profileUser),
+    managedBy: resolveManagerType(profile.referredBy?.accountCategory ?? null),
+    primaryImagePrivacy: (primary?.privacy as ImagePrivacy) ?? "BLURRED",
+    imageUrl,
+    details: {
+      height: profile.height ?? "",
+      weight: profile.weight ?? "",
+      childrenStatus: profile.childrenStatus ?? "",
+      family: profile.familyDetails ?? "",
+    },
+    verifications: {
+      mobile: profileUser?.isMobileVerified ?? false,
+      email: false,
+      photo: profile.isVerified,
+      nid: false,
+    },
+    // Guest baseline: nothing requested, nothing sent, no match — identical to
+    // what a fresh authenticated free member sees on someone new.
+    viewer: { photoAccess: "NONE", interest: "NONE", isPro: false, isMatched: false },
+    // Contact is never handed to a guest (it otherwise requires a mutual
+    // ACCEPTED interest, which a signed-out visitor can never have).
+    maskedContact: undefined,
+  };
+}

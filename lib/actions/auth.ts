@@ -1,12 +1,13 @@
 "use server";
 
 import { AuthError } from "next-auth";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import bcrypt from "bcryptjs";
 import { signIn, signOut } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { calcAge, normalizeBdMobile } from "@/lib/utils";
 import { grantSignupSubscription } from "@/lib/billing";
+import { GUEST_COOKIE } from "@/lib/guest";
 
 /**
  * Build the absolute origin from the incoming request headers.
@@ -31,6 +32,8 @@ export async function authenticate(
 ): Promise<string | undefined> {
   try {
     const origin = await getOrigin();
+    // A real login supersedes any leftover guest-preview cookie.
+    (await cookies()).delete(GUEST_COOKIE);
     await signIn("credentials", {
       email: formData.get("email"),
       password: formData.get("password"),
@@ -135,6 +138,7 @@ export async function register(
   const dest = "/onboarding?success=true";
   const onboarding = locale === "en" ? `/en${dest}` : dest;
   const origin = await getOrigin();
+  (await cookies()).delete(GUEST_COOKIE);
   try {
     await signIn("credentials", { email, password, redirectTo: `${origin}${onboarding}` });
   } catch (error) {
