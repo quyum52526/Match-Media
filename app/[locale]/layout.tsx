@@ -95,22 +95,14 @@ export default async function LocaleLayout({
     >
       <body className={`${bodyFont} bg-canvas text-ink antialiased`}>
         <NextIntlClientProvider>
-<<<<<<< Updated upstream
           <GuestModeProvider isGuest={isGuest}>
             <CallProviderMount>
               <Header />
               <MobileVerifyBanner />
               {children}
+              <Footer />
             </CallProviderMount>
           </GuestModeProvider>
-=======
-          <CallProviderMount>
-            <Header />
-            <MobileVerifyBanner />
-            {children}
-            <Footer />
-          </CallProviderMount>
->>>>>>> Stashed changes
         </NextIntlClientProvider>
       </body>
     </html>
