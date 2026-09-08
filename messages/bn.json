@@ -231,9 +231,9 @@
       "children": "সন্তান",
       "maritalStatus": "বৈবাহিক অবস্থা",
       "familyStatus": "পরিবারের ধরন",
-      "fatherOccupation": "বাবার পেশা",
-      "motherOccupation": "মায়ের পেশা",
-      "siblings": "ভাইবোন",
+      "fatherProfession": "বাবার পেশা",
+      "motherProfession": "মায়ের পেশা",
+      "numberOfSiblings": "ভাইবোনের সংখ্যা",
       "familyValues": "পারিবারিক মূল্যবোধ",
       "familyNote": "পরিবার সম্পর্কে আরও",
       "empty": "এই সদস্য এখনও এই তথ্যগুলো যোগ করেননি।"

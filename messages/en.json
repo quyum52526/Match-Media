@@ -231,9 +231,9 @@
       "children": "Children",
       "maritalStatus": "Marital status",
       "familyStatus": "Family status",
-      "fatherOccupation": "Father’s occupation",
-      "motherOccupation": "Mother’s occupation",
-      "siblings": "Siblings",
+      "fatherProfession": "Father’s profession",
+      "motherProfession": "Mother’s profession",
+      "numberOfSiblings": "Number of siblings",
       "familyValues": "Family values",
       "familyNote": "More about the family",
       "empty": "This member has not added these details yet."
