@@ -21,8 +21,8 @@ const LABEL_PREFIX =
 /** Explicit "Label: value" keys, EN + BN. */
 const FIELD_LABELS: [RegExp, keyof FamilyBackground][] = [
   [/^(family\s*status|পরিবারের?\s*ধরন|পরিবার)$/i, "status"],
-  [/^(father(['’]s)?(\s*(profession|occupation))?|বাবা(র)?|পিতা(র)?)$/i, "fatherProfession"],
-  [/^(mother(['’]s)?(\s*(profession|occupation))?|মা(য়ের)?|মাতা(র)?)$/i, "motherProfession"],
+  [/^(father(['’]s)?(\s*(profession|occupation))?|বাবা(র)?|পিতা(র)?)$/i, "fatherOccupation"],
+  [/^(mother(['’]s)?(\s*(profession|occupation))?|মা(য়ের)?|মাতা(র)?)$/i, "motherOccupation"],
   [/^(siblings?|brothers?\s*(&|and)?\s*sisters?|ভাইবোন|ভাই[-\s]*বোন)$/i, "siblings"],
   [/^(family\s*values?|values?|পারিবারিক\s*মূল্যবোধ|মূল্যবোধ)$/i, "values"],
 ];
@@ -36,8 +36,8 @@ const BOTH_PARENTS = /^(বাবা[-\s]*(ও\s*)?মা|মা[-\s]*(ও\s*)?�
 
 /** Prefix keywords for label-less prose ("বাবা ব্যবসায়ী"). */
 const PARENT_PREFIX: [RegExp, keyof FamilyBackground][] = [
-  [/^(বাবা|পিতা|father)\s*[-–—]?\s*/i, "fatherProfession"],
-  [/^(মা|মাতা|mother)\s*[-–—]?\s*/i, "motherProfession"],
+  [/^(বাবা|পিতা|father)\s*[-–—]?\s*/i, "fatherOccupation"],
+  [/^(মা|মাতা|mother)\s*[-–—]?\s*/i, "motherOccupation"],
 ];
 
 const SIBLING_WORDS = /(ভাইবোন|ভাই|বোন|siblings?|brother|sister)/i;

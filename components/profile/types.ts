@@ -72,8 +72,8 @@ export interface ProfileVerifications {
 export interface FamilyBackground {
   /** Joint / nuclear, as written by the member. */
   status?: string;
-  fatherProfession?: string;
-  motherProfession?: string;
+  fatherOccupation?: string;
+  motherOccupation?: string;
   siblings?: string;
   /** Religious / cultural values the member described. */
   values?: string;

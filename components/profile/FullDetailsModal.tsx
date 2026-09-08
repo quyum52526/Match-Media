@@ -90,8 +90,8 @@ export function FullDetailsModal({
 
   const familyRows: DetailItem[] = [
     { icon: Users, label: t("familyStatus"), value: family.status },
-    { icon: Briefcase, label: t("fatherProfession"), value: family.fatherProfession },
-    { icon: UserRound, label: t("motherProfession"), value: family.motherProfession },
+    { icon: Briefcase, label: t("fatherOccupation"), value: family.fatherOccupation },
+    { icon: UserRound, label: t("motherOccupation"), value: family.motherOccupation },
     { icon: Users, label: t("siblings"), value: family.siblings },
     { icon: HeartHandshake, label: t("familyValues"), value: family.values },
   ];
