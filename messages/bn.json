@@ -223,10 +223,20 @@
     "viewFullDetails": "Full Details দেখুন",
     "details": {
       "title": "Full Details",
-      "height": "Height",
-      "weight": "Weight",
-      "children": "Children",
-      "family": "Family details"
+      "close": "বন্ধ করুন",
+      "personalSection": "ব্যক্তিগত তথ্য",
+      "familySection": "পারিবারিক পরিচয়",
+      "height": "উচ্চতা",
+      "weight": "ওজন",
+      "children": "সন্তান",
+      "maritalStatus": "বৈবাহিক অবস্থা",
+      "familyStatus": "পরিবারের ধরন",
+      "fatherProfession": "বাবার পেশা",
+      "motherProfession": "মায়ের পেশা",
+      "siblings": "ভাইবোন",
+      "familyValues": "পারিবারিক মূল্যবোধ",
+      "familyNote": "পরিবার সম্পর্কে আরও",
+      "empty": "এই সদস্য এখনও এই তথ্যগুলো যোগ করেননি।"
     },
     "facts": {
       "address": "ঠিকানা",
@@ -771,11 +781,25 @@
   "Footer": {
     "tagline": "বাংলাদেশের জন্য গোপনীয়তা-প্রথম, সম্মতি-ভিত্তিক matrimony।",
     "disclaimer": "প্ল্যাটফর্ম শুধুমাত্র একটি যোগাযোগ মাধ্যম; পরিচয়/তথ্য যাচাইয়ের দায়িত্ব ব্যবহারকারীর",
-    "colLegal": "লিঙ্ক",
     "contact": "যোগাযোগ",
     "privacy": "গোপনীয়তা নীতি",
     "terms": "শর্তাবলি",
-    "rights": "© {year} MatchMedia। সর্বস্বত্ব সংরক্ষিত।"
+    "rights": "© {year} MatchMedia। সর্বস্বত্ব সংরক্ষিত।",
+    "colDiscover": "TODO: Discover",
+    "discoverBrowse": "TODO: Browse matches",
+    "discoverHow": "TODO: How it works",
+    "discoverStories": "TODO: Success stories",
+    "discoverPricing": "TODO: Pricing",
+    "colCompany": "TODO: Company",
+    "companyAbout": "TODO: About us",
+    "companyBlog": "TODO: Blog",
+    "companyCareers": "TODO: Careers",
+    "colTrust": "TODO: Trust & safety",
+    "trustSafety": "TODO: Safety centre",
+    "trustReport": "TODO: Report a profile",
+    "signalBlurred": "TODO: Photos blurred by default",
+    "signalContact": "TODO: Contact details never shared",
+    "signalGuardian": "TODO: Guardian & agency profiles supported"
   },
   "LocaleSwitcher": {
     "label": "ভাষা"

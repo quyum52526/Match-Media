@@ -7,7 +7,6 @@ import { HomeHero } from "@/components/home/HomeHero";
 import { StackedFeatureSection } from "@/components/home/StackedFeatureSection";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { InteractiveMap } from "@/components/home/InteractiveMap";
-import { HomeFooter } from "@/components/home/HomeFooter";
 import { FeaturedInfluencer } from "@/components/home/FeaturedInfluencer";
 import { getHomepageShowcase, getMarqueeProfiles } from "@/lib/data/showcase";
 
@@ -63,7 +62,6 @@ export default async function Home({
       <InteractiveMap />
       <HowItWorks />
       <FeaturedInfluencer />
-      <HomeFooter />
     </main>
   );
 }

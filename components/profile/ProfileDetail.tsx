@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardBody, CardTitle } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
-import { Modal } from "@/components/ui/Modal";
 import {
   ShieldCheckIcon,
   StarIcon,
@@ -37,6 +36,7 @@ import { computeCompletion } from "@/lib/utils";
 import { localize } from "@/lib/constants/labels";
 import { BlurredImage } from "./BlurredImage";
 import { ExpressInterestModal } from "./ExpressInterestModal";
+import { FullDetailsModal } from "./FullDetailsModal";
 import { ReportButton } from "./ReportButton";
 import { TrustCard } from "./TrustCard";
 import type { ProfileDetailView, ViewerState } from "./types";
@@ -91,7 +91,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
     data.details.height,
     data.details.weight,
     data.details.childrenStatus,
-    data.details.family,
+    data.details.family.raw,
   ]);
 
   function requestPhotoAccess() {
@@ -308,24 +308,12 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
       </div>
 
       {/* Full Details modal */}
-      <Modal
+      <FullDetailsModal
         open={detailsOpen}
         onClose={() => setDetailsOpen(false)}
-        title={t("details.title")}
-      >
-        <dl className="divide-y divide-ink/10">
-          <DetailRow label={t("details.height")} value={data.details.height} />
-          <DetailRow label={t("details.weight")} value={data.details.weight} />
-          <DetailRow
-            label={t("details.children")}
-            value={data.details.childrenStatus}
-          />
-          <DetailRow
-            label={t("details.family")}
-            value={data.details.family}
-          />
-        </dl>
-      </Modal>
+        details={data.details}
+        displayName={data.displayName}
+      />
 
       {/* Express Interest modal — optional introductory note */}
       <ExpressInterestModal
@@ -358,15 +346,6 @@ function Fact({
         <dt className="text-xs text-ink/50">{label}</dt>
         <dd className="text-sm font-medium text-ink">{value}</dd>
       </div>
-    </div>
-  );
-}
-
-function DetailRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between gap-4 py-2.5">
-      <dt className="shrink-0 text-sm text-ink/50">{label}</dt>
-      <dd className="text-right text-sm font-medium text-ink">{value}</dd>
     </div>
   );
 }

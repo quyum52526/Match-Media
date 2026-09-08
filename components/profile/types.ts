@@ -61,12 +61,36 @@ export interface ProfileVerifications {
   nid: boolean;
 }
 
+/**
+ * Family background, split into the rows the Full Details modal renders.
+ *
+ * Every field is optional because the DB holds a single free-text column that
+ * is parsed into these (see `lib/data/familyDetails.ts`): a value is present
+ * only when it could be identified. `note` carries whatever did not classify,
+ * and `raw` is the untouched original (used for the completion score).
+ */
+export interface FamilyBackground {
+  /** Joint / nuclear, as written by the member. */
+  status?: string;
+  fatherProfession?: string;
+  motherProfession?: string;
+  siblings?: string;
+  /** Religious / cultural values the member described. */
+  values?: string;
+  /** Unclassified remainder of the free-text blurb. */
+  note?: string;
+  /** The original stored string, verbatim. */
+  raw: string;
+}
+
 /** Extended attributes shown in the "View Full Details" modal. */
 export interface ProfileFullDetails {
   height: string;
   weight: string;
   childrenStatus: string;
-  family: string;
+  /** Duplicated from the key-facts card so the modal reads standalone. */
+  maritalStatus: string;
+  family: FamilyBackground;
 }
 
 /**

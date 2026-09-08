@@ -7,6 +7,7 @@ import { isProActive } from "@/lib/billing";
 import { maskEmail, maskPhone } from "@/lib/privacy";
 import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
 import { heightsInRange } from "@/lib/constants/profileOptions";
+import { parseFamilyDetails } from "@/lib/data/familyDetails";
 import type {
   ProfileDetailView,
   ProfileSummary,
@@ -507,7 +508,9 @@ export async function getProfileForViewer(
       height: profile.height ?? "",
       weight: profile.weight ?? "",
       childrenStatus: profile.childrenStatus ?? "",
-      family: profile.familyDetails ?? "",
+      maritalStatus: profile.maritalStatus ?? "",
+      // One free-text column -> the labelled rows the Full Details modal shows.
+      family: parseFamilyDetails(profile.familyDetails),
     },
     verifications: {
       mobile: profileUser?.isMobileVerified ?? false,
@@ -587,7 +590,9 @@ export async function getGuestProfilePreview(
       height: profile.height ?? "",
       weight: profile.weight ?? "",
       childrenStatus: profile.childrenStatus ?? "",
-      family: profile.familyDetails ?? "",
+      maritalStatus: profile.maritalStatus ?? "",
+      // One free-text column -> the labelled rows the Full Details modal shows.
+      family: parseFamilyDetails(profile.familyDetails),
     },
     verifications: {
       mobile: profileUser?.isMobileVerified ?? false,

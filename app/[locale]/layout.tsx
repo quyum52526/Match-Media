@@ -10,6 +10,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 import { MobileVerifyBanner } from "@/components/auth/MobileVerifyBanner";
 import { CallProviderMount } from "@/components/calls/CallProviderMount";
 import { GuestModeProvider } from "@/components/auth/GuestModeContext";
@@ -94,6 +95,7 @@ export default async function LocaleLayout({
     >
       <body className={`${bodyFont} bg-canvas text-ink antialiased`}>
         <NextIntlClientProvider>
+<<<<<<< Updated upstream
           <GuestModeProvider isGuest={isGuest}>
             <CallProviderMount>
               <Header />
@@ -101,6 +103,14 @@ export default async function LocaleLayout({
               {children}
             </CallProviderMount>
           </GuestModeProvider>
+=======
+          <CallProviderMount>
+            <Header />
+            <MobileVerifyBanner />
+            {children}
+            <Footer />
+          </CallProviderMount>
+>>>>>>> Stashed changes
         </NextIntlClientProvider>
       </body>
     </html>

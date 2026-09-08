@@ -223,10 +223,20 @@
     "viewFullDetails": "View Full Details",
     "details": {
       "title": "Full Details",
+      "close": "Close",
+      "personalSection": "Personal specifications",
+      "familySection": "Family background",
       "height": "Height",
       "weight": "Weight",
       "children": "Children",
-      "family": "Family details"
+      "maritalStatus": "Marital status",
+      "familyStatus": "Family status",
+      "fatherProfession": "Father’s profession",
+      "motherProfession": "Mother’s profession",
+      "siblings": "Siblings",
+      "familyValues": "Family values",
+      "familyNote": "More about the family",
+      "empty": "This member has not added these details yet."
     },
     "facts": {
       "address": "Address",
@@ -771,11 +781,25 @@
   "Footer": {
     "tagline": "Privacy-first, consent-based matrimony for Bangladesh.",
     "disclaimer": "This platform is only a communication medium; verifying identity and information is the user's responsibility.",
-    "colLegal": "Quick links",
     "contact": "Contact",
     "privacy": "Privacy Policy",
     "terms": "Terms",
-    "rights": "© {year} MatchMedia. All rights reserved."
+    "rights": "© {year} MatchMedia. All rights reserved.",
+    "colDiscover": "Discover",
+    "discoverBrowse": "Browse matches",
+    "discoverHow": "How it works",
+    "discoverStories": "Success stories",
+    "discoverPricing": "Pricing",
+    "colCompany": "Company",
+    "companyAbout": "About us",
+    "companyBlog": "Blog",
+    "companyCareers": "Careers",
+    "colTrust": "Trust & safety",
+    "trustSafety": "Safety centre",
+    "trustReport": "Report a profile",
+    "signalBlurred": "Photos blurred by default",
+    "signalContact": "Contact details never shared",
+    "signalGuardian": "Guardian & agency profiles supported"
   },
   "LocaleSwitcher": {
     "label": "Language"
