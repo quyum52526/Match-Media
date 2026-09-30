@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
-import { BadgeCheck, Crown } from "lucide-react";
+import { BadgeCheck, Crown, Lock } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { ShowcaseProfile } from "@/lib/data/showcase";
+import { ShowcaseAvatar } from "./ShowcaseAvatar";
 
 export interface StackedFeatureSectionProps {
   title: string;
@@ -13,6 +14,12 @@ export interface StackedFeatureSectionProps {
   profiles?: ShowcaseProfile[];
   /** Decorative name shown on the front card when no real profiles are provided. */
   badgeName?: string;
+  /**
+   * Optional privacy/reassurance line rendered under the description. Opt-in per
+   * section (rather than always-on) so only the sections that need the caveat
+   * carry it — the homepage passes it for Premium Members.
+   */
+  note?: string;
 }
 
 /** Inner content of a single stacked card. */
@@ -25,16 +32,13 @@ function CardFace({
   isFront: boolean;
   badgeName: string;
 }) {
-  // Showcase cards are PUBLIC — never show a lock icon here. When a real
-  // signed imageUrl arrives from the server it renders; otherwise fall back
-  // to a branded gradient so the stack looks intentional, not locked.
-  const CARD_HUES = [
-    "from-primary/20 via-accent/10 to-canvas",
-    "from-accent/20 via-primary/10 to-canvas",
-    "from-success/15 via-accent/10 to-canvas",
-  ];
-  const hue = CARD_HUES[Math.abs(badgeName.charCodeAt(0)) % CARD_HUES.length];
-
+  // Showcase cards never show a lock icon: the server already reduced the photo
+  // to one that is safe to publish (original for PUBLIC, blurred derivative
+  // otherwise — see pickShowcaseKey in lib/data/showcase.ts).
+  //
+  // Three states, in order: a real signed photo; a real profile with no usable
+  // photo (initials avatar); or no profile at all, when the DB returned fewer
+  // than three rows for this section (decorative gradient, no initials).
   const body = profile?.imageUrl ? (
     <div className="relative h-full w-full">
       <Image
@@ -47,7 +51,7 @@ function CardFace({
       />
     </div>
   ) : (
-    <div className={`h-full w-full bg-gradient-to-br ${hue}`} />
+    <ShowcaseAvatar profile={profile} textClass="text-5xl" />
   );
 
   // Name badge — only on the front (top) card.
@@ -81,6 +85,7 @@ export function StackedFeatureSection({
   redirectLink,
   profiles,
   badgeName = "Faisal Ansari",
+  note,
 }: StackedFeatureSectionProps) {
   const cardsLeft = imagePosition === "left";
 
@@ -107,6 +112,17 @@ export function StackedFeatureSection({
         <p className="mt-3 max-w-md text-base font-normal leading-relaxed text-muted">
           {description}
         </p>
+
+        {/* Privacy caveat. Inherits the parent's centre-on-mobile /
+            left-on-desktop alignment: the flex row re-justifies at md, and the
+            icon gets its own top offset so it aligns to the first line rather
+            than the vertical centre once the text wraps to two lines. */}
+        {note && (
+          <p className="mt-3 flex max-w-md items-start justify-center gap-2 text-xs leading-relaxed text-ink/60 sm:text-sm md:justify-start">
+            <Lock size={14} className="mt-0.5 shrink-0" aria-hidden="true" />
+            <span className="text-left">{note}</span>
+          </p>
+        )}
       </div>
 
       {/* ---------- Clickable card stack ---------- */}

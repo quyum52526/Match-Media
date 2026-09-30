@@ -53,7 +53,8 @@
       "premiumTitle": "Premium Members",
       "premiumDesc": "Verified, serious members who've upgraded for a more committed search.",
       "verifiedTitle": "Verified Professionals",
-      "verifiedDesc": "Connect with trusted doctors, engineers, and specialized experts verified for authenticity."
+      "verifiedDesc": "Connect with trusted doctors, engineers, and specialized experts verified for authenticity.",
+      "privacyNote": "To ensure maximum member privacy, photos remain blurred by default until permission is granted."
     },
     "professionals": {
       "title": "Verified Professionals",
@@ -187,7 +188,10 @@
       "minHeight": "Min",
       "maxHeight": "Max",
       "any": "Any",
-      "clear": "Clear filters"
+      "clear": "Clear filters",
+      "religion": "Religion",
+      "sect": "Sect",
+      "sectPlaceholder": "Select religion first"
     },
     "noMatch": {
       "title": "No profiles match your filters",
@@ -226,7 +230,12 @@
       "height": "Height",
       "weight": "Weight",
       "children": "Children",
-      "family": "Family details"
+      "family": "Family details",
+      "religion": "Religion",
+      "sect": "Sect",
+      "caste": "Caste / community",
+      "diet": "Diet",
+      "smoking": "Smoking"
     },
     "facts": {
       "address": "Address",
@@ -339,7 +348,8 @@
       "basic": "Basic information",
       "background": "Location & background",
       "details": "Additional details",
-      "about": "About you"
+      "about": "About you",
+      "religion": "Religion & community"
     },
     "fields": {
       "fullName": "Full name",
@@ -355,7 +365,12 @@
       "childrenStatus": "Children",
       "familyDetails": "Family details",
       "bio": "Bio",
-      "nameHidden": "Hide my name on my profile"
+      "nameHidden": "Hide my name on my profile",
+      "religion": "Religion",
+      "sect": "Sect",
+      "caste": "Caste / community",
+      "diet": "Diet",
+      "smokingStatus": "Smoking"
     },
     "gender": {
       "placeholder": "Select gender",
@@ -407,7 +422,8 @@
         "FORBIDDEN": "You can only manage your own photos.",
         "NO_PROFILE": "Save your basic details first, then add photos."
       }
-    }
+    },
+    "selectReligionFirst": "Select religion first"
   },
   "Report": {
     "button": "Report",
@@ -548,8 +564,45 @@
         "EXISTS": "An account with this email already exists",
         "AGE": "You must be at least 18 years old",
         "MOBILE": "Enter a valid Bangladeshi mobile number",
-        "INVALID": "Account created, but sign-in failed. Please log in."
-      }
+        "INVALID": "Account created, but sign-in failed. Please log in.",
+        "CATEGORY": "Please choose an account type",
+        "AGENCY_NAME": "Agency name is required",
+        "CONTACT_PERSON": "Contact person name is required",
+        "DISTRICT": "Please select your service district",
+        "MOBILE_REQUIRED": "Mobile number is required for this account type"
+      },
+      "accountType": {
+        "label": "I am signing up as",
+        "hint": "This sets up the right account for you. Changing it later needs support.",
+        "agentNotice": "Agent accounts need admin approval before you can take assignments. You will not have a matrimonial profile.",
+        "options": {
+          "SELF": {
+            "title": "Personal",
+            "description": "Finding a life partner for myself."
+          },
+          "PARENTS": {
+            "title": "Parents / Guardian",
+            "description": "Managing profile and finding matches for son or daughter."
+          },
+          "MEDIA": {
+            "title": "Marriage Media",
+            "description": "Agency managing profiles for multiple matrimonial clients."
+          },
+          "AGENT": {
+            "title": "Verification Agent",
+            "description": "Visiting candidates in person to confirm identity & documents."
+          }
+        },
+        "aboutOption": "About {option}"
+      },
+      "agencyName": "Agency name",
+      "contactPerson": "Contact person",
+      "district": "Service district",
+      "districtPlaceholder": "Select your district",
+      "districtHint": "Where you can travel to verify candidates.",
+      "mobileHintRequired": "Bangladeshi number — required so we can reach you.",
+      "guardianName": "Your full name",
+      "guardianNameHint": "The parent or guardian name. You will add your son or daughter details next."
     }
   },
   "GuestGate": {
@@ -787,9 +840,18 @@
     "missionBody": "We believe matchmaking should never be a guessing game. Our mission is simple: protect your privacy, and give you complete clarity about who you're truly connecting with. From your first expression of interest to the moment you decide to make that first call, you remain in full control of your journey — every step of the way.",
     "valuesTitle": "What We Stand For",
     "values": [
-      { "title": "Privacy by default", "body": "Photos, contact details, and personal information stay hidden until you choose to share them." },
-      { "title": "Verified members", "body": "Mobile verification and manual review keep the community genuine." },
-      { "title": "No pressure", "body": "Browse, connect, and decide at your own pace — there's no rush and no spam." }
+      {
+        "title": "Privacy by default",
+        "body": "Photos, contact details, and personal information stay hidden until you choose to share them."
+      },
+      {
+        "title": "Verified members",
+        "body": "Mobile verification and manual review keep the community genuine."
+      },
+      {
+        "title": "No pressure",
+        "body": "Browse, connect, and decide at your own pace — there's no rush and no spam."
+      }
     ]
   },
   "Contact": {
@@ -808,13 +870,41 @@
     "title": "Terms and Conditions",
     "intro": "By using MatchMedia, you agree to the following terms. Please read them carefully.",
     "sections": [
-      { "id": "acceptance-of-terms", "heading": "1. Acceptance of Terms", "body": "MatchMedia is an online introduction and matchmaking platform that helps members and their families discover, evaluate and connect with potential life partners. By creating an account you confirm that you are at least 18 years old, legally able to enter into an agreement, and that you accept these Terms and Conditions in full. MatchMedia acts solely as a facilitator: we provide the tools for discovery, verification and communication, but every decision about a relationship or marriage rests entirely with you and your family. We may update these terms from time to time as the platform evolves; when we make material changes we will notify you in the app, and your continued use of MatchMedia after an update means you accept the revised terms." },
-      { "id": "account-responsibility", "heading": "2. Account Responsibility", "body": "You are responsible for the accuracy and honesty of every piece of information on your profile — including your age, education, profession, marital status and family details — and for keeping it up to date. Keep your login credentials confidential and notify us immediately if you suspect unauthorised access to your account. Each member may hold only one personal account. Where a profile is managed on behalf of a candidate — by parents or by a registered matchmaking organisation (Media) — the manager must have the candidate's informed consent and remains fully responsible for the profile's accuracy and conduct. Accounts that repeatedly publish false or misleading information may be suspended or permanently removed." },
-      { "id": "privacy", "heading": "3. Privacy", "body": "Your privacy is the foundation of MatchMedia. We collect only the information needed to operate the service, and we never sell your personal data. Your photos and personal details are shared with other members only in the ways you control: photos remain blurred until you approve a viewing request, and your contact details are never displayed to anyone (see the Data Privacy & Masking Policy below). Communication with your matches happens through MatchMedia's own messaging and calling features, so you never need to hand out a phone number or email address. Data required for payments is processed securely by our payment partner and is never visible to other members. You may request deletion of your account and associated data at any time." },
-      { "id": "verification", "heading": "4. Verification", "body": "Trust on MatchMedia is built through verification. Our network of registered Verification Agents — trained, independently verified field agents — review and confirm member details such as identity documents (NID), locality and stated profession. Agents are compensated per completed task from the verification budget attached to each request, which keeps the process independent and accountable. Profiles that pass these checks receive the \"Verified\" badge, and those that complete additional background checks receive \"Premium Verified\". Verification significantly raises the reliability of a profile, but it is not a guarantee of character or intent: members and their families should always exercise their own judgment before advancing a relationship." },
-      { "id": "prohibited-conduct", "heading": "5. Prohibited Conduct", "body": "MatchMedia is a respectful, family-oriented community, and conduct that undermines it is prohibited. This includes harassment or abusive language toward any member; impersonation or the creation of fake profiles; publishing false or misleading information; attempting to obtain another member's phone number, email or other contact details outside the platform or to circumvent the masking and photo-privacy protections; requesting money, gifts or financial information from any member; and any commercial solicitation unrelated to legitimate matchmaking. Violations may lead to content removal, suspension or a permanent ban, and where the law requires it we will cooperate with the authorities. Please report suspicious behaviour with the in-app Report tool — our moderation team reviews every report." },
-      { "id": "liability", "heading": "6. Liability", "body": "MatchMedia is an introduction platform, not a marriage bureau or a party to any relationship. We do not arrange, broker or guarantee marriages, and we make no promises about the number or quality of matches, responses or outcomes. While verification and moderation substantially reduce risk, we cannot vouch for the character, conduct or intentions of any member, and we are not responsible for interactions that take place outside the platform, including in-person meetings. You are responsible for your own due diligence: meet first in safe public places, involve your family early, and never send money to anyone you meet on the platform. To the maximum extent permitted by the laws of Bangladesh, MatchMedia's total liability for any claim arising from the use of the service is limited to the fees you have paid to us." },
-      { "id": "masking-policy", "heading": "7. Data Privacy & Masking Policy", "body": "We protect member data with masking and blurring by default. Profile photos are stored privately and served only as blurred previews until the owner approves a viewing request; every photo is also reviewed by our moderation team before it becomes visible to anyone. Phone numbers and email addresses are never displayed to other members — on profile pages they appear only in masked form (for example 018****3456 or a***@gmail.com), and this masking is applied on our servers, so the real values never even reach another member's device. Matched members connect through MatchMedia's built-in messaging and voice calling instead of exchanging contact details. Your full contact details are never sold, shared with third parties or revealed to other members; unmasked data is used only to operate your account — login, OTP verification and secure payment processing." }
+      {
+        "id": "acceptance-of-terms",
+        "heading": "1. Acceptance of Terms",
+        "body": "MatchMedia is an online introduction and matchmaking platform that helps members and their families discover, evaluate and connect with potential life partners. By creating an account you confirm that you are at least 18 years old, legally able to enter into an agreement, and that you accept these Terms and Conditions in full. MatchMedia acts solely as a facilitator: we provide the tools for discovery, verification and communication, but every decision about a relationship or marriage rests entirely with you and your family. We may update these terms from time to time as the platform evolves; when we make material changes we will notify you in the app, and your continued use of MatchMedia after an update means you accept the revised terms."
+      },
+      {
+        "id": "account-responsibility",
+        "heading": "2. Account Responsibility",
+        "body": "You are responsible for the accuracy and honesty of every piece of information on your profile — including your age, education, profession, marital status and family details — and for keeping it up to date. Keep your login credentials confidential and notify us immediately if you suspect unauthorised access to your account. Each member may hold only one personal account. Where a profile is managed on behalf of a candidate — by parents or by a registered matchmaking organisation (Media) — the manager must have the candidate's informed consent and remains fully responsible for the profile's accuracy and conduct. Accounts that repeatedly publish false or misleading information may be suspended or permanently removed."
+      },
+      {
+        "id": "privacy",
+        "heading": "3. Privacy",
+        "body": "Your privacy is the foundation of MatchMedia. We collect only the information needed to operate the service, and we never sell your personal data. Your photos and personal details are shared with other members only in the ways you control: photos remain blurred until you approve a viewing request, and your contact details are never displayed to anyone (see the Data Privacy & Masking Policy below). Communication with your matches happens through MatchMedia's own messaging and calling features, so you never need to hand out a phone number or email address. Data required for payments is processed securely by our payment partner and is never visible to other members. You may request deletion of your account and associated data at any time."
+      },
+      {
+        "id": "verification",
+        "heading": "4. Verification",
+        "body": "Trust on MatchMedia is built through verification. Our network of registered Verification Agents — trained, independently verified field agents — review and confirm member details such as identity documents (NID), locality and stated profession. Agents are compensated per completed task from the verification budget attached to each request, which keeps the process independent and accountable. Profiles that pass these checks receive the \"Verified\" badge, and those that complete additional background checks receive \"Premium Verified\". Verification significantly raises the reliability of a profile, but it is not a guarantee of character or intent: members and their families should always exercise their own judgment before advancing a relationship."
+      },
+      {
+        "id": "prohibited-conduct",
+        "heading": "5. Prohibited Conduct",
+        "body": "MatchMedia is a respectful, family-oriented community, and conduct that undermines it is prohibited. This includes harassment or abusive language toward any member; impersonation or the creation of fake profiles; publishing false or misleading information; attempting to obtain another member's phone number, email or other contact details outside the platform or to circumvent the masking and photo-privacy protections; requesting money, gifts or financial information from any member; and any commercial solicitation unrelated to legitimate matchmaking. Violations may lead to content removal, suspension or a permanent ban, and where the law requires it we will cooperate with the authorities. Please report suspicious behaviour with the in-app Report tool — our moderation team reviews every report."
+      },
+      {
+        "id": "liability",
+        "heading": "6. Liability",
+        "body": "MatchMedia is an introduction platform, not a marriage bureau or a party to any relationship. We do not arrange, broker or guarantee marriages, and we make no promises about the number or quality of matches, responses or outcomes. While verification and moderation substantially reduce risk, we cannot vouch for the character, conduct or intentions of any member, and we are not responsible for interactions that take place outside the platform, including in-person meetings. You are responsible for your own due diligence: meet first in safe public places, involve your family early, and never send money to anyone you meet on the platform. To the maximum extent permitted by the laws of Bangladesh, MatchMedia's total liability for any claim arising from the use of the service is limited to the fees you have paid to us."
+      },
+      {
+        "id": "masking-policy",
+        "heading": "7. Data Privacy & Masking Policy",
+        "body": "We protect member data with masking and blurring by default. Profile photos are stored privately and served only as blurred previews until the owner approves a viewing request; every photo is also reviewed by our moderation team before it becomes visible to anyone. Phone numbers and email addresses are never displayed to other members — on profile pages they appear only in masked form (for example 018****3456 or a***@gmail.com), and this masking is applied on our servers, so the real values never even reach another member's device. Matched members connect through MatchMedia's built-in messaging and voice calling instead of exchanging contact details. Your full contact details are never sold, shared with third parties or revealed to other members; unmasked data is used only to operate your account — login, OTP verification and secure payment processing."
+      }
     ]
   },
   "Blog": {
@@ -828,11 +918,26 @@
         "body": {
           "intro": "In the world of digital matchmaking, your profile is your first impression. If you want serious, quality matches, start by getting authenticity and clarity right.",
           "points": [
-            { "heading": "Use real, recent photos.", "text": "Choose clear, well-lit photos that reflect how you look today. Avoid group photos and heavy filters — people want to know who they're actually talking to." },
-            { "heading": "Be honest about your details.", "text": "Profession, education, lifestyle — state them accurately. Trust begins right here." },
-            { "heading": "Write a bio that says something.", "text": "Not just a list of facts — bring out your values, your personality, and what sets you apart from everyone else. That's what people connect with." },
-            { "heading": "Be clear about what you're looking for.", "text": "Vague expectations lead to vague matches. Being specific saves everyone's time." },
-            { "heading": "Stay active.", "text": "A profile that never updates sends its own signal — that you're not serious. Keep yours regularly updated." }
+            {
+              "heading": "Use real, recent photos.",
+              "text": "Choose clear, well-lit photos that reflect how you look today. Avoid group photos and heavy filters — people want to know who they're actually talking to."
+            },
+            {
+              "heading": "Be honest about your details.",
+              "text": "Profession, education, lifestyle — state them accurately. Trust begins right here."
+            },
+            {
+              "heading": "Write a bio that says something.",
+              "text": "Not just a list of facts — bring out your values, your personality, and what sets you apart from everyone else. That's what people connect with."
+            },
+            {
+              "heading": "Be clear about what you're looking for.",
+              "text": "Vague expectations lead to vague matches. Being specific saves everyone's time."
+            },
+            {
+              "heading": "Stay active.",
+              "text": "A profile that never updates sends its own signal — that you're not serious. Keep yours regularly updated."
+            }
           ]
         }
       },
@@ -843,10 +948,22 @@
         "body": {
           "intro": "When you're searching for a life partner, safety isn't optional — it's the entire foundation. Verification isn't just a checkbox; it's what makes everything else work.",
           "points": [
-            { "heading": "It reduces fraud.", "text": "Mobile and photo verification mean fewer fake profiles and less catfishing — the person on the other side is real." },
-            { "heading": "It creates room for honest conversation.", "text": "When people know the person on the other side is verified too, they open up. That's where good connections begin." },
-            { "heading": "It keeps the platform credible.", "text": "Safety-first isn't just a policy — it's what tells people this is a place worth trusting." },
-            { "heading": "It protects your privacy too.", "text": "A good verification system confirms your legitimacy without exposing your personal information to the world." }
+            {
+              "heading": "It reduces fraud.",
+              "text": "Mobile and photo verification mean fewer fake profiles and less catfishing — the person on the other side is real."
+            },
+            {
+              "heading": "It creates room for honest conversation.",
+              "text": "When people know the person on the other side is verified too, they open up. That's where good connections begin."
+            },
+            {
+              "heading": "It keeps the platform credible.",
+              "text": "Safety-first isn't just a policy — it's what tells people this is a place worth trusting."
+            },
+            {
+              "heading": "It protects your privacy too.",
+              "text": "A good verification system confirms your legitimacy without exposing your personal information to the world."
+            }
           ]
         }
       },
@@ -857,11 +974,26 @@
         "body": {
           "intro": "Going from the chat screen to a face-to-face coffee table is a big step. Here's how to make it a smooth one:",
           "points": [
-            { "heading": "Skip the generic opener.", "text": "Messages like \"Hi, how are you\" get ignored. Mention something specific from their profile — it shows you actually read it instead of just chatting." },
-            { "heading": "Keep it light at first.", "text": "Match the energy of the other person's messages — if they write short replies, don't send paragraphs. Balance is everything." },
-            { "heading": "Know when to move forward.", "text": "A few days of good conversation is enough. Don't stay pen pals — chemistry only really shows itself in person." },
-            { "heading": "Propose a specific plan.", "text": "\"Let's meet sometime\" goes nowhere. \"Coffee at [place] on Saturday afternoon?\" makes saying yes easy." },
-            { "heading": "Respect their time.", "text": "If they need longer, be patient, keep the conversation going, and trust your intuition." }
+            {
+              "heading": "Skip the generic opener.",
+              "text": "Messages like \"Hi, how are you\" get ignored. Mention something specific from their profile — it shows you actually read it instead of just chatting."
+            },
+            {
+              "heading": "Keep it light at first.",
+              "text": "Match the energy of the other person's messages — if they write short replies, don't send paragraphs. Balance is everything."
+            },
+            {
+              "heading": "Know when to move forward.",
+              "text": "A few days of good conversation is enough. Don't stay pen pals — chemistry only really shows itself in person."
+            },
+            {
+              "heading": "Propose a specific plan.",
+              "text": "\"Let's meet sometime\" goes nowhere. \"Coffee at [place] on Saturday afternoon?\" makes saying yes easy."
+            },
+            {
+              "heading": "Respect their time.",
+              "text": "If they need longer, be patient, keep the conversation going, and trust your intuition."
+            }
           ]
         }
       }
@@ -872,9 +1004,51 @@
     "title": "Events",
     "intro": "Meetups, webinars, and community sessions hosted by MatchMedia.",
     "items": [
-      { "title": "Matchmaking Q&A Webinar", "date": "2026-07-15", "location": "Online", "description": "Live session answering your questions about profiles, privacy, and verification." },
-      { "title": "Dhaka Community Meetup", "date": "2026-08-02", "location": "Dhaka", "description": "An in-person meetup for verified members to meet the MatchMedia team." },
-      { "title": "Safe Matchmaking Workshop", "date": "2026-08-20", "location": "Online", "description": "Practical guidance on staying safe while getting to know a potential match." }
+      {
+        "title": "Matchmaking Q&A Webinar",
+        "date": "2026-07-15",
+        "location": "Online",
+        "description": "Live session answering your questions about profiles, privacy, and verification."
+      },
+      {
+        "title": "Dhaka Community Meetup",
+        "date": "2026-08-02",
+        "location": "Dhaka",
+        "description": "An in-person meetup for verified members to meet the MatchMedia team."
+      },
+      {
+        "title": "Safe Matchmaking Workshop",
+        "date": "2026-08-20",
+        "location": "Online",
+        "description": "Practical guidance on staying safe while getting to know a potential match."
+      }
     ]
+  },
+  "Preferences": {
+    "title": "Partner preferences",
+    "intro": "Tell us what you are looking for. These only shape your recommendations — leave anything blank to keep it open.",
+    "religionHint": "Religion is matched strictly: only profiles of the religions you pick are recommended.",
+    "save": "Save preferences",
+    "saved": "Preferences saved",
+    "fields": {
+      "ageRange": "Age range",
+      "minAge": "Min",
+      "maxAge": "Max",
+      "heightRange": "Height range",
+      "minHeight": "Min",
+      "maxHeight": "Max",
+      "religions": "Religion",
+      "sects": "Sect",
+      "educations": "Education",
+      "professions": "Profession",
+      "maritalStatuses": "Marital status",
+      "districts": "Districts"
+    },
+    "errors": {
+      "UNAUTH": "Please log in again",
+      "NO_PROFILE": "Complete your profile first",
+      "AGE_RANGE": "Minimum age cannot be greater than maximum age",
+      "HEIGHT_RANGE": "Minimum height cannot be greater than maximum height"
+    }
   }
 }

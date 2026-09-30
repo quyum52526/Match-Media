@@ -92,6 +92,11 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
     data.details.weight,
     data.details.childrenStatus,
     data.details.family,
+    data.details.religion,
+    data.details.sect,
+    data.details.caste,
+    data.details.diet,
+    data.details.smokingStatus,
   ]);
 
   function requestPhotoAccess() {
@@ -314,8 +319,26 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
         title={t("details.title")}
       >
         <dl className="divide-y divide-ink/10">
+          <DetailRow
+            label={t("details.religion")}
+            value={localize(data.details.religion, locale)}
+          />
+          <DetailRow
+            label={t("details.sect")}
+            value={localize(data.details.sect, locale)}
+          />
+          {/* Caste is free text, so it is shown verbatim (no label mapping). */}
+          <DetailRow label={t("details.caste")} value={data.details.caste} />
           <DetailRow label={t("details.height")} value={data.details.height} />
           <DetailRow label={t("details.weight")} value={data.details.weight} />
+          <DetailRow
+            label={t("details.diet")}
+            value={localize(data.details.diet, locale)}
+          />
+          <DetailRow
+            label={t("details.smoking")}
+            value={localize(data.details.smokingStatus, locale)}
+          />
           <DetailRow
             label={t("details.children")}
             value={data.details.childrenStatus}
@@ -362,7 +385,9 @@ function Fact({
   );
 }
 
+/** Renders nothing for an unset value, so optional fields leave no blank row. */
 function DetailRow({ label, value }: { label: string; value: string }) {
+  if (!value.trim()) return null;
   return (
     <div className="flex justify-between gap-4 py-2.5">
       <dt className="shrink-0 text-sm text-ink/50">{label}</dt>

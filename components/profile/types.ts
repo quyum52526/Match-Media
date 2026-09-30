@@ -67,6 +67,12 @@ export interface ProfileFullDetails {
   weight: string;
   childrenStatus: string;
   family: string;
+  /** Canonical English values — localize at render time via `localize()`. */
+  religion: string;
+  sect: string;
+  caste: string;
+  diet: string;
+  smokingStatus: string;
 }
 
 /**
@@ -80,6 +86,9 @@ export interface EditableProfile {
   dateOfBirth: string;
   district: string;
   upazila: string;
+  religion: string;
+  sect: string;
+  caste: string;
   profession: string;
   education: string;
   maritalStatus: string;
@@ -87,8 +96,28 @@ export interface EditableProfile {
   weight: string;
   childrenStatus: string;
   familyDetails: string;
+  diet: string;
+  smokingStatus: string;
   bio: string;
   nameHidden: boolean;
+}
+
+/**
+ * A profile's partner criteria, shaped for the preferences form. Ranges are
+ * strings so number/select inputs stay controlled-friendly ("" = unset); the
+ * multi-value dimensions are canonical English values.
+ */
+export interface EditablePartnerPreference {
+  minAge: string;
+  maxAge: string;
+  minHeight: string;
+  maxHeight: string;
+  religions: string[];
+  sects: string[];
+  districts: string[];
+  professions: string[];
+  educations: string[];
+  maritalStatuses: string[];
 }
 
 /** Lightweight, presentation-ready profile for the browse/listing grid. */

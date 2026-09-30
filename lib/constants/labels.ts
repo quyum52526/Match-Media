@@ -3,6 +3,10 @@ import {
   PROFESSIONS,
   EDUCATION_LEVELS,
   MARITAL_STATUSES,
+  RELIGIONS,
+  ALL_SECTS,
+  DIETS,
+  SMOKING_STATUSES,
 } from "./profileOptions";
 import { DISTRICTS, ALL_UPAZILAS } from "./bdGeo";
 
@@ -17,6 +21,10 @@ const BN_LABELS: Record<string, string> = Object.fromEntries(
     ...PROFESSIONS,
     ...EDUCATION_LEVELS,
     ...MARITAL_STATUSES,
+    ...RELIGIONS,
+    ...ALL_SECTS,
+    ...DIETS,
+    ...SMOKING_STATUSES,
     ...DISTRICTS,
     ...ALL_UPAZILAS,
   ].map((o) => [o.value, o.bn]),

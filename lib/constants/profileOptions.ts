@@ -51,6 +51,71 @@ export const EDUCATION_LEVELS: readonly Option[] = [
   { value: "Other", bn: "অন্যান্য" },
 ];
 
+export const RELIGIONS: readonly Option[] = [
+  { value: "Islam", bn: "ইসলাম" },
+  { value: "Hinduism", bn: "হিন্দু" },
+  { value: "Buddhism", bn: "বৌদ্ধ" },
+  { value: "Christianity", bn: "খ্রিস্টান" },
+  { value: "Other", bn: "অন্যান্য" },
+];
+
+/**
+ * Sects/denominations keyed by the canonical religion value. A religion absent
+ * from this map (or with an empty list) simply has no sect selector — the UI
+ * falls back to the free-text `caste` field. Values stay canonical English.
+ */
+export const SECTS_BY_RELIGION: Readonly<Record<string, readonly Option[]>> = {
+  Islam: [
+    { value: "Sunni", bn: "সুন্নি" },
+    { value: "Shia", bn: "শিয়া" },
+    { value: "Other", bn: "অন্যান্য" },
+  ],
+  Hinduism: [
+    { value: "Brahmin", bn: "ব্রাহ্মণ" },
+    { value: "Kayastha", bn: "কায়স্থ" },
+    { value: "Vaishya", bn: "বৈশ্য" },
+    { value: "Shudra", bn: "শূদ্র" },
+    { value: "Other", bn: "অন্যান্য" },
+  ],
+  Buddhism: [
+    { value: "Theravada", bn: "থেরবাদ" },
+    { value: "Mahayana", bn: "মহাযান" },
+    { value: "Other", bn: "অন্যান্য" },
+  ],
+  Christianity: [
+    { value: "Catholic", bn: "ক্যাথলিক" },
+    { value: "Protestant", bn: "প্রোটেস্ট্যান্ট" },
+    { value: "Orthodox", bn: "অর্থোডক্স" },
+    { value: "Other", bn: "অন্যান্য" },
+  ],
+};
+
+/** Every sect across all religions — used to build the label map / validate. */
+export const ALL_SECTS: readonly Option[] = Object.values(SECTS_BY_RELIGION)
+  .flat()
+  // "Other" repeats across religions; dedupe by value so the label map is flat.
+  .filter((o, i, all) => all.findIndex((x) => x.value === o.value) === i);
+
+/** The sects valid for a religion, or [] when the religion has none/unknown. */
+export function sectsFor(religion: string | null | undefined): readonly Option[] {
+  if (!religion) return [];
+  return SECTS_BY_RELIGION[religion] ?? [];
+}
+
+export const DIETS: readonly Option[] = [
+  { value: "Halal only", bn: "শুধু হালাল" },
+  { value: "Vegetarian", bn: "নিরামিষভোজী" },
+  { value: "Non-vegetarian", bn: "আমিষভোজী" },
+  { value: "Eggetarian", bn: "ডিম-নিরামিষ" },
+  { value: "Vegan", bn: "ভেগান" },
+];
+
+export const SMOKING_STATUSES: readonly Option[] = [
+  { value: "Never", bn: "ধূমপান করি না" },
+  { value: "Occasionally", bn: "মাঝে মাঝে" },
+  { value: "Regularly", bn: "নিয়মিত" },
+];
+
 export const MARITAL_STATUSES: readonly Option[] = [
   { value: "Single", bn: "অবিবাহিত" },
   { value: "Married", bn: "বিবাহিত" },

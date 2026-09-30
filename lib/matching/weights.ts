@@ -6,6 +6,12 @@
  * (lib/matching/score.ts) or the retrieval layer (lib/data/recommend.ts).
  */
 export const MATCH_WEIGHTS = {
+  /**
+   * Same (or explicitly accepted) religion. Weighted highest because religion is
+   * also a HARD gate — a mismatch scores 0 overall rather than losing points.
+   * See `scoreCandidate` in ./score.ts.
+   */
+  religion: 6,
   /** Same district — the strongest locality signal. */
   district: 5,
   /** Candidate's age falls within tolerance of the preferred age. */
@@ -14,8 +20,12 @@ export const MATCH_WEIGHTS = {
   education: 2,
   /** Same profession. */
   profession: 2,
+  /** Same sect/denomination within the religion. */
+  sect: 2,
   /** Same marital status. */
   maritalStatus: 1,
+  /** Candidate's height falls inside the preferred range. */
+  height: 1,
 } as const;
 
 /** Max attainable score — handy for normalising to a 0–100 "match %". */

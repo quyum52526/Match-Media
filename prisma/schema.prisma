@@ -337,6 +337,18 @@ model Profile {
   maritalStatus String?
   bio           String?
 
+  // Religion / community. `sect` is constrained by `religion` in the UI
+  // (lib/constants/profileOptions.ts SECTS_BY_RELIGION); `caste` stays free text
+  // for communities we don't enumerate. Religion is a HARD matching gate — see
+  // lib/matching/score.ts.
+  religion      String?
+  sect          String?
+  caste         String?
+
+  // Lifestyle attributes
+  smokingStatus String?
+  diet          String?
+
   // Extended attributes (shown in the "View Full Details" modal)
   height         String?
   weight         String?
@@ -362,6 +374,7 @@ model Profile {
   viewLogs               ProfileViewLog[]         @relation("ProfileViews")
   serviceRequests        ServiceRequest[]         @relation("ServiceTargets")
   verificationAssignment VerificationAssignment?
+  partnerPreference      PartnerPreference?
 
   @@index([referredById])
   @@index([district, upazila])
@@ -372,6 +385,38 @@ model Profile {
   // Lets a recommendation scan narrow to the viewer's district (heaviest weight)
   // before scoring, complementing [district, upazila].
   @@index([gender, district])
+  // Religion is a hard matching gate, so the candidate scan filters on it
+  // alongside gender before any scoring happens.
+  @@index([gender, religion])
+}
+
+// A profile's explicit partner criteria, used to rank recommendations. Every
+// field is optional: an unset dimension contributes nothing rather than
+// excluding anyone. The scalar-list fields are OR-sets ("any of these"), so an
+// empty list means "no preference" — NOT "matches nothing".
+//
+// These are PREFERENCES, not access control: they only steer ranking in
+// lib/data/recommend.ts and never widen what a viewer is allowed to see.
+model PartnerPreference {
+  id        String  @id @default(cuid())
+  profileId String  @unique
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  minAge Int?
+  maxAge Int?
+  // Canonical height labels (e.g. 5'4"), resolved to a range via heightsInRange().
+  minHeight String?
+  maxHeight String?
+
+  religions        String[]
+  sects            String[]
+  districts        String[]
+  professions      String[]
+  educations       String[]
+  maritalStatuses  String[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ProfileImage {

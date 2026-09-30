@@ -1,7 +1,7 @@
 import "server-only";
 import { type Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { signUrl, STORAGE_BUCKET } from "@/lib/storage/supabase";
+import { signUrl } from "@/lib/storage/supabase";
 
 export interface ShowcaseProfile {
   id: string;
@@ -9,19 +9,35 @@ export interface ShowcaseProfile {
   location: string;
   isVerified: boolean;
   isPro: boolean;
-  imageUrl?: string; // defined only when a PUBLIC+APPROVED primary photo exists
+  /**
+   * Signed URL for the card photo: the ORIGINAL for a PUBLIC photo, the blurred
+   * derivative for a BLURRED one. Undefined when the profile has no approved
+   * photo or the URL could not be signed — the card then renders an initials
+   * avatar (see ShowcaseAvatar).
+   */
+  imageUrl?: string;
 }
 
-// Fetch one PUBLIC + APPROVED photo per profile for the homepage cards.
-// isPrimary is not required: any qualifying photo is fine for the showcase.
+// Fetch one APPROVED photo per profile for the homepage cards.
+//
+// Moderation is a hard requirement (a PENDING/REJECTED photo must never leave the
+// server), but privacy is NOT a filter here: a BLURRED photo still earns a
+// showcase spot, it just contributes its blurred derivative instead of the
+// original (see pickShowcaseKey). Requiring PUBLIC used to exclude every profile
+// that kept its photos gated — which is most of them — leaving whole sections
+// empty and falling back to the decorative placeholder card.
+//
+// Ordering prefers a PUBLIC photo over a BLURRED one (a clear card looks better),
+// then the primary, so the best available image wins. isPrimary is not required.
 const showcaseInclude = {
   user: { select: { isPro: true } },
   images: {
-    where: {
-      moderationStatus: "APPROVED" as const,
-      privacy: "PUBLIC" as const,
-    },
-    orderBy: { isPrimary: "desc" as const }, // prefer the primary when it exists
+    where: { moderationStatus: "APPROVED" as const },
+    orderBy: [
+      { privacy: "desc" as const }, // "PUBLIC" > "BLURRED" alphabetically
+      { isPrimary: "desc" as const },
+      { sortOrder: "asc" as const },
+    ],
     take: 1,
   },
 } satisfies Prisma.ProfileInclude;
@@ -31,45 +47,52 @@ type ShowcaseRow = Prisma.ProfileGetPayload<{ include: typeof showcaseInclude }>
 // Base filter shared by every homepage query:
 //   • Must be a managed profile (userId=null) OR a self-registered candidate (SELF).
 //     PARENTS/MEDIA/AGENT/ADMIN personal profiles are excluded.
-//   • Must have at least one PUBLIC + APPROVED photo (isPrimary not required —
-//     profiles with photos but no primary flag still deserve a showcase spot).
+//   • Must have at least one APPROVED photo. Privacy is deliberately not part of
+//     the gate (a BLURRED photo shows its blurred derivative), and isPrimary is
+//     not required — a profile with photos but no primary flag still qualifies.
 const showcaseWhere = {
   OR: [
     { userId: null },
     { user: { accountCategory: "SELF" as const } },
   ],
   images: {
-    some: {
-      moderationStatus: "APPROVED" as const,
-      privacy: "PUBLIC" as const,
-    },
+    some: { moderationStatus: "APPROVED" as const },
   },
 } satisfies Prisma.ProfileWhereInput;
+
+/**
+ * THE PRIVACY BOUNDARY for the public homepage.
+ *
+ * The homepage is served to anonymous visitors, so the original (unblurred) key
+ * may only ever be signed for a photo its owner explicitly made PUBLIC. A
+ * BLURRED photo contributes its pre-blurred derivative instead — the identical
+ * rule `hydrateProfileCards` applies to a gated viewer in lib/data/profiles.ts.
+ *
+ * Never "simplify" this to `originalKey`: the showcase query intentionally admits
+ * BLURRED photos, so that would publish gated photos to the open internet.
+ */
+function pickShowcaseKey(
+  image: ShowcaseRow["images"][number] | undefined,
+): string | null {
+  if (!image) return null;
+  return image.privacy === "PUBLIC" ? image.originalKey : image.blurredKey;
+}
 
 async function toShowcaseProfiles(rows: ShowcaseRow[]): Promise<ShowcaseProfile[]> {
   // Sign each profile's photo individually so the storage key is used as-is,
   // with no path transformation that could break Map lookups. The admin client
-  // (service-role key) bypasses RLS entirely — no viewerId check is needed here.
-  // showcaseWhere already guarantees every row has a PUBLIC+APPROVED photo, so
-  // the original (unblurred) key is always safe to expose to anonymous visitors.
+  // (service-role key) bypasses RLS entirely — no viewerId check is needed here,
+  // because pickShowcaseKey has already reduced the key to one that is safe to
+  // publish.
   return Promise.all(
     rows.map(async (r) => {
-      const imgKey = r.images[0]?.originalKey ?? null;
-      let imageUrl: string | undefined;
-      if (imgKey) {
-        const signed = await signUrl(imgKey);
-        if (signed) {
-          imageUrl = signed;
-        } else {
-          // signUrl failed (Supabase not configured or unreachable). Fall back to
-          // the direct public storage URL — works when the bucket has public reads
-          // enabled, which is the expected setup for PUBLIC showcase photos.
-          const supabaseUrl = process.env.SUPABASE_URL;
-          if (supabaseUrl) {
-            imageUrl = `${supabaseUrl}/storage/v1/object/public/${STORAGE_BUCKET}/${imgKey}`;
-          }
-        }
-      }
+      const imgKey = pickShowcaseKey(r.images[0]);
+      // A failed signature (storage unconfigured, or the object is missing —
+      // e.g. seeded placeholder keys) leaves imageUrl undefined, and the card
+      // renders its initials avatar. We deliberately do NOT fall back to an
+      // unsigned public-object URL: it only resolves on a public-read bucket,
+      // otherwise it renders as a broken image instead of the styled fallback.
+      const imageUrl = imgKey ? ((await signUrl(imgKey)) ?? undefined) : undefined;
 
       return {
         // Managed profiles have userId=null; fall back to profile.id for a stable key.

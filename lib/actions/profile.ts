@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { calcAge, computeCompletion, resolveImmutableGender } from "@/lib/utils";
 import { getViewerId } from "@/lib/session";
-import { GENDERS } from "@/lib/constants/profileOptions";
+import { GENDERS, sectsFor } from "@/lib/constants/profileOptions";
 
 const PROFILE_EDIT = "/[locale]/profile/edit";
 const BROWSE = "/[locale]/browse";
@@ -12,6 +12,18 @@ const PROFILE = "/[locale]/profiles/[id]";
 
 function field(formData: FormData, name: string): string {
   return String(formData.get(name) ?? "").trim();
+}
+
+/**
+ * Keep `sect` consistent with `religion`: a sect is only persisted when it is a
+ * valid option for the submitted religion. Switching religion therefore clears a
+ * stale sect instead of leaving an impossible pair (e.g. Islam + "Catholic") in
+ * the DB, where the matcher would score it as a real signal.
+ */
+function sectFor(religion: string, submitted: string): string {
+  if (!religion || !submitted) return "";
+  const valid = sectsFor(religion);
+  return valid.some((o) => o.value === submitted) ? submitted : "";
 }
 
 /**
@@ -76,6 +88,13 @@ export async function updateProfile(
   const profession = field(formData, "profession");
   const education = field(formData, "education");
   const maritalStatus = field(formData, "maritalStatus");
+  const religion = field(formData, "religion");
+  // Sect is only meaningful for the chosen religion; drop a stale value left over
+  // from a previously selected religion rather than persisting a mismatch.
+  const sect = sectFor(religion, field(formData, "sect"));
+  const caste = field(formData, "caste");
+  const diet = field(formData, "diet");
+  const smokingStatus = field(formData, "smokingStatus");
   const height = field(formData, "height");
   const weight = field(formData, "weight");
   const childrenStatus = field(formData, "childrenStatus");
@@ -97,6 +116,11 @@ export async function updateProfile(
     profession: profession || null,
     education: education || null,
     maritalStatus: maritalStatus || null,
+    religion: religion || null,
+    sect: sect || null,
+    caste: caste || null,
+    diet: diet || null,
+    smokingStatus: smokingStatus || null,
     height: height || null,
     weight: weight || null,
     childrenStatus: childrenStatus || null,
@@ -141,6 +165,13 @@ async function updateProfileById(
   const profession = field(formData, "profession");
   const education = field(formData, "education");
   const maritalStatus = field(formData, "maritalStatus");
+  const religion = field(formData, "religion");
+  // Sect is only meaningful for the chosen religion; drop a stale value left over
+  // from a previously selected religion rather than persisting a mismatch.
+  const sect = sectFor(religion, field(formData, "sect"));
+  const caste = field(formData, "caste");
+  const diet = field(formData, "diet");
+  const smokingStatus = field(formData, "smokingStatus");
   const height = field(formData, "height");
   const weight = field(formData, "weight");
   const childrenStatus = field(formData, "childrenStatus");
@@ -164,6 +195,11 @@ async function updateProfileById(
       profession: profession || null,
       education: education || null,
       maritalStatus: maritalStatus || null,
+      religion: religion || null,
+      sect: sect || null,
+      caste: caste || null,
+      diet: diet || null,
+      smokingStatus: smokingStatus || null,
       height: height || null,
       weight: weight || null,
       childrenStatus: childrenStatus || null,

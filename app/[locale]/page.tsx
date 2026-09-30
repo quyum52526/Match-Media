@@ -38,6 +38,7 @@ export default async function Home({
           icon={<Crown size={24} />}
           title={tf("premiumTitle")}
           description={tf("premiumDesc")}
+          note={tf("privacyNote")}
           redirectLink="/browse"
           profiles={premiumProfiles}
         />

@@ -12,10 +12,24 @@ function dob(age: number): Date {
   return new Date(2026 - age, 5, 1);
 }
 
+/**
+ * One approved primary photo per seeded profile.
+ *
+ * `moderationStatus: APPROVED` is explicit and load-bearing: the column defaults
+ * to PENDING, and every viewer-facing query (browse cards, profile detail, the
+ * homepage showcase) serves only APPROVED photos. Seeding the default left every
+ * seeded profile photoless in the UI and the homepage sections empty.
+ *
+ * The keys are placeholders with no matching object in Supabase Storage, so
+ * signing fails and the UI falls back to its initials avatar. That is the
+ * intended dev behaviour — seeding must not depend on binary fixtures — but it
+ * does mean a seeded profile shows initials, not a photograph.
+ */
 const blurredImage = {
   create: [
     {
       privacy: "BLURRED" as const,
+      moderationStatus: "APPROVED" as const,
       originalKey: "seed/original.jpg",
       blurredKey: "seed/blurred.jpg",
       isPrimary: true,

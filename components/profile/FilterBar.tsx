@@ -9,7 +9,9 @@ import {
   PROFESSIONS,
   EDUCATION_LEVELS,
   MARITAL_STATUSES,
+  RELIGIONS,
   HEIGHTS,
+  sectsFor,
 } from "@/lib/constants/profileOptions";
 import { DISTRICTS, upazilasFor } from "@/lib/constants/bdGeo";
 import { localize } from "@/lib/constants/labels";
@@ -31,6 +33,8 @@ export function FilterBar() {
     "maxAge",
     "district",
     "upazila",
+    "religion",
+    "sect",
     "profession",
     "education",
     "maritalStatus",
@@ -40,6 +44,10 @@ export function FilterBar() {
 
   const selectedDistrict = params.get("district") ?? "";
   const upazilaOptions = selectedDistrict ? upazilasFor(selectedDistrict) : [];
+
+  // Religion drives the sect cascade, exactly like district -> upazila.
+  const selectedReligion = params.get("religion") ?? "";
+  const sectOptions = sectsFor(selectedReligion);
 
   function commit(next: URLSearchParams) {
     const qs = next.toString();
@@ -62,6 +70,15 @@ export function FilterBar() {
     if (value) next.set("district", value);
     else next.delete("district");
     next.delete("upazila");
+    commit(next);
+  }
+
+  // Sects are religion-specific, so changing/clearing religion resets sect.
+  function setReligion(value: string) {
+    const next = new URLSearchParams(params.toString());
+    if (value) next.set("religion", value);
+    else next.delete("religion");
+    next.delete("sect");
     commit(next);
   }
 
@@ -161,6 +178,41 @@ export function FilterBar() {
               {upazilaOptions.map((u) => (
                 <option key={u.value} value={u.value}>
                   {localize(u.value, locale)}
+                </option>
+              ))}
+            </select>
+          </Labelled>
+
+          {/* Religion */}
+          <Labelled label={t("religion")}>
+            <select
+              value={selectedReligion}
+              onChange={(e) => setReligion(e.target.value)}
+              className={fieldClass}
+            >
+              <option value="">{t("any")}</option>
+              {RELIGIONS.map((r) => (
+                <option key={r.value} value={r.value}>
+                  {localize(r.value, locale)}
+                </option>
+              ))}
+            </select>
+          </Labelled>
+
+          {/* Sect (cascades from the selected religion) */}
+          <Labelled label={t("sect")}>
+            <select
+              value={params.get("sect") ?? ""}
+              onChange={(e) => setParam("sect", e.target.value)}
+              disabled={sectOptions.length === 0}
+              className={`${fieldClass} disabled:cursor-not-allowed disabled:bg-ink/5 disabled:text-ink/40`}
+            >
+              <option value="">
+                {selectedReligion ? t("any") : t("sectPlaceholder")}
+              </option>
+              {sectOptions.map((sct) => (
+                <option key={sct.value} value={sct.value}>
+                  {localize(sct.value, locale)}
                 </option>
               ))}
             </select>

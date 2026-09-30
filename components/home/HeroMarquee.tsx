@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { ShieldCheckIcon } from "@/components/ui/icons";
 import type { ShowcaseProfile } from "@/lib/data/showcase";
+import { initialsOf } from "./ShowcaseAvatar";
 
 /**
  * Infinite horizontal marquee — real profiles from the DB, blurred gradient
@@ -66,11 +67,17 @@ function Avatar({ profile, hue }: { profile: ShowcaseProfile; hue: string }) {
       </span>
     );
   }
+  // No usable photo -> initials on the profile's gradient. Not blurred: there is
+  // nothing to conceal here, and a legible initial reads as a deliberate avatar
+  // rather than a failed image.
   return (
     <span
-      className={`shrink-0 rounded-full bg-gradient-to-br ${hue} blur-[2px]`}
+      className={`flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${hue} font-display text-[11px] font-semibold text-ink/70`}
       style={{ width: size, height: size }}
-    />
+      aria-hidden="true"
+    >
+      {initialsOf(profile.displayName)}
+    </span>
   );
 }
 

@@ -67,6 +67,8 @@ export default async function BrowsePage({
     maxAge: num(sp.maxAge),
     district: str(sp.district),
     upazila: str(sp.upazila),
+    religion: str(sp.religion),
+    sect: str(sp.sect),
     profession: str(sp.profession),
     education: str(sp.education),
     maritalStatus: str(sp.maritalStatus),

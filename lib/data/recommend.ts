@@ -9,6 +9,10 @@ import {
   hydrateProfileCards,
   type SearchFilters,
 } from "./profiles";
+import {
+  applyPartnerPreference,
+  PARTNER_PREFERENCE_SELECT,
+} from "./preferences";
 import type { ProfileSummary } from "@/components/profile/types";
 
 /** A card plus its computed match score (higher = better fit). */
@@ -71,8 +75,18 @@ async function fallbackRecommendations(
   viewerId: string,
   candidateArm: Prisma.ProfileWhereInput,
   preferredGender: string | null,
+  acceptedReligions: readonly string[] | null = null,
 ): Promise<RecommendationResult> {
-  const where: Prisma.ProfileWhereInput = { ...candidateArm };
+  // The religion gate is mandatory, so it applies to the fallback too — an
+  // unscored suggestion must never cross a religion the viewer ruled out.
+  const where: Prisma.ProfileWhereInput = acceptedReligions?.length
+    ? {
+        AND: [
+          candidateArm,
+          { OR: [{ religion: { in: [...acceptedReligions] } }, { religion: null }] },
+        ],
+      }
+    : { ...candidateArm };
   if (preferredGender) where.gender = preferredGender;
   const rows = await prisma.profile.findMany({
     where,
@@ -130,6 +144,9 @@ export async function getRecommendedProfiles(
       education: true,
       profession: true,
       maritalStatus: true,
+      religion: true,
+      sect: true,
+      partnerPreference: { select: PARTNER_PREFERENCE_SELECT },
     },
   });
   if (!viewer) return fallbackRecommendations(viewerId, candidateArm, null);
@@ -138,21 +155,59 @@ export async function getRecommendedProfiles(
   const preferredAge = resolvePreferredAge(filters, viewerAge);
   const preferredGender = filters.gender ?? oppositeGender(viewer.gender);
 
-  // Hybrid preference vector: filter value overrides the profile value.
-  const preference: MatchPreference = {
+  // Hybrid preference vector, in precedence order (highest first):
+  //   1. an active search filter — the most explicit, most immediate intent;
+  //   2. the saved PartnerPreference lists (folded in below);
+  //   3. the viewer's own profile values (homophily fallback).
+  // Scalars from (1)/(3) go in first; applyPartnerPreference layers (2) on as
+  // the list dimensions, which win over the scalars whenever they're non-empty.
+  const base: MatchPreference = {
     age: preferredAge,
     district: filters.district ?? viewer.district,
     education: filters.education ?? viewer.education,
     profession: filters.profession ?? viewer.profession,
     maritalStatus: filters.maritalStatus ?? viewer.maritalStatus,
+    religion: filters.religion ?? viewer.religion,
+    sect: filters.sect ?? viewer.sect,
   };
+  const preference = applyPartnerPreference(base, viewer.partnerPreference);
+
+  // An explicit religion filter is the viewer's immediate intent, so it
+  // overrides the saved religion list for this request.
+  if (filters.religion) preference.religions = [filters.religion];
 
   // Index-backed gate: opposite gender + a generous age window. Bounds how many
   // rows we score at all. Age >= lo .. <= hi  ->  dob in [yearsAgo(hi+1), yearsAgo(lo)].
   const ageLo = Math.max(18, preferredAge - AGE_GATE_WINDOW);
   const ageHi = preferredAge + AGE_GATE_WINDOW;
+  // Religion is a HARD gate, so push it into the scan (index-backed by
+  // @@index([gender, religion])) instead of scoring it away afterwards.
+  // `religion: null` is included deliberately: a candidate who hasn't stated a
+  // religion is not disqualified (they just earn no religion points), matching
+  // isReligionCompatible() so the SQL gate and the scorer can never disagree.
+  const acceptedReligions = preference.religions?.length
+    ? [...preference.religions]
+    : preference.religion
+      ? [preference.religion]
+      : null;
+
+  // Both the candidate arm and the religion gate need their own OR, so compose
+  // them under AND — assigning either to a single top-level `OR` would silently
+  // clobber the other and, in the candidate arm's case, leak non-candidate rows.
   const where: Prisma.ProfileWhereInput = {
-    ...candidateArm,
+    AND: [
+      candidateArm,
+      ...(acceptedReligions
+        ? [
+            {
+              OR: [
+                { religion: { in: acceptedReligions } },
+                { religion: null },
+              ],
+            } satisfies Prisma.ProfileWhereInput,
+          ]
+        : []),
+    ],
     dateOfBirth: { gte: yearsAgo(ageHi + 1), lte: yearsAgo(ageLo) },
   };
   if (preferredGender) where.gender = preferredGender;
@@ -167,6 +222,9 @@ export async function getRecommendedProfiles(
       education: true,
       profession: true,
       maritalStatus: true,
+      religion: true,
+      sect: true,
+      height: true,
       isVerified: true,
       createdAt: true,
     },
@@ -183,6 +241,9 @@ export async function getRecommendedProfiles(
         education: c.education,
         profession: c.profession,
         maritalStatus: c.maritalStatus,
+        religion: c.religion,
+        sect: c.sect,
+        height: c.height,
       }),
     }))
     .filter((c) => c.score > 0) // no shared signal -> not a recommendation
@@ -197,8 +258,13 @@ export async function getRecommendedProfiles(
   if (ranked.length === 0) {
     // No scored matches (sparse profile or narrow criteria). Rather than vanish,
     // fall back to the most-complete opposite-gender candidates so there's still
-    // someone to explore.
-    return fallbackRecommendations(viewerId, candidateArm, preferredGender);
+    // someone to explore — still religion-gated.
+    return fallbackRecommendations(
+      viewerId,
+      candidateArm,
+      preferredGender,
+      acceptedReligions,
+    );
   }
 
   const scoreById = new Map(ranked.map((r) => [r.id, r.score]));

@@ -11,7 +11,11 @@ import {
   PROFESSIONS,
   EDUCATION_LEVELS,
   MARITAL_STATUSES,
+  RELIGIONS,
+  DIETS,
+  SMOKING_STATUSES,
   HEIGHTS,
+  sectsFor,
 } from "@/lib/constants/profileOptions";
 import { DISTRICTS, upazilasFor } from "@/lib/constants/bdGeo";
 import { localize } from "@/lib/constants/labels";
@@ -48,6 +52,12 @@ export function ProfileEditForm({
   // District -> Upazila cascade is controlled so the upazila list stays in sync.
   const [district, setDistrict] = useState(initial.district);
   const [upazila, setUpazila] = useState(initial.upazila);
+
+  // Religion -> Sect cascade. Sects are religion-specific, so switching religion
+  // clears the sect (the server re-validates the pair regardless).
+  const [religion, setReligion] = useState(initial.religion);
+  const [sect, setSect] = useState(initial.sect);
+  const sectOptions = sectsFor(religion);
 
   return (
     <form action={formAction} className="space-y-6">
@@ -184,6 +194,62 @@ export function ProfileEditForm({
         </CardBody>
       </Card>
 
+      {/* Religion & community */}
+      <Card>
+        <CardBody className="space-y-4">
+          <CardTitle>{t("sections.religion")}</CardTitle>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <Field label={t("fields.religion")}>
+              <select
+                name="religion"
+                value={religion}
+                onChange={(e) => {
+                  setReligion(e.target.value);
+                  setSect(""); // sects differ per religion
+                }}
+                className={inputClass}
+              >
+                <option value="">{t("select")}</option>
+                {withCurrent(RELIGIONS, religion).map((r) => (
+                  <option key={r.value} value={r.value}>
+                    {localize(r.value, locale)}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <Field label={t("fields.sect")}>
+              <select
+                name="sect"
+                value={sect}
+                disabled={sectOptions.length === 0}
+                onChange={(e) => setSect(e.target.value)}
+                className={`${inputClass} disabled:bg-ink/5 disabled:text-ink/40`}
+              >
+                <option value="">
+                  {religion ? t("select") : t("selectReligionFirst")}
+                </option>
+                {withCurrent(sectOptions, sect).map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {localize(o.value, locale)}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            {/* Free text — communities we don't enumerate. */}
+            <Field label={t("fields.caste")}>
+              <input
+                name="caste"
+                type="text"
+                defaultValue={initial.caste}
+                className={inputClass}
+              />
+            </Field>
+          </div>
+        </CardBody>
+      </Card>
+
       {/* Additional details */}
       <Card>
         <CardBody className="space-y-4">
@@ -213,6 +279,26 @@ export function ProfileEditForm({
                 type="text"
                 defaultValue={initial.childrenStatus}
                 className={inputClass}
+              />
+            </Field>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field label={t("fields.diet")}>
+              <StdSelect
+                name="diet"
+                value={initial.diet}
+                options={DIETS}
+                placeholder={t("select")}
+                locale={locale}
+              />
+            </Field>
+            <Field label={t("fields.smokingStatus")}>
+              <StdSelect
+                name="smokingStatus"
+                value={initial.smokingStatus}
+                options={SMOKING_STATUSES}
+                placeholder={t("select")}
+                locale={locale}
               />
             </Field>
           </div>

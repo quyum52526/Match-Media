@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AuthBackground } from "@/components/auth/AuthBackground";
 import { ProfileEditForm } from "@/components/profile/ProfileEditForm";
+import { PartnerPreferencesForm } from "@/components/profile/PartnerPreferencesForm";
 import { PhotoManager } from "@/components/profile/PhotoManager";
 import { AgentDashboard } from "@/components/agent/AgentDashboard";
 import { MediaDashboard } from "@/components/media/MediaDashboard";
@@ -10,6 +11,7 @@ import { GuardianDashboard } from "@/components/guardian/GuardianDashboard";
 import { Card, CardBody } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { getEditableProfile, getClientEditableProfile } from "@/lib/data/profiles";
+import { getEditablePartnerPreference } from "@/lib/data/preferences";
 import { getAgentDashboardData } from "@/lib/data/agentDashboard";
 import { getMediaDashboardData } from "@/lib/data/mediaDashboard";
 import { getGuardianDashboardData } from "@/lib/data/guardianDashboard";
@@ -233,6 +235,10 @@ export default async function ProfileEditPage({
   // ── SELF / PARENTS / null (not yet chosen) ────────────────────────────────
   const hasProfile = initial.gender !== "";
   const photos = hasProfile ? await getOwnPhotos(viewerId) : [];
+  // Preferences hang off the Profile row, so only offer them once one exists.
+  const preferences = hasProfile
+    ? await getEditablePartnerPreference(viewerId)
+    : null;
 
   return withBg(
     <Container className="py-6 sm:py-10"><div className="mx-auto max-w-2xl">
@@ -263,6 +269,12 @@ export default async function ProfileEditPage({
       )}
 
       <ProfileEditForm initial={initial} />
+
+      {preferences && (
+        <div className="mt-6">
+          <PartnerPreferencesForm initial={preferences} />
+        </div>
+      )}
     </div></Container>
   );
 }

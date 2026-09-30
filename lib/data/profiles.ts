@@ -26,6 +26,9 @@ const EMPTY_EDITABLE: EditableProfile = {
   dateOfBirth: "",
   district: "",
   upazila: "",
+  religion: "",
+  sect: "",
+  caste: "",
   profession: "",
   education: "",
   maritalStatus: "",
@@ -33,9 +36,62 @@ const EMPTY_EDITABLE: EditableProfile = {
   weight: "",
   childrenStatus: "",
   familyDetails: "",
+  diet: "",
+  smokingStatus: "",
   bio: "",
   nameHidden: false,
 };
+
+/**
+ * Map a Profile row to the edit-form shape. Single source of truth for both the
+ * self-edit and the agency client-edit paths, so a new profile field can never
+ * be wired into one form and silently missed by the other.
+ */
+function toEditableProfile(profile: {
+  fullName: string | null;
+  gender: string;
+  dateOfBirth: Date;
+  district: string | null;
+  upazila: string | null;
+  religion: string | null;
+  sect: string | null;
+  caste: string | null;
+  profession: string | null;
+  education: string | null;
+  maritalStatus: string | null;
+  height: string | null;
+  weight: string | null;
+  childrenStatus: string | null;
+  familyDetails: string | null;
+  diet: string | null;
+  smokingStatus: string | null;
+  bio: string | null;
+  nameHidden: boolean;
+}): EditableProfile {
+  return {
+    fullName: profile.fullName ?? "",
+    gender: profile.gender ?? "",
+    dateOfBirth: profile.dateOfBirth
+      ? profile.dateOfBirth.toISOString().slice(0, 10)
+      : "",
+    district: profile.district ?? "",
+    upazila: profile.upazila ?? "",
+    religion: profile.religion ?? "",
+    sect: profile.sect ?? "",
+    caste: profile.caste ?? "",
+    profession: profile.profession ?? "",
+    education: profile.education ?? "",
+    maritalStatus: profile.maritalStatus ?? "",
+    height: profile.height ?? "",
+    weight: profile.weight ?? "",
+    childrenStatus: profile.childrenStatus ?? "",
+    familyDetails: profile.familyDetails ?? "",
+    diet: profile.diet ?? "",
+    smokingStatus: profile.smokingStatus ?? "",
+    bio: profile.bio ?? "",
+    nameHidden: profile.nameHidden,
+  };
+}
 
 /**
  * The current user's own profile shaped for the edit form. Returns blanks when
@@ -49,24 +105,7 @@ export async function getEditableProfile(
   });
   if (!profile) return { ...EMPTY_EDITABLE };
 
-  return {
-    fullName: profile.fullName ?? "",
-    gender: profile.gender ?? "",
-    dateOfBirth: profile.dateOfBirth
-      ? profile.dateOfBirth.toISOString().slice(0, 10)
-      : "",
-    district: profile.district ?? "",
-    upazila: profile.upazila ?? "",
-    profession: profile.profession ?? "",
-    education: profile.education ?? "",
-    maritalStatus: profile.maritalStatus ?? "",
-    height: profile.height ?? "",
-    weight: profile.weight ?? "",
-    childrenStatus: profile.childrenStatus ?? "",
-    familyDetails: profile.familyDetails ?? "",
-    bio: profile.bio ?? "",
-    nameHidden: profile.nameHidden,
-  };
+  return toEditableProfile(profile);
 }
 
 /**
@@ -90,24 +129,7 @@ export async function getClientEditableProfile(
     return null;
   }
 
-  return {
-    fullName: profile.fullName ?? "",
-    gender: profile.gender ?? "",
-    dateOfBirth: profile.dateOfBirth
-      ? profile.dateOfBirth.toISOString().slice(0, 10)
-      : "",
-    district: profile.district ?? "",
-    upazila: profile.upazila ?? "",
-    profession: profile.profession ?? "",
-    education: profile.education ?? "",
-    maritalStatus: profile.maritalStatus ?? "",
-    height: profile.height ?? "",
-    weight: profile.weight ?? "",
-    childrenStatus: profile.childrenStatus ?? "",
-    familyDetails: profile.familyDetails ?? "",
-    bio: profile.bio ?? "",
-    nameHidden: profile.nameHidden,
-  };
+  return toEditableProfile(profile);
 }
 
 /** Search/filter criteria (all optional; values are canonical English). */
@@ -117,6 +139,8 @@ export interface SearchFilters {
   maxAge?: number;
   district?: string;
   upazila?: string;
+  religion?: string;
+  sect?: string;
   profession?: string;
   education?: string;
   maritalStatus?: string;
@@ -286,9 +310,14 @@ export async function getBrowseProfiles(
   const where: Prisma.ProfileWhereInput = {
     OR: [{ userId: null }, selfCandidateArm],
   };
+  // Scalar equality filters. Each is applied only when provided, so an absent
+  // filter never narrows the feed — and none of them touches the candidate-arm
+  // OR above, so managed profiles (userId = null) stay reachable.
   if (filters.gender) where.gender = filters.gender;
   if (filters.district) where.district = filters.district;
   if (filters.upazila) where.upazila = filters.upazila;
+  if (filters.religion) where.religion = filters.religion;
+  if (filters.sect) where.sect = filters.sect;
   if (filters.profession) where.profession = filters.profession;
   if (filters.education) where.education = filters.education;
   if (filters.maritalStatus) where.maritalStatus = filters.maritalStatus;
@@ -508,6 +537,11 @@ export async function getProfileForViewer(
       weight: profile.weight ?? "",
       childrenStatus: profile.childrenStatus ?? "",
       family: profile.familyDetails ?? "",
+      religion: profile.religion ?? "",
+      sect: profile.sect ?? "",
+      caste: profile.caste ?? "",
+      diet: profile.diet ?? "",
+      smokingStatus: profile.smokingStatus ?? "",
     },
     verifications: {
       mobile: profileUser?.isMobileVerified ?? false,
@@ -588,6 +622,11 @@ export async function getGuestProfilePreview(
       weight: profile.weight ?? "",
       childrenStatus: profile.childrenStatus ?? "",
       family: profile.familyDetails ?? "",
+      religion: profile.religion ?? "",
+      sect: profile.sect ?? "",
+      caste: profile.caste ?? "",
+      diet: profile.diet ?? "",
+      smokingStatus: profile.smokingStatus ?? "",
     },
     verifications: {
       mobile: profileUser?.isMobileVerified ?? false,
