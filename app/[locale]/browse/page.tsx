@@ -1,13 +1,20 @@
+import { Suspense } from "react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/Container";
 import { ProfileGrid } from "@/components/profile/ProfileGrid";
+import { ProfileGridSkeleton } from "@/components/profile/ProfileGridSkeleton";
+import { BrowsePagination } from "@/components/profile/BrowsePagination";
 import { RecommendedProfiles } from "@/components/profile/RecommendedProfiles";
 import { FilterBar } from "@/components/profile/FilterBar";
 import { ProfileCompletionBanner } from "@/components/profile/ProfileCompletionBanner";
 import { Button } from "@/components/ui/Button";
 import { SearchIcon } from "@/components/ui/icons";
-import { getBrowseProfiles, type SearchFilters } from "@/lib/data/profiles";
+import {
+  BROWSE_PAGE_SIZE,
+  getBrowseProfiles,
+  type SearchFilters,
+} from "@/lib/data/profiles";
 import { getRecommendedProfiles } from "@/lib/data/recommend";
 import { getProfileCompletion } from "@/lib/data/profileCompletion";
 import { getPhotoRequestQuota, getProfileViewQuota } from "@/lib/data/billing";
@@ -77,6 +84,10 @@ export default async function BrowsePage({
   };
   const hasFilters = Object.values(filters).some((v) => v !== undefined);
 
+  // `page` is not a filter — it must not count toward hasFilters, or the
+  // "no matches, clear your filters" empty state would fire on a bare page 2.
+  const page = num(sp.page) ?? 1;
+
   // A guest has no account to fetch quotas/completion for, so these stay
   // static rather than hitting the DB. `unlimited: true` here only suppresses
   // the "N left today" / "limit reached" copy (which would be misleading —
@@ -85,8 +96,11 @@ export default async function BrowsePage({
   // the quota value is ever consulted, so nothing actually unmetered slips through.
   const guestQuota = { unlimited: true, remaining: FREE_DAILY_LIMIT, limit: FREE_DAILY_LIMIT };
 
-  const [profiles, recommended, completion, quota, viewQuota] = await Promise.all([
-    getBrowseProfiles(effectiveViewerId, filters, viewerRole, viewerCategory),
+  // The paginated feed is deliberately NOT in this Promise.all: it is awaited
+  // inside <BrowseFeed>, below a Suspense boundary, so paging shows a skeleton
+  // instead of blocking the whole page (filters, quota banner and the
+  // recommendations strip stay on screen while the next page loads).
+  const [recommended, completion, quota, viewQuota] = await Promise.all([
     // Recommendations are shown to every viewer, guests included (guests get
     // the gender-agnostic fallback set, same as a profile-less MEDIA/ADMIN).
     getRecommendedProfiles(effectiveViewerId, filters),
@@ -132,35 +146,96 @@ export default async function BrowsePage({
         emptyText={t("recommended.empty")}
       />
 
+      {/* `key` is what makes the skeleton appear on every filter/page change:
+          a changed key remounts the boundary, so React shows the fallback again
+          instead of holding the previous results on screen. */}
+      <Suspense
+        key={JSON.stringify(sp)}
+        fallback={<ProfileGridSkeleton count={BROWSE_PAGE_SIZE} />}
+      >
+        <BrowseFeed
+          viewerId={effectiveViewerId}
+          filters={filters}
+          viewerRole={viewerRole}
+          viewerCategory={viewerCategory}
+          page={page}
+          quota={quota}
+          hasFilters={hasFilters}
+          searchParams={sp}
+        />
+      </Suspense>
+    </Container>
+  );
+}
+
+/**
+ * The paginated result set. Split into its own async component purely so it can
+ * sit under a Suspense boundary — everything above it stays interactive while a
+ * page is fetched.
+ */
+async function BrowseFeed({
+  viewerId,
+  filters,
+  viewerRole,
+  viewerCategory,
+  page,
+  quota,
+  hasFilters,
+  searchParams,
+}: {
+  viewerId: string;
+  filters: SearchFilters;
+  viewerRole: string | null;
+  viewerCategory: string | null;
+  page: number;
+  quota: { unlimited: boolean; remaining: number; limit: number };
+  hasFilters: boolean;
+  searchParams: SP;
+}) {
+  const t = await getTranslations("Browse");
+  const { profiles, total, page: current, pageCount } = await getBrowseProfiles(
+    viewerId,
+    filters,
+    viewerRole,
+    viewerCategory,
+    { page, limit: BROWSE_PAGE_SIZE },
+  );
+
+  if (profiles.length === 0) {
+    return hasFilters ? (
+      <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-hairline bg-white py-14 text-center">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink/5 text-ink/40">
+          <SearchIcon width={22} height={22} />
+        </span>
+        <p className="text-base font-semibold text-ink">{t("noMatch.title")}</p>
+        <p className="max-w-xs text-sm text-ink/60">{t("noMatch.hint")}</p>
+        <Link href="/browse" className="mt-1">
+          <Button variant="outline" size="sm">
+            {t("noMatch.clear")}
+          </Button>
+        </Link>
+      </div>
+    ) : (
+      <p className="text-sm text-ink/60">{t("empty")}</p>
+    );
+  }
+
+  return (
+    <>
+      {/* The count is the TOTAL across all pages, not this page's length —
+          "12 profiles" on page 3 of 40 would be actively misleading. */}
       <p className="mb-4 font-body text-sm text-ink/50">
-        {t("resultCount", {
-          count: profiles.length,
-          n: String(profiles.length),
-        })}
+        {t("resultCount", { count: total, n: String(total) })}
       </p>
 
-      {profiles.length > 0 ? (
-        <ProfileGrid profiles={profiles} quota={quota} />
-      ) : hasFilters ? (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-hairline bg-white py-14 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink/5 text-ink/40">
-            <SearchIcon width={22} height={22} />
-          </span>
-          <p className="text-base font-semibold text-ink">
-            {t("noMatch.title")}
-          </p>
-          <p className="max-w-xs text-sm text-ink/60">
-            {t("noMatch.hint")}
-          </p>
-          <Link href="/browse" className="mt-1">
-            <Button variant="outline" size="sm">
-              {t("noMatch.clear")}
-            </Button>
-          </Link>
-        </div>
-      ) : (
-        <p className="text-sm text-ink/60">{t("empty")}</p>
-      )}
-    </Container>
+      <ProfileGrid profiles={profiles} quota={quota} />
+
+      <BrowsePagination
+        page={current}
+        pageCount={pageCount}
+        total={total}
+        searchParams={searchParams}
+      />
+    </>
   );
 }

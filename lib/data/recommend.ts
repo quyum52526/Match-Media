@@ -5,7 +5,7 @@ import { calcAge } from "@/lib/utils";
 import { scoreCandidate, type MatchPreference } from "@/lib/matching/score";
 import { AGE_GATE_WINDOW, RECOMMENDED_LIMIT } from "@/lib/matching/weights";
 import {
-  BROWSE_CARD_INCLUDE,
+  BROWSE_CARD_SELECT,
   hydrateProfileCards,
   type SearchFilters,
 } from "./profiles";
@@ -92,7 +92,7 @@ async function fallbackRecommendations(
     where,
     orderBy: [{ completionScore: "desc" }, { createdAt: "desc" }],
     take: RECOMMENDED_LIMIT,
-    include: BROWSE_CARD_INCLUDE,
+    select: BROWSE_CARD_SELECT,
   });
   const cards = await hydrateProfileCards(rows, viewerId);
   return {
@@ -272,7 +272,7 @@ export async function getRecommendedProfiles(
   // PASS 2 — hydrate ONLY the winners through the shared card pipeline.
   const rows = await prisma.profile.findMany({
     where: { id: { in: ranked.map((r) => r.id) } },
-    include: BROWSE_CARD_INCLUDE,
+    select: BROWSE_CARD_SELECT,
   });
   // Preserve score order (findMany's `in` does not guarantee ordering).
   rows.sort(

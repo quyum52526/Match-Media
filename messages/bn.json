@@ -203,6 +203,13 @@
       "limitReachedTitle": "আজকের limit শেষ।",
       "limitReached": "আজকের অনুমোদিত {limit} টি profile-ই দেখা হয়ে গেছে।",
       "upgrade": "Unlimited-এর জন্য Pro নিন"
+    },
+    "pagination": {
+      "label": "ফলাফলের পৃষ্ঠা",
+      "prev": "পূর্ববর্তী",
+      "next": "পরবর্তী",
+      "goToPage": "পৃষ্ঠা {page}-এ যান",
+      "summary": "{pageCount}-এর মধ্যে পৃষ্ঠা {page} · {total} টি প্রোফাইল"
     }
   },
   "Actions": {

@@ -2,7 +2,7 @@ import "server-only";
 import { unstable_cache } from "next/cache";
 import { type Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { SIGNED_URL_TTL, signUrl } from "@/lib/storage/supabase";
+import { PUBLIC_URL_TTL, signUrl } from "@/lib/storage/supabase";
 
 export interface ShowcaseProfile {
   id: string;
@@ -93,7 +93,13 @@ async function toShowcaseProfiles(rows: ShowcaseRow[]): Promise<ShowcaseProfile[
       // renders its initials avatar. We deliberately do NOT fall back to an
       // unsigned public-object URL: it only resolves on a public-read bucket,
       // otherwise it renders as a broken image instead of the styled fallback.
-      const imageUrl = imgKey ? ((await signUrl(imgKey)) ?? undefined) : undefined;
+      // PUBLIC_URL_TTL, not the gated default: pickShowcaseKey has already
+      // reduced this to a publishable key (original only when the owner marked
+      // the photo PUBLIC, otherwise the blurred derivative), so there is no
+      // access grant here that could later need revoking.
+      const imageUrl = imgKey
+        ? ((await signUrl(imgKey, PUBLIC_URL_TTL)) ?? undefined)
+        : undefined;
 
       return {
         // Managed profiles have userId=null; fall back to profile.id for a stable key.
@@ -174,18 +180,18 @@ export async function getHomepageShowcase(): Promise<HomepageShowcase> {
 /**
  * How long the homepage showcase is reused before a background refresh.
  *
- * HARD CONSTRAINT: this must stay well under SIGNED_URL_TTL. The cached value
- * contains Supabase signed URLs, so caching it for longer than those signatures
- * live would serve expired links and every card would 403. A build-time assert
- * guards the pair, since the failure is invisible until the images break in
- * production.
+ * HARD CONSTRAINT: this must stay well under PUBLIC_URL_TTL, the lifetime these
+ * cards' URLs are signed with. The cached value contains Supabase signed URLs,
+ * so caching it for longer than those signatures live would serve expired links
+ * and every card would 403. A build-time assert guards the pair, since the
+ * failure is invisible until the images break in production.
  */
 export const SHOWCASE_REVALIDATE_SECONDS = 600;
 
-if (SHOWCASE_REVALIDATE_SECONDS >= SIGNED_URL_TTL) {
+if (SHOWCASE_REVALIDATE_SECONDS >= PUBLIC_URL_TTL) {
   throw new Error(
     `SHOWCASE_REVALIDATE_SECONDS (${SHOWCASE_REVALIDATE_SECONDS}) must be well below ` +
-      `SIGNED_URL_TTL (${SIGNED_URL_TTL}), or cached showcase photos will 403.`,
+      `PUBLIC_URL_TTL (${PUBLIC_URL_TTL}), or cached showcase photos will 403.`,
   );
 }
 

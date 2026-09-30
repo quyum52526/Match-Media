@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import {
@@ -35,11 +36,29 @@ import { MaskedContact } from "@/components/privacy/MaskedContact";
 import { computeCompletion } from "@/lib/utils";
 import { localize } from "@/lib/constants/labels";
 import { BlurredImage } from "./BlurredImage";
-import { ExpressInterestModal } from "./ExpressInterestModal";
-import { FullDetailsModal } from "./FullDetailsModal";
 import { ReportButton } from "./ReportButton";
 import { TrustCard } from "./TrustCard";
 import type { ProfileDetailView, ViewerState } from "./types";
+
+/**
+ * Both modals start closed and only ever open on an explicit click, so their
+ * code has no business in this route's first load — `profiles/[id]` is the
+ * heaviest page in the app. `ssr: false` because neither renders anything until
+ * opened, so there is no markup to hydrate and nothing shifts when the chunk
+ * arrives.
+ *
+ * No loading skeleton: the chunk is small and fetched on the click that opens
+ * the dialog, so a placeholder would flash more than it would reassure.
+ */
+const FullDetailsModal = dynamic(
+  () => import("./FullDetailsModal").then((m) => m.FullDetailsModal),
+  { ssr: false },
+);
+
+const ExpressInterestModal = dynamic(
+  () => import("./ExpressInterestModal").then((m) => m.ExpressInterestModal),
+  { ssr: false },
+);
 
 interface ProfileDetailProps {
   data: ProfileDetailView;

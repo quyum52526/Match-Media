@@ -10,9 +10,30 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 export const STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET ?? "profile-photos";
 
-// Signed-URL lifetime (seconds). Pages that surface photos are dynamic, so a
-// 1-hour window is plenty and keeps links from lingering if copied.
+/**
+ * Default signed-URL lifetime (seconds) for GATED photos.
+ *
+ * Deliberately short. A signed URL is a bearer capability: anyone holding it can
+ * fetch the object until it expires, with no further authorization check. So
+ * this value IS the revocation window — after an owner denies or revokes photo
+ * access (respondToPhotoRequest), a previously-issued link keeps working for up
+ * to this long. One hour is the cap on that exposure.
+ *
+ * Do NOT raise this to get better browser caching. Use PUBLIC_URL_TTL for
+ * imagery that has no access gate to revoke in the first place.
+ */
 export const SIGNED_URL_TTL = 60 * 60;
+
+/**
+ * Signed-URL lifetime for images the owner has explicitly made PUBLIC, and for
+ * blurred derivatives — neither is gated, so there is nothing to revoke and a
+ * long-lived link leaks nothing.
+ *
+ * 24h lets the browser and the Next image optimizer actually reuse a derivative
+ * instead of re-fetching on every signature rotation. Any cache built on top of
+ * these URLs must expire well before this (see SHOWCASE_REVALIDATE_SECONDS).
+ */
+export const PUBLIC_URL_TTL = 60 * 60 * 24;
 
 const globalForSupabase = globalThis as unknown as {
   supabaseAdmin: SupabaseClient | undefined;

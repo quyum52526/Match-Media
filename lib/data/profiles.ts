@@ -2,7 +2,7 @@ import "server-only";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { calcAge } from "@/lib/utils";
-import { signUrl, signUrls } from "@/lib/storage/supabase";
+import { PUBLIC_URL_TTL, signUrl, signUrls } from "@/lib/storage/supabase";
 import { isProActive } from "@/lib/billing";
 import { maskEmail, maskPhone } from "@/lib/privacy";
 import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
@@ -171,12 +171,24 @@ function resolveManagerType(
  * so the main grid and the "Recommended for You" strip fetch identical shapes
  * and hydrate through the same code path (hydrateProfileCards).
  */
-export const BROWSE_CARD_INCLUDE = {
+export const BROWSE_CARD_SELECT = {
+  // A `select`, not an `include`: an include returns every Profile column, and
+  // the row has ~35 of them (bio, familyDetails, the religion/lifestyle fields,
+  // timestamps) while a card renders 10. The feed fetches many rows at once, so
+  // the unused columns are the bulk of the payload.
+  id: true,
+  userId: true,
+  fullName: true,
+  nameHidden: true,
+  gender: true,
+  dateOfBirth: true,
+  district: true,
+  upazila: true,
+  isVerified: true,
   user: {
     select: {
       isPro: true,
       isMobileVerified: true,
-      accountCategory: true,
       nidVerificationStatus: true,
       selfieVerificationStatus: true,
     },
@@ -186,12 +198,41 @@ export const BROWSE_CARD_INCLUDE = {
   referredBy: { select: { accountCategory: true } },
   // Only an APPROVED primary photo is ever shown to other viewers
   // (pre-moderation: PENDING/REJECTED photos never leave the server).
-  images: { where: { isPrimary: true, moderationStatus: "APPROVED" }, take: 1 },
-} satisfies Prisma.ProfileInclude;
+  // Just the three fields the reveal decision needs — not moderation notes,
+  // reviewer ids or timestamps.
+  images: {
+    where: { isPrimary: true, moderationStatus: "APPROVED" },
+    select: { privacy: true, originalKey: true, blurredKey: true },
+    take: 1,
+  },
+} satisfies Prisma.ProfileSelect;
 
-/** A Profile row fetched with BROWSE_CARD_INCLUDE. */
+/**
+ * The profile owner's User fields the detail view actually consumes: Pro status,
+ * the mobile-verified badge, and the contact pair that gets masked.
+ *
+ * Explicit because `user: true` returns the whole row — which means pulling
+ * `passwordHash`, the NID/selfie storage keys and the admin review notes into
+ * the render on every profile view. None of it is used, and none of it should be
+ * a stray property away from a client payload.
+ */
+export const PROFILE_OWNER_USER_SELECT = {
+  isPro: true,
+  proExpiresAt: true,
+  isMobileVerified: true,
+  mobile: true,
+  email: true,
+} as const;
+
+/** Entitlement-only fields — all `isProActive()` needs about the viewer. */
+export const VIEWER_PRO_SELECT = {
+  isPro: true,
+  proExpiresAt: true,
+} as const;
+
+/** A Profile row fetched with BROWSE_CARD_SELECT. */
 export type BrowseCardRow = Prisma.ProfileGetPayload<{
-  include: typeof BROWSE_CARD_INCLUDE;
+  select: typeof BROWSE_CARD_SELECT;
 }>;
 
 /**
@@ -221,15 +262,31 @@ export async function hydrateProfileCards(
   // Pick the viewer-appropriate storage key per profile: the ORIGINAL only when
   // the photo is PUBLIC or the viewer is APPROVED, otherwise the blurred teaser.
   // The original key is never signed (and so never leaks) for gated viewers.
-  const keyToSign: string[] = [];
+  //
+  // Keys are split into two TTL buckets, because the signed URL is a bearer
+  // capability and its lifetime is the revocation window:
+  //
+  //   ungated — a blurred derivative, or an original the owner marked PUBLIC.
+  //             Nothing to revoke, so sign for PUBLIC_URL_TTL and let browsers
+  //             and the image optimizer actually reuse the derivative.
+  //   gated   — an original unlocked only by this viewer's APPROVED request.
+  //             Short SIGNED_URL_TTL, so revoking access takes effect promptly.
+  const ungatedKeys: string[] = [];
+  const gatedKeys: string[] = [];
   for (const p of profiles) {
     const img = p.images[0];
     if (!img) continue;
     const access = p.userId ? (statusByOwner.get(p.userId) ?? "NONE") : "NONE";
-    const revealed = img.privacy === "PUBLIC" || access === "APPROVED";
-    keyToSign.push(revealed ? img.originalKey : img.blurredKey);
+    const isPublic = img.privacy === "PUBLIC";
+    if (isPublic) ungatedKeys.push(img.originalKey);
+    else if (access === "APPROVED") gatedKeys.push(img.originalKey);
+    else ungatedKeys.push(img.blurredKey);
   }
-  const signed = await signUrls(keyToSign);
+  const [ungatedSigned, gatedSigned] = await Promise.all([
+    signUrls(ungatedKeys, PUBLIC_URL_TTL),
+    signUrls(gatedKeys),
+  ]);
+  const signed = new Map([...ungatedSigned, ...gatedSigned]);
 
   return profiles.map((p) => {
     // For managed profiles (userId = null) use the Profile.id as the card
@@ -270,23 +327,31 @@ export async function hydrateProfileCards(
   });
 }
 
+/** Cards per page on the browse grid. Divides evenly by 2 and 3 columns. */
+export const BROWSE_PAGE_SIZE = 12;
+
+/** One page of the browse feed, plus what the UI needs to render pager links. */
+export interface BrowsePage {
+  profiles: ProfileSummary[];
+  /** Total rows matching the filters, across every page. */
+  total: number;
+  /** The page actually served (clamped into range). */
+  page: number;
+  pageCount: number;
+  limit: number;
+}
+
 /**
- * List profiles for the browse/search grid (viewer-scoped). Excludes the
- * viewer's own profile, applies the given filters, and includes the viewer's
- * current photo-access state per card. Photos always start blurred in the
- * payload; only the viewer's access state is exposed, not the image keys.
+ * Build the browse feed's WHERE clause.
  *
- * MEDIA agencies and ADMINs see all profiles including agency-managed ones
- * (userId = null). Regular users only see profiles backed by a User account.
+ * Extracted so the page query and the COUNT query are provably identical — if
+ * they drift, the pager advertises pages that render empty. Every caller must
+ * use this rather than assembling its own filter object.
  */
-export async function getBrowseProfiles(
+function buildBrowseWhere(
   viewerId: string,
-  filters: SearchFilters = {},
-  viewerRole?: string | null,
-  viewerCategory?: string | null,
-): Promise<ProfileSummary[]> {
-  const isPrivilegedViewer =
-    viewerRole === "ADMIN" || viewerCategory === "MEDIA" || viewerCategory === "PARENTS";
+  filters: SearchFilters,
+): Prisma.ProfileWhereInput {
 
   // Only true candidate profiles belong in the browse feed:
   //   • managed profiles (userId = null) — created by MEDIA agencies or PARENTS
@@ -306,8 +371,8 @@ export async function getBrowseProfiles(
   };
 
   // Managed profiles (userId = null, created by PARENTS/MEDIA agencies) are
-  // always included in the browse feed for every viewer. The isPrivilegedViewer
-  // flag only widens *other* access controls — it must not gate managed profiles.
+  // always included in the browse feed for every viewer. Viewer role/category
+  // deliberately does NOT gate this arm.
   const where: Prisma.ProfileWhereInput = {
     OR: [{ userId: null }, selfCandidateArm],
   };
@@ -337,13 +402,60 @@ export async function getBrowseProfiles(
     where.height = { in: heightsInRange(filters.minHeight, filters.maxHeight) };
   }
 
-  const profiles = await prisma.profile.findMany({
+  return where;
+}
+
+/**
+ * One page of profiles for the browse/search grid (viewer-scoped). Excludes the
+ * viewer's own profile, applies the given filters, and includes the viewer's
+ * current photo-access state per card. Photos always start blurred in the
+ * payload; only the viewer's access state is exposed, not the image keys.
+ *
+ * PAGINATED because the feed is unbounded: without a `take` this fetched — and
+ * signed a URL for — every matching profile in the database on every request,
+ * so cost grew linearly with signups. `page` is clamped into range, so a
+ * hand-edited ?page=999 lands on the last page instead of rendering blank.
+ */
+export async function getBrowseProfiles(
+  viewerId: string,
+  filters: SearchFilters = {},
+  viewerRole?: string | null,
+  viewerCategory?: string | null,
+  options: { page?: number; limit?: number } = {},
+): Promise<BrowsePage> {
+  const limit = Math.max(1, Math.trunc(options.limit ?? BROWSE_PAGE_SIZE));
+  const requestedPage = Math.max(1, Math.trunc(options.page ?? 1));
+  const where = buildBrowseWhere(viewerId, filters);
+
+  // Count first: the page number has to be clamped against a real total before
+  // we can compute a valid `skip`, otherwise an out-of-range page silently
+  // returns nothing.
+  const total = await prisma.profile.count({ where });
+  const pageCount = Math.max(1, Math.ceil(total / limit));
+  const page = Math.min(requestedPage, pageCount);
+
+  if (total === 0) {
+    return { profiles: [], total, page: 1, pageCount: 1, limit };
+  }
+
+  const rows = await prisma.profile.findMany({
     where,
-    orderBy: { createdAt: "asc" },
-    include: BROWSE_CARD_INCLUDE,
+    // createdAt alone is not a unique ordering, so rows with identical
+    // timestamps could swap between pages and appear twice or not at all.
+    // `id` breaks the tie and makes the sequence stable across requests.
+    orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+    skip: (page - 1) * limit,
+    take: limit,
+    select: BROWSE_CARD_SELECT,
   });
 
-  return hydrateProfileCards(profiles, viewerId);
+  return {
+    profiles: await hydrateProfileCards(rows, viewerId),
+    total,
+    page,
+    pageCount,
+    limit,
+  };
 }
 
 /**
@@ -422,7 +534,7 @@ export async function getProfileForViewer(
   const profile = await prisma.profile.findFirst({
     where: { OR: [{ userId: profileId }, { id: profileId }] },
     include: {
-      user: true,
+      user: { select: PROFILE_OWNER_USER_SELECT },
       referredBy: { select: { accountCategory: true } },
       // Pre-moderation: only an APPROVED primary photo is served to viewers.
       images: { where: { isPrimary: true, moderationStatus: "APPROVED" }, take: 1 },
@@ -466,8 +578,14 @@ export async function getProfileForViewer(
   const viewer = ownerUserId
     ? viewerId === ownerUserId
       ? profileUser
-      : await prisma.user.findUnique({ where: { id: viewerId } })
-    : await prisma.user.findUnique({ where: { id: viewerId } });
+      : await prisma.user.findUnique({
+          where: { id: viewerId },
+          select: VIEWER_PRO_SELECT,
+        })
+    : await prisma.user.findUnique({
+        where: { id: viewerId },
+        select: VIEWER_PRO_SELECT,
+      });
 
   // Social features (photo requests, interests, messaging) require the profile
   // to have a User account. Managed profiles get neutral/locked defaults.
@@ -584,7 +702,7 @@ export async function getGuestProfilePreview(
   const profile = await prisma.profile.findFirst({
     where: { OR: [{ userId: profileId }, { id: profileId }] },
     include: {
-      user: true,
+      user: { select: PROFILE_OWNER_USER_SELECT },
       referredBy: { select: { accountCategory: true } },
       images: { where: { isPrimary: true, moderationStatus: "APPROVED" }, take: 1 },
     },

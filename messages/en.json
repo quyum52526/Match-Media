@@ -203,6 +203,13 @@
       "limitReachedTitle": "Daily limit reached.",
       "limitReached": "You've viewed all {limit} profiles allowed today.",
       "upgrade": "Upgrade to Pro for unlimited"
+    },
+    "pagination": {
+      "label": "Result pages",
+      "prev": "Previous",
+      "next": "Next",
+      "goToPage": "Go to page {page}",
+      "summary": "Page {page} of {pageCount} · {total} profiles"
     }
   },
   "Actions": {
