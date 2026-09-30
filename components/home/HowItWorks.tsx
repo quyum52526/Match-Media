@@ -30,7 +30,7 @@ export async function HowItWorks() {
   ];
 
   return (
-    <section className="bg-canvas antialiased">
+    <section id="how-it-works" className="scroll-mt-24 bg-canvas antialiased">
       <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
         {/* Heading */}
         <div className="mx-auto max-w-2xl text-center">
