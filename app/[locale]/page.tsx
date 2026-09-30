@@ -1,5 +1,12 @@
-// Always fetch fresh data — the showcase profiles change as users join/are verified.
-export const dynamic = "force-dynamic";
+// ISR: serve the marketing homepage from the CDN and refresh the showcase in the
+// background every 10 minutes, instead of querying Prisma/Supabase per request.
+//
+// NOTE: this only takes effect once the route stops using a dynamic API. The
+// [locale] layout awaits getViewerId() (cookies) for the session-aware header,
+// which opts the whole route into dynamic rendering — so today this directive is
+// inert and the real saving comes from the cached data layer in
+// lib/data/showcase.ts. See the comment there.
+export const revalidate = 600;
 
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Sparkles, Crown, ShieldCheck } from "lucide-react";
@@ -8,7 +15,10 @@ import { StackedFeatureSection } from "@/components/home/StackedFeatureSection";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { InteractiveMap } from "@/components/home/InteractiveMap";
 import { FeaturedInfluencer } from "@/components/home/FeaturedInfluencer";
-import { getHomepageShowcase, getMarqueeProfiles } from "@/lib/data/showcase";
+import {
+  getCachedHomepageShowcase,
+  getCachedMarqueeProfiles,
+} from "@/lib/data/showcase";
 
 export default async function Home({
   params,
@@ -23,8 +33,8 @@ export default async function Home({
   const [tf, { premiumProfiles, newProfiles, verifiedProfiles }, marqueeProfiles] =
     await Promise.all([
       getTranslations("Home.featured"),
-      getHomepageShowcase(),
-      getMarqueeProfiles(),
+      getCachedHomepageShowcase(),
+      getCachedMarqueeProfiles(),
     ]);
 
   return (

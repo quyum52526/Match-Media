@@ -1,7 +1,8 @@
 import "server-only";
+import { unstable_cache } from "next/cache";
 import { type Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { signUrl } from "@/lib/storage/supabase";
+import { SIGNED_URL_TTL, signUrl } from "@/lib/storage/supabase";
 
 export interface ShowcaseProfile {
   id: string;
@@ -165,3 +166,53 @@ export async function getHomepageShowcase(): Promise<HomepageShowcase> {
 
   return { premiumProfiles, newProfiles, verifiedProfiles };
 }
+
+// ---------------------------------------------------------------------------
+// Cached entry points for the public homepage
+// ---------------------------------------------------------------------------
+
+/**
+ * How long the homepage showcase is reused before a background refresh.
+ *
+ * HARD CONSTRAINT: this must stay well under SIGNED_URL_TTL. The cached value
+ * contains Supabase signed URLs, so caching it for longer than those signatures
+ * live would serve expired links and every card would 403. A build-time assert
+ * guards the pair, since the failure is invisible until the images break in
+ * production.
+ */
+export const SHOWCASE_REVALIDATE_SECONDS = 600;
+
+if (SHOWCASE_REVALIDATE_SECONDS >= SIGNED_URL_TTL) {
+  throw new Error(
+    `SHOWCASE_REVALIDATE_SECONDS (${SHOWCASE_REVALIDATE_SECONDS}) must be well below ` +
+      `SIGNED_URL_TTL (${SIGNED_URL_TTL}), or cached showcase photos will 403.`,
+  );
+}
+
+/**
+ * Why cache the DATA and not the page:
+ *
+ * The [locale] layout awaits getViewerId() for the session-aware header, which
+ * reads cookies and therefore opts every route — homepage included — into
+ * dynamic rendering. A page-level `export const revalidate` cannot override
+ * that, so the homepage is re-rendered per request no matter what.
+ *
+ * Caching here gets the actual win anyway: the render still runs per request,
+ * but the Prisma queries and the Supabase URL signing (4 queries + up to 13
+ * signatures) collapse to one shared, periodically-refreshed result instead of
+ * running for every anonymous visitor.
+ *
+ * Both are tagged "showcase", so a future admin action can call
+ * revalidateTag("showcase") to push a change out immediately.
+ */
+export const getCachedHomepageShowcase = unstable_cache(
+  getHomepageShowcase,
+  ["homepage-showcase"],
+  { revalidate: SHOWCASE_REVALIDATE_SECONDS, tags: ["showcase"] },
+);
+
+export const getCachedMarqueeProfiles = unstable_cache(
+  () => getMarqueeProfiles(),
+  ["homepage-marquee"],
+  { revalidate: SHOWCASE_REVALIDATE_SECONDS, tags: ["showcase"] },
+);

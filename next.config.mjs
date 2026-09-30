@@ -12,6 +12,17 @@ const nextConfig = {
     },
   },
   images: {
+    // Hold an optimized derivative for at least 24h instead of the 60s default.
+    //
+    // Full benefit applies to stable URLs — the local /public brand art, and any
+    // future public-bucket photo URL.
+    //
+    // CAVEAT for Supabase signed URLs: the optimizer keys its cache on the whole
+    // source URL, query string included, so each hourly signature rotation
+    // (SIGNED_URL_TTL in lib/storage/supabase.ts) is a fresh cache key and gets
+    // re-optimized no matter how high this is set. Raising SIGNED_URL_TTL is
+    // what actually cuts that re-work; this TTL cannot.
+    minimumCacheTTL: 86400,
     remotePatterns: [
       {
         // Supabase Storage signed URLs (private bucket):
