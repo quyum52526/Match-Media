@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getViewerId } from "@/lib/session";
-import { areUsersMatched, getOrCreateConversation } from "@/lib/data/messaging";
+import { getOrCreateConversation } from "@/lib/data/messaging";
+import { canInitiateContact } from "@/lib/contactGate";
 import { notify } from "@/lib/notifications/dispatch";
 
 const MESSAGES = "/[locale]/messages";
@@ -32,12 +33,12 @@ export async function sendMessage(
   if (!text) return { ok: false, error: "EMPTY" };
   if (text.length > MAX_BODY) return { ok: false, error: "TOO_LONG" };
 
-  // Trust soft-gate: only mobile-verified users may message.
-  const sender = await prisma.user.findUnique({
-    where: { id: viewerId },
-    select: { isMobileVerified: true },
-  });
-  if (!sender?.isMobileVerified) return { ok: false, error: "NOT_VERIFIED" };
+  // Trust gate. What counts as "verified" depends on whether SMS OTP is live —
+  // see canInitiateContact. With SMS off, a typed-in number proves nothing, so
+  // the admin-granted Verified badge is required instead.
+  if (!(await canInitiateContact(viewerId))) {
+    return { ok: false, error: "NOT_VERIFIED" };
+  }
 
   // Authoritative gate: must be a mutual match.
   const conversationId = await getOrCreateConversation(viewerId, otherUserId);

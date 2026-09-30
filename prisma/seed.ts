@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { seedBillingCatalog } from "./seedCatalog";
+import { seedFeatureFlags } from "./seedFeatureFlags";
 
 const prisma = new PrismaClient();
 
@@ -48,6 +49,9 @@ async function main() {
 
   // --- Billing catalog (plans + promo coupons) — idempotent upserts ---
   await seedBillingCatalog(prisma);
+
+  // --- Feature flags — creates missing keys, never overwrites a live toggle ---
+  await seedFeatureFlags(prisma);
 
   // --- Clean slate (FK-safe order) ---
   await prisma.interest.deleteMany();

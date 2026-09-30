@@ -469,7 +469,9 @@
       "photos": "Photos",
       "reports": "Reports",
       "verification": "Verification",
-      "users": "Users"
+      "users": "Users",
+      "documents": "Documents",
+      "settings": "Settings"
     },
     "overview": {
       "pendingPhotos": "Photos pending review",
@@ -508,6 +510,39 @@
       "filterUnverified": "Unverified",
       "filterAll": "All",
       "managedByAgency": "Managed by Agency"
+    },
+    "settings": {
+      "title": "Feature flags",
+      "intro": "Operational switches that take effect immediately, without a deploy.",
+      "saved": "Saved",
+      "error": "Could not save — please retry.",
+      "inert": "Not wired",
+      "warnings": {
+        "smsOff": "Mobile numbers are accepted without an SMS code. The \"mobile verified\" badge and its share of the trust score are unearned while this is off, and messaging and calls are open to any well-formed number.",
+        "browseGateOn": "Unverified members cannot browse at all. This blocks the core feature for everyone without the Verified badge."
+      },
+      "flags": {
+        "ENABLE_SMS_OTP": {
+          "label": "SMS OTP verification",
+          "description": "Send a real SMS code to prove the member holds the number. Off skips the gateway and its per-message cost."
+        },
+        "ENABLE_EMAIL_OTP": {
+          "label": "Email OTP verification",
+          "description": "Verify email addresses with a emailed code. No email provider is configured yet, so this toggle currently has no effect."
+        },
+        "ENABLE_NID_VERIFICATION": {
+          "label": "NID document upload",
+          "description": "Collect NID front and back images for manual admin review. Off hides the step from members."
+        },
+        "ENABLE_SELFIE_VERIFICATION": {
+          "label": "Selfie verification",
+          "description": "Collect a live selfie for manual face-match review. Off hides the step from members."
+        },
+        "REQUIRE_VERIFICATION_TO_BROWSE": {
+          "label": "Require verification to browse",
+          "description": "Members must hold the Verified badge before they can browse profiles. Guests and admins are unaffected."
+        }
+      }
     }
   },
   "Messages": {

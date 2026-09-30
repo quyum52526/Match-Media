@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { calcAge } from "@/lib/utils";
 import { PUBLIC_URL_TTL, signUrl, signUrls } from "@/lib/storage/supabase";
 import { isProActive } from "@/lib/billing";
+import { mobileCountsTowardTrust } from "@/lib/contactGate";
 import { maskEmail, maskPhone } from "@/lib/privacy";
 import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
 import { heightsInRange } from "@/lib/constants/profileOptions";
@@ -248,6 +249,9 @@ export async function hydrateProfileCards(
 ): Promise<ProfileSummary[]> {
   // Photo-access state only applies to profiles that have a User account.
   // Managed profiles (userId = null) have no ownerId, so they always show as "NONE".
+  // Whether the mobile signal is earned right now (one cached read per request).
+  const countMobile = await mobileCountsTowardTrust();
+
   const ownerIds = profiles.map((p) => p.userId).filter((id): id is string => id !== null);
   const requests = ownerIds.length
     ? await prisma.photoAccessRequest.findMany({
@@ -312,19 +316,26 @@ export async function hydrateProfileCards(
       primaryImagePrivacy: (img?.privacy as ImagePrivacy) ?? "BLURRED",
       imageUrl: key ? signed.get(key) : undefined,
       photoAccess: access,
-      // 4 trust signals × 25 pts: verified badge, mobile OTP, NID approved, selfie approved
-      trustScore: Math.round(
-        (
-          [
-            p.isVerified,
-            p.user?.isMobileVerified ?? false,
-            p.user?.nidVerificationStatus === "APPROVED",
-            p.user?.selfieVerificationStatus === "APPROVED",
-          ].filter(Boolean).length / 4
-        ) * 100,
-      ),
+      // Trust signals, scored as a share of the signals that are actually
+      // EARNABLE. The mobile component is dropped entirely — numerator AND
+      // denominator — while ENABLE_SMS_OTP is off, because then it is set for
+      // anyone who typed a plausible number. Leaving it in would hand out 25
+      // free points and make the score meaningless to other members. Dividing by
+      // the live signal count keeps a fully-verified member at 100 either way.
+      trustScore: trustScoreOf([
+        p.isVerified,
+        ...(countMobile ? [p.user?.isMobileVerified ?? false] : []),
+        p.user?.nidVerificationStatus === "APPROVED",
+        p.user?.selfieVerificationStatus === "APPROVED",
+      ]),
     };
   });
+}
+
+/** 0-100 share of the supplied trust signals that are satisfied. */
+function trustScoreOf(signals: boolean[]): number {
+  if (signals.length === 0) return 0;
+  return Math.round((signals.filter(Boolean).length / signals.length) * 100);
 }
 
 /** Cards per page on the browse grid. Divides evenly by 2 and 3 columns. */

@@ -44,6 +44,13 @@ export function VerifyMobileForm({ mobile }: { mobile: string | null }) {
     setNotice(null);
     startTransition(async () => {
       const res = await sendMobileOtp(num);
+      // SMS OTP disabled server-side: the number is already accepted, so go
+      // straight on instead of showing a code box no SMS will ever fill.
+      if (res.ok && res.bypassed) {
+        router.push("/");
+        router.refresh();
+        return;
+      }
       if (res.ok) {
         setPhase("verify");
         setNotice(t("sent"));

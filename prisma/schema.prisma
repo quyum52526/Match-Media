@@ -232,6 +232,7 @@ model User {
   passwordHash     String
   mobile           String?          @unique
   isMobileVerified Boolean          @default(false)
+  isEmailVerified  Boolean          @default(false)
   // Pro (paid) membership — drives the VIP badge and contact-reveal gate.
   // `isPro` is the denormalized fast-path flag; `proExpiresAt` is the source of
   // truth that isProActive() checks so access lapses the moment it passes.
@@ -309,6 +310,7 @@ model User {
 
   // Trust: mobile one-time-password challenges
   mobileOtps MobileOtp[] @relation("UserOtps")
+  emailOtps  EmailOtp[]  @relation("UserEmailOtps")
 
   // In-app notifications (as recipient)
   notifications Notification[] @relation("UserNotifications")
@@ -822,6 +824,27 @@ model MobileOtp {
   @@index([userId])
 }
 
+// One-time-password challenge for verifying a user's email address.
+//
+// Mirrors MobileOtp on purpose: the threat model is identical, so the defences
+// are too — the code is stored only as a bcrypt hash, `attempts` caps
+// brute-force, `lastSentAt` drives the resend cooldown, and `consumedAt` makes a
+// code single-use. A fresh row per send; verification stamps consumedAt.
+model EmailOtp {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation("UserEmailOtps", fields: [userId], references: [id], onDelete: Cascade)
+  email      String
+  codeHash   String
+  expiresAt  DateTime
+  attempts   Int       @default(0)
+  consumedAt DateTime?
+  lastSentAt DateTime  @default(now())
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+}
+
 // --- Voice calling: WebRTC call sessions ------------------------------------
 
 // One row per voice-call attempt within a conversation. The cuid `id` doubles
@@ -861,4 +884,20 @@ model Notification {
 
   @@index([userId, readAt])
   @@index([userId, createdAt])
+}
+
+// --- Runtime feature flags --------------------------------------------------
+
+// Operational switches an admin flips without a deploy. Read through
+// lib/featureFlags.ts, which supplies the default for a key that has no row yet
+// — so a fresh database (or a key added in code before it is seeded) behaves
+// predictably instead of silently reading `false`.
+//
+// These gate COST and WORKFLOW, not authorization. Never put a permission check
+// behind a flag: role and ownership checks stay unconditional in the actions.
+model FeatureFlag {
+  key         String   @id
+  enabled     Boolean  @default(false)
+  description String?
+  updatedAt   DateTime @updatedAt
 }

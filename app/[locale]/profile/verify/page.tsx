@@ -3,6 +3,7 @@ import { setRequestLocale } from "next-intl/server";
 import { requireViewerId } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { VerificationCenter } from "@/components/verification/VerificationCenter";
+import { getFeatureFlags } from "@/lib/featureFlags";
 import { Container } from "@/components/ui/Container";
 
 export const metadata = {
@@ -15,6 +16,8 @@ async function getUserVerificationState(userId: string) {
     select: {
       isMobileVerified: true,
       mobile: true,
+      email: true,
+      isEmailVerified: true,
       nidVerificationStatus: true,
       nidReviewNote: true,
       selfieVerificationStatus: true,
@@ -34,13 +37,21 @@ export default async function VerifyPage({
   setRequestLocale(locale);
 
   const userId = await requireViewerId(`/${locale}/login`);
-  const user = await getUserVerificationState(userId);
+  const [user, flags] = await Promise.all([
+    getUserVerificationState(userId),
+    getFeatureFlags(),
+  ]);
   if (!user) redirect(`/${locale}/login`);
 
   return (
     <Container className="py-10">
       <div className="mx-auto max-w-2xl">
-        <VerificationCenter user={user} />
+        <VerificationCenter
+          user={user}
+          nidEnabled={flags.ENABLE_NID_VERIFICATION}
+          selfieEnabled={flags.ENABLE_SELFIE_VERIFICATION}
+          emailEnabled={flags.ENABLE_EMAIL_OTP}
+        />
       </div>
     </Container>
   );

@@ -28,7 +28,11 @@ export default async function AdminLayout({
     { href: "/admin/photos", label: t("nav.photos") },
     { href: "/admin/reports", label: t("nav.reports") },
     { href: "/admin/verification", label: t("nav.verification") },
+    // The document-review queue had no nav entry at all, so it was reachable
+    // only by typing the URL.
+    { href: "/admin/verifications", label: t("nav.documents") },
     { href: "/admin/users", label: t("nav.users") },
+    { href: "/admin/settings", label: t("nav.settings") },
   ];
 
   return (

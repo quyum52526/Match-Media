@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { submitNid, submitSelfie } from "@/lib/actions/verification";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardTitle } from "@/components/ui/Card";
+import { EmailVerifyCard } from "./EmailVerifyCard";
 import {
   ShieldCheckIcon,
   CheckCircleIcon,
@@ -315,6 +316,8 @@ function TrustProgress({
 // ---------------------------------------------------------------------------
 
 interface UserVerificationState {
+  email: string;
+  isEmailVerified: boolean;
   isMobileVerified: boolean;
   mobile: string | null;
   nidVerificationStatus: VerStatus;
@@ -325,7 +328,20 @@ interface UserVerificationState {
   accountCategory: string | null;
 }
 
-export function VerificationCenter({ user }: { user: UserVerificationState }) {
+export function VerificationCenter({
+  user,
+  nidEnabled = true,
+  selfieEnabled = true,
+  emailEnabled = true,
+}: {
+  user: UserVerificationState;
+  /** ENABLE_EMAIL_OTP — hides the email step when the flag is off. */
+  emailEnabled?: boolean;
+  /** ENABLE_NID_VERIFICATION — hides the NID step when the flag is off. */
+  nidEnabled?: boolean;
+  /** ENABLE_SELFIE_VERIFICATION — hides the selfie step when off. */
+  selfieEnabled?: boolean;
+}) {
   return (
     <div className="space-y-6">
       <div>
@@ -366,15 +382,25 @@ export function VerificationCenter({ user }: { user: UserVerificationState }) {
           </CardBody>
         </Card>
 
-        <NidCard
-          status={user.nidVerificationStatus}
-          reviewNote={user.nidReviewNote}
-        />
+        {emailEnabled && (
+          <EmailVerifyCard email={user.email} verified={user.isEmailVerified} />
+        )}
 
-        <SelfieCard
-          status={user.selfieVerificationStatus}
-          reviewNote={user.selfieReviewNote}
-        />
+        {/* Hidden, not disabled, when the flag is off: an upload that admins
+            are not reviewing would leave the member waiting indefinitely. */}
+        {nidEnabled && (
+          <NidCard
+            status={user.nidVerificationStatus}
+            reviewNote={user.nidReviewNote}
+          />
+        )}
+
+        {selfieEnabled && (
+          <SelfieCard
+            status={user.selfieVerificationStatus}
+            reviewNote={user.selfieReviewNote}
+          />
+        )}
       </div>
     </div>
   );

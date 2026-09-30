@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/Container";
@@ -21,6 +22,7 @@ import { getPhotoRequestQuota, getProfileViewQuota } from "@/lib/data/billing";
 import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
 import { QuotaNote } from "@/components/billing/PhotoQuota";
 import { getViewerIdOrGuest } from "@/lib/session";
+import { isFeatureEnabled } from "@/lib/featureFlags";
 import { GUEST_VIEWER_ID } from "@/lib/guest";
 import { prisma } from "@/lib/prisma";
 
@@ -67,6 +69,20 @@ export default async function BrowsePage({
   const viewerRole = viewer?.role ?? null;
   const viewerCategory = viewer?.accountCategory ?? null;
   const isPrivilegedViewer = viewerRole === "ADMIN" || viewerCategory === "MEDIA" || viewerCategory === "PARENTS";
+
+  // Optional hard gate (off by default). Applies to signed-in members only:
+  // a guest has no profile to verify, and bouncing them here would break the
+  // "Explore as Guest" entry point that the whole preview mode exists for.
+  if (!isGuest && await isFeatureEnabled("REQUIRE_VERIFICATION_TO_BROWSE")) {
+    const ownProfile = await prisma.profile.findUnique({
+      where: { userId: effectiveViewerId },
+      select: { isVerified: true },
+    });
+    // Admins are exempt — they have no candidate profile to verify.
+    if (viewerRole !== "ADMIN" && !ownProfile?.isVerified) {
+      redirect(locale === "en" ? "/en/profile/verify" : "/profile/verify");
+    }
+  }
 
   const filters: SearchFilters = {
     gender: str(sp.gender),

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getViewerId } from "@/lib/session";
 import { getSmsProvider } from "@/lib/sms";
+import { isFeatureEnabled } from "@/lib/featureFlags";
 import { normalizeBdMobile } from "@/lib/utils";
 
 // Tunables for the OTP lifecycle.
@@ -14,7 +15,15 @@ const MAX_ATTEMPTS = 5; // wrong-code guesses before the code is locked
 
 /** Result codes the UI localizes under the `Otp` namespace. */
 export type SendOtpResult =
-  | { ok: true }
+  | {
+      ok: true;
+      /**
+       * True when ENABLE_SMS_OTP is off: no code was sent and the number is
+       * already accepted, so the caller must skip the code-entry step entirely
+       * rather than wait for an SMS that will never arrive.
+       */
+      bypassed?: boolean;
+    }
   | { ok: false; error: "UNAUTH" | "INVALID_NUMBER" | "RATE_LIMITED" | "ALREADY" };
 
 export type VerifyOtpResult =
@@ -48,6 +57,27 @@ export async function sendMobileOtp(mobile?: string): Promise<SendOtpResult> {
 
   const normalized = normalizeBdMobile(mobile ?? user.mobile ?? "");
   if (!normalized) return { ok: false, error: "INVALID_NUMBER" };
+
+  // SMS OTP disabled: record the number and accept it without a code.
+  //
+  // The format check above still runs (normalizeBdMobile enforces the
+  // 88 01[3-9] XXXXXXXX shape), so we store a plausible number — but nothing
+  // proves the user holds it. `isMobileVerified` consequently means "supplied"
+  // rather than "proven" while this flag is off, which matters because that same
+  // field gates messaging/calls and feeds trustScore. See lib/constants/featureFlags.ts.
+  //
+  // No MobileOtp row is created: there is no challenge to consume, and a stray
+  // unconsumed row would let a later re-enable verify against a code that was
+  // never sent.
+  if (!(await isFeatureEnabled("ENABLE_SMS_OTP"))) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { mobile: normalized, isMobileVerified: true },
+    });
+    revalidatePath(VERIFY_PATH, "page");
+    revalidatePath("/", "layout");
+    return { ok: true, bypassed: true };
+  }
 
   // Cooldown: refuse if the user got a code in the last minute.
   const recent = await prisma.mobileOtp.findFirst({
@@ -98,6 +128,25 @@ export async function sendMobileOtp(mobile?: string): Promise<SendOtpResult> {
 export async function verifyMobileOtp(code: string): Promise<VerifyOtpResult> {
   const userId = await getViewerId();
   if (!userId) return { ok: false, error: "UNAUTH" };
+
+  // With SMS OTP off there is no challenge to check. Treat an already-accepted
+  // number as success so a client still sitting on the code screen (flag flipped
+  // mid-session, or a stale tab) can complete instead of failing on NO_CODE.
+  if (!(await isFeatureEnabled("ENABLE_SMS_OTP"))) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { mobile: true, isMobileVerified: true },
+    });
+    if (user?.isMobileVerified) return { ok: true };
+    if (!user?.mobile) return { ok: false, error: "NO_CODE" };
+    await prisma.user.update({
+      where: { id: userId },
+      data: { isMobileVerified: true },
+    });
+    revalidatePath(VERIFY_PATH, "page");
+    revalidatePath("/", "layout");
+    return { ok: true };
+  }
 
   const challenge = await prisma.mobileOtp.findFirst({
     where: { userId, consumedAt: null },

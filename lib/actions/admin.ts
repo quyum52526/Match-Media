@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { assertAdmin } from "@/lib/session";
 import { notify } from "@/lib/notifications/dispatch";
+import { FEATURE_FLAGS, isFeatureFlagKey } from "@/lib/constants/featureFlags";
 
 // Dynamic-route literals so revalidation covers every locale param.
 const ADMIN = "/[locale]/admin";
@@ -298,5 +299,40 @@ export async function resolveReport(
 
   revalidatePath(ADMIN, "page");
   revalidatePath(ADMIN_REPORTS, "page");
+  return ok;
+}
+
+// ---------------------------------------------------------------------------
+// Feature flags
+// ---------------------------------------------------------------------------
+
+/**
+ * Toggle a runtime feature flag. ADMIN only.
+ *
+ * The key is validated against the code-defined catalog rather than written
+ * through: an arbitrary key would create a row nothing reads, which looks like a
+ * working toggle in the UI and silently does nothing.
+ *
+ * `upsert`, not `update`, because a key may not have a row yet (added in code
+ * ahead of the seed) — the first toggle creates it.
+ */
+export async function updateFeatureFlag(
+  key: string,
+  enabled: boolean,
+): Promise<AdminResult> {
+  const adminId = await assertAdmin();
+  if (!adminId) return err("FORBIDDEN");
+  if (!isFeatureFlagKey(key)) return err("UNKNOWN_FLAG");
+
+  await prisma.featureFlag.upsert({
+    where: { key },
+    update: { enabled },
+    create: { key, enabled, description: FEATURE_FLAGS[key].description },
+  });
+
+  // Flags change server behaviour app-wide (upload steps appear/disappear, the
+  // browse gate opens or closes), so drop the whole layout cache rather than
+  // guessing which pages read which flag.
+  revalidatePath("/", "layout");
   return ok;
 }

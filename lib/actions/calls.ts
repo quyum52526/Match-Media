@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getViewerId } from "@/lib/session";
 import { getOrCreateConversation } from "@/lib/data/messaging";
+import { canInitiateContact } from "@/lib/contactGate";
 import { notify } from "@/lib/notifications/dispatch";
 
 const MESSAGES = "/[locale]/messages";
@@ -61,11 +62,10 @@ export async function startCall(otherUserId: string): Promise<StartCallResult> {
   const viewerId = await getViewerId();
   if (!viewerId) return { ok: false, error: "UNAUTH" };
 
-  const caller = await prisma.user.findUnique({
-    where: { id: viewerId },
-    select: { isMobileVerified: true },
-  });
-  if (!caller?.isMobileVerified) return { ok: false, error: "NOT_VERIFIED" };
+  // Same gate as messaging — shared so the two can never diverge.
+  if (!(await canInitiateContact(viewerId))) {
+    return { ok: false, error: "NOT_VERIFIED" };
+  }
 
   // Authoritative gate: must be a mutual match (also creates the conversation).
   const conversationId = await getOrCreateConversation(viewerId, otherUserId);
