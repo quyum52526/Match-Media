@@ -40,7 +40,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const user = await prisma.user.findUnique({ where: { email } });
         if (!user) return null;
 
-        const valid = await bcrypt.compare(password, user.passwordHash);
+        // A bcrypt hash is exactly 60 characters and contains no whitespace.
+        // A stored value with padding is corrupt data — the signature of a hash
+        // pasted into a DB console or echoed through a shell, which appends a
+        // newline. bcrypt.compare() returns false for such a value rather than
+        // throwing, so the account presents as "Invalid email or password" with
+        // nothing in the logs to explain it. Trimming cannot weaken
+        // verification (whitespace can never make a wrong password match), and
+        // the warning means the bad row gets noticed instead of becoming a
+        // lockout nobody can diagnose.
+        const storedHash = user.passwordHash.trim();
+        if (storedHash !== user.passwordHash || storedHash.length !== 60) {
+          console.warn(
+            `[auth] malformed passwordHash for user ${user.id}: stored length ` +
+              `${user.passwordHash.length}, expected 60. Re-hash this row.`,
+          );
+        }
+
+        const valid = await bcrypt.compare(password, storedHash);
         if (!valid) return null;
 
         return { id: user.id, email: user.email };
