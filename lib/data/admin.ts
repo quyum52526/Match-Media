@@ -6,7 +6,9 @@ import type {
   ReportReason,
   ReportStatus,
 } from "@/components/profile/types";
+import { getPendingVerificationCount } from "@/lib/data/adminVerifications";
 import type {
+  AdminNavCounts,
   AdminStats,
   AdminReport,
   AdminUser,
@@ -28,6 +30,24 @@ export async function getAdminStats(): Promise<AdminStats> {
     prisma.profile.count({ where: { isVerified: false } }),
   ]);
   return { pendingPhotos, openReports, unverifiedProfiles };
+}
+
+/**
+ * Counts for the admin tab-nav badges.
+ *
+ * One Promise.all so the whole nav costs a single round of parallel COUNTs.
+ * The document queue delegates to getPendingVerificationCount() rather than
+ * repeating its three predicates here — two copies would drift and the badge
+ * would start disagreeing with the page it points at.
+ */
+export async function getAdminNavCounts(): Promise<AdminNavCounts> {
+  const [photos, reports, verification, documents] = await Promise.all([
+    prisma.profileImage.count({ where: { moderationStatus: "PENDING" } }),
+    prisma.report.count({ where: { status: "OPEN" } }),
+    prisma.profile.count({ where: { isVerified: false } }),
+    getPendingVerificationCount(),
+  ]);
+  return { photos, reports, verification, documents };
 }
 
 /** Photos awaiting moderation, oldest first, with signed original URLs. */

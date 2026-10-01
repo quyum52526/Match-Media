@@ -11,6 +11,22 @@ export interface AdminStats {
   unverifiedProfiles: number;
 }
 
+/**
+ * Pending-work counts for the badges on the admin tab nav. Each number is the
+ * size of the queue that tab opens onto, so a badge and its page can never
+ * disagree — they are derived from the same predicates.
+ */
+export interface AdminNavCounts {
+  /** Photos awaiting moderation. */
+  photos: number;
+  /** Reports still OPEN. */
+  reports: number;
+  /** Profiles without the Verified badge — a backlog, not an inbox. */
+  verification: number;
+  /** NID + selfie + agency submissions awaiting review. */
+  documents: number;
+}
+
 /** A photo awaiting moderation (admin sees the clear original). */
 export interface PendingPhoto {
   id: string;

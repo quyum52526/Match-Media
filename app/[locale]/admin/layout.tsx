@@ -2,6 +2,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/Container";
 import { requireAdmin } from "@/lib/session";
+import { getAdminNavCounts } from "@/lib/data/admin";
 
 export const metadata = {
   title: "Admin · MatchMedia",
@@ -22,15 +23,28 @@ export default async function AdminLayout({
   // Authoritative gate: signed-out -> login, non-admin -> home.
   await requireAdmin(`/${locale}/login`, `/${locale}`);
   const t = await getTranslations("Admin");
+  // Counted after the gate, so a non-admin never triggers these queries.
+  const counts = await getAdminNavCounts();
 
-  const tabs: { href: string; label: string }[] = [
+  // `count` is the size of the queue behind the tab. Tabs with nothing to
+  // review (Overview, Users, Settings) carry no badge at all rather than a
+  // zero, so the badges stay a to-do list instead of decoration.
+  const tabs: { href: string; label: string; count?: number }[] = [
     { href: "/admin", label: t("nav.overview") },
-    { href: "/admin/photos", label: t("nav.photos") },
-    { href: "/admin/reports", label: t("nav.reports") },
-    { href: "/admin/verification", label: t("nav.verification") },
+    { href: "/admin/photos", label: t("nav.photos"), count: counts.photos },
+    { href: "/admin/reports", label: t("nav.reports"), count: counts.reports },
+    {
+      href: "/admin/verification",
+      label: t("nav.verification"),
+      count: counts.verification,
+    },
     // The document-review queue had no nav entry at all, so it was reachable
     // only by typing the URL.
-    { href: "/admin/verifications", label: t("nav.documents") },
+    {
+      href: "/admin/verifications",
+      label: t("nav.documents"),
+      count: counts.documents,
+    },
     { href: "/admin/users", label: t("nav.users") },
     // Shown to both tiers: a moderator gets the live config read-only.
     { href: "/admin/settings", label: t("nav.settings") },
@@ -48,14 +62,39 @@ export default async function AdminLayout({
           <Link
             key={tab.href}
             href={tab.href}
-            className="rounded-lg px-3 py-1.5 text-sm font-medium text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink"
+            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink"
           >
             {tab.label}
+            {/* Rendered only when there is actually work waiting. */}
+            {tab.count !== undefined && tab.count > 0 && (
+              <PendingBadge count={tab.count} label={tab.label} />
+            )}
           </Link>
         ))}
       </nav>
 
       {children}
     </Container>
+  );
+}
+
+/**
+ * Count pill for a nav tab.
+ *
+ * Solid garnet rather than a tinted background: the theme's colour tokens are
+ * bare `var()` hex values with no `<alpha-value>`, so a `/10`-style opacity
+ * utility renders transparent and the badge would vanish.
+ *
+ * The visible number is capped at 99+ so one large backlog cannot stretch the
+ * tab row, while the real figure stays in the accessible label.
+ */
+function PendingBadge({ count, label }: { count: number; label: string }) {
+  return (
+    <span
+      className="inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white"
+      aria-label={`${label}: ${count} pending`}
+    >
+      {count > 99 ? "99+" : count}
+    </span>
   );
 }

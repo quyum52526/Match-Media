@@ -16,6 +16,19 @@ const BROWSE = "/[locale]/browse";
 const PROFILE = "/[locale]/profiles/[id]";
 const PROFILE_EDIT = "/[locale]/profile/edit";
 
+/**
+ * Refresh the tab-nav badge counts.
+ *
+ * Those counts are computed in the admin LAYOUT, and
+ * `revalidatePath(path, "page")` does not refresh layout data — so without
+ * this a moderator approves a photo and the badge keeps showing the old
+ * number until a full reload. Revalidating the layout segment refreshes the
+ * counts for every admin page nested under it.
+ */
+function revalidateAdminNav() {
+  revalidatePath(ADMIN, "layout");
+}
+
 /** Status codes the admin UI localizes; `ok` is the success case. */
 export type AdminResult = { ok: true } | { ok: false; error: string };
 const ok: AdminResult = { ok: true };
@@ -52,6 +65,7 @@ export async function approvePhoto(imageId: string): Promise<AdminResult> {
   revalidatePath(BROWSE, "page");
   revalidatePath(PROFILE, "page");
   revalidatePath(PROFILE_EDIT, "page");
+  revalidateAdminNav();
   return ok;
 }
 
@@ -88,6 +102,7 @@ export async function rejectPhoto(
   revalidatePath(BROWSE, "page");
   revalidatePath(PROFILE, "page");
   revalidatePath(PROFILE_EDIT, "page");
+  revalidateAdminNav();
   return ok;
 }
 
@@ -121,6 +136,7 @@ export async function setVerified(
   revalidatePath(ADMIN_VERIFY, "page");
   revalidatePath(BROWSE, "page");
   revalidatePath(PROFILE, "page");
+  revalidateAdminNav();
   return ok;
 }
 
@@ -165,6 +181,7 @@ export async function approveNid(userId: string): Promise<AdminResult> {
   revalidatePath(ADMIN_VERIFY, "page");
   revalidatePath(BROWSE, "page");
   revalidatePath(PROFILE, "page");
+  revalidateAdminNav();
   return ok;
 }
 
@@ -182,6 +199,7 @@ export async function rejectNid(
   await notify({ userId, type: "NID_REJECTED", actorId: adminId, link: "/profile/verify" });
 
   revalidatePath(ADMIN_VERIFY, "page");
+  revalidateAdminNav();
   return ok;
 }
 
@@ -199,6 +217,7 @@ export async function approveSelfie(userId: string): Promise<AdminResult> {
   revalidatePath(ADMIN_VERIFY, "page");
   revalidatePath(BROWSE, "page");
   revalidatePath(PROFILE, "page");
+  revalidateAdminNav();
   return ok;
 }
 
@@ -216,6 +235,7 @@ export async function rejectSelfie(
   await notify({ userId, type: "SELFIE_REJECTED", actorId: adminId, link: "/profile/verify" });
 
   revalidatePath(ADMIN_VERIFY, "page");
+  revalidateAdminNav();
   return ok;
 }
 
@@ -229,6 +249,7 @@ export async function approveAgency(userId: string): Promise<AdminResult> {
   });
 
   revalidatePath(ADMIN_VERIFY, "page");
+  revalidateAdminNav();
   return ok;
 }
 
@@ -242,6 +263,7 @@ export async function rejectAgency(userId: string): Promise<AdminResult> {
   });
 
   revalidatePath(ADMIN_VERIFY, "page");
+  revalidateAdminNav();
   return ok;
 }
 
@@ -304,6 +326,7 @@ export async function resolveReport(
 
   revalidatePath(ADMIN, "page");
   revalidatePath(ADMIN_REPORTS, "page");
+  revalidateAdminNav();
   return ok;
 }
 
