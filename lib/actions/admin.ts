@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { assertAdmin } from "@/lib/session";
+import { assertAdmin, assertSuperAdmin } from "@/lib/session";
 import { notify } from "@/lib/notifications/dispatch";
 import { FEATURE_FLAGS, isFeatureFlagKey } from "@/lib/constants/featureFlags";
 
@@ -246,7 +246,12 @@ export async function rejectAgency(userId: string): Promise<AdminResult> {
 }
 
 /**
- * Reset any user's password. Admin-only.
+ * Reset any user's password. SUPER_ADMIN only.
+ *
+ * Deliberately NOT available to a plain ADMIN (moderator): setting someone
+ * else's password is account takeover, not moderation, so it sits with the
+ * owner alongside the other sensitive operations.
+ *
  * The plaintext `newPassword` arrives over HTTPS, is hashed server-side with
  * bcrypt (salt 10, matching auth.ts), and stored — the hash never leaves the
  * server. The existing passwordHash is never read or returned to the client.
@@ -255,7 +260,7 @@ export async function resetUserPassword(
   userId: string,
   newPassword: string,
 ): Promise<AdminResult> {
-  const adminId = await assertAdmin();
+  const adminId = await assertSuperAdmin();
   if (!adminId) return err("FORBIDDEN");
 
   if (!newPassword || newPassword.length < 8) return err("TOO_SHORT");
@@ -307,7 +312,12 @@ export async function resolveReport(
 // ---------------------------------------------------------------------------
 
 /**
- * Toggle a runtime feature flag. ADMIN only.
+ * Toggle a runtime feature flag. SUPER_ADMIN only.
+ *
+ * Deliberately NOT available to a plain ADMIN (moderator): a flag changes
+ * platform-wide behaviour (whether SMS is paid for, whether browsing is gated),
+ * which is an owner decision rather than a moderation one. The settings page
+ * renders read-only for a moderator; this is the boundary behind it.
  *
  * The key is validated against the code-defined catalog rather than written
  * through: an arbitrary key would create a row nothing reads, which looks like a
@@ -320,7 +330,7 @@ export async function updateFeatureFlag(
   key: string,
   enabled: boolean,
 ): Promise<AdminResult> {
-  const adminId = await assertAdmin();
+  const adminId = await assertSuperAdmin();
   if (!adminId) return err("FORBIDDEN");
   if (!isFeatureFlagKey(key)) return err("UNKNOWN_FLAG");
 

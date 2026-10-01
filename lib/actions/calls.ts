@@ -6,6 +6,7 @@ import { getViewerId } from "@/lib/session";
 import { getOrCreateConversation } from "@/lib/data/messaging";
 import { canInitiateContact } from "@/lib/contactGate";
 import { notify } from "@/lib/notifications/dispatch";
+import { isFeatureEnabled } from "@/lib/featureFlags";
 
 const MESSAGES = "/[locale]/messages";
 const THREAD = "/[locale]/messages/[conversationId]";
@@ -19,7 +20,11 @@ export interface IceServer {
 
 export type StartCallResult =
   | { ok: true; callId: string; conversationId: string; otherUserId: string }
-  | { ok: false; error: "UNAUTH" | "NOT_VERIFIED" | "NOT_MATCHED" };
+  | {
+      ok: false;
+      // DISABLED: the voiceCalls feature flag is off (see /admin/settings).
+      error: "UNAUTH" | "NOT_VERIFIED" | "NOT_MATCHED" | "DISABLED";
+    };
 
 export type CallActionResult = { ok: boolean };
 
@@ -65,6 +70,11 @@ export async function startCall(otherUserId: string): Promise<StartCallResult> {
   // Same gate as messaging — shared so the two can never diverge.
   if (!(await canInitiateContact(viewerId))) {
     return { ok: false, error: "NOT_VERIFIED" };
+  }
+  // Operational kill-switch (SUPER_ADMIN, /admin/settings). Checked AFTER
+  // authorization so an unauthorized caller never learns the feature's state.
+  if (!(await isFeatureEnabled("ENABLE_VOICE_CALLS"))) {
+    return { ok: false, error: "DISABLED" };
   }
 
   // Authoritative gate: must be a mutual match (also creates the conversation).

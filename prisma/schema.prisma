@@ -22,7 +22,11 @@ enum Role {
   GUARDIAN
   MEDIA
   AGENT
+  // Moderator: content review + verification approvals only.
   ADMIN
+  // Owner: everything ADMIN can do, plus feature flags, system settings and
+  // destructive/sensitive operations. See lib/rbac.ts for the hierarchy.
+  SUPER_ADMIN
 }
 
 // Which onboarding path the user chose. NULL means they haven't reached
@@ -95,10 +99,10 @@ enum AgencyVerificationStatus {
 // (NID photos, live selfie). Shared by every document type so we don't
 // need a new enum per field. REJECTED allows re-submission.
 enum VerificationStatus {
-  UNVERIFIED  // not yet submitted
-  PENDING     // submitted, awaiting admin review
-  APPROVED    // admin accepted
-  REJECTED    // admin rejected; user may resubmit
+  UNVERIFIED // not yet submitted
+  PENDING // submitted, awaiting admin review
+  APPROVED // admin accepted
+  REJECTED // admin rejected; user may resubmit
 }
 
 // --- Billing / subscription -------------------------------------------------
@@ -199,8 +203,8 @@ enum NotificationType {
   PHOTO_REJECTED // admin rejected your uploaded photo
   VERIFIED_BADGE // admin granted your Verified trust badge
   REPORT_RESOLVED // a report you filed was actioned
-  NID_APPROVED    // admin approved NID submission
-  NID_REJECTED    // admin rejected NID submission
+  NID_APPROVED // admin approved NID submission
+  NID_REJECTED // admin rejected NID submission
   SELFIE_APPROVED // admin approved live selfie
   SELFIE_REJECTED // admin rejected live selfie
 }
@@ -223,21 +227,21 @@ enum CallStatus {
 // ---------------------------------------------------------------------------
 
 model User {
-  id               String           @id @default(cuid())
-  role             Role             @default(GENERAL)
+  id                       String                   @id @default(cuid())
+  role                     Role                     @default(GENERAL)
   // NULL until the user completes Step 1 of the onboarding wizard.
   // Setting this also syncs `role` (MEDIA/AGENT users get the matching Role).
-  accountCategory  AccountCategory?
-  email            String           @unique
-  passwordHash     String
-  mobile           String?          @unique
-  isMobileVerified Boolean          @default(false)
-  isEmailVerified  Boolean          @default(false)
+  accountCategory          AccountCategory?
+  email                    String                   @unique
+  passwordHash             String
+  mobile                   String?                  @unique
+  isMobileVerified         Boolean                  @default(false)
+  isEmailVerified          Boolean                  @default(false)
   // Pro (paid) membership — drives the VIP badge and contact-reveal gate.
   // `isPro` is the denormalized fast-path flag; `proExpiresAt` is the source of
   // truth that isProActive() checks so access lapses the moment it passes.
-  isPro            Boolean   @default(false)
-  proExpiresAt     DateTime?
+  isPro                    Boolean                  @default(false)
+  proExpiresAt             DateTime?
   // Agency info — only populated for MEDIA accounts.
   agencyName               String?
   contactPerson            String?
@@ -253,16 +257,16 @@ model User {
   // Document / identity verification — manual admin-approval workflow.
   // Keys are Supabase Storage paths in the private "verification-docs" bucket;
   // never stored as public URLs (signed at read time, like profile photos).
-  nidFrontKey              String?
-  nidBackKey               String?
-  nidVerificationStatus    VerificationStatus @default(UNVERIFIED)
-  nidReviewNote            String?   // admin rejection reason; cleared on re-submit
+  nidFrontKey           String?
+  nidBackKey            String?
+  nidVerificationStatus VerificationStatus @default(UNVERIFIED)
+  nidReviewNote         String? // admin rejection reason; cleared on re-submit
 
   selfieKey                String?
   selfieVerificationStatus VerificationStatus @default(UNVERIFIED)
   selfieReviewNote         String?
 
-  createdAt        DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   // 1:1 — the user's own profile
   profile Profile?
@@ -286,9 +290,9 @@ model User {
   requestedServiceRequests ServiceRequest[] @relation("RequesterServices")
 
   // Verification assignments (admin perspective: jobs they created)
-  assignmentsCreated   VerificationAssignment[] @relation("AssignmentCreatedBy")
+  assignmentsCreated  VerificationAssignment[] @relation("AssignmentCreatedBy")
   // Verification assignments (agent perspective: jobs assigned to them)
-  assignmentsReceived  VerificationAssignment[] @relation("AssignmentAgent")
+  assignmentsReceived VerificationAssignment[] @relation("AssignmentAgent")
 
   // Profile view activity (as the viewer)
   profileViews ProfileViewLog[] @relation("ViewsMade")
@@ -318,6 +322,9 @@ model User {
   // Job board
   postedJobs      JobPost[]        @relation("PostedJobs")
   jobApplications JobApplication[] @relation("AgentApplications")
+
+  // System settings this user (a SUPER_ADMIN) last changed
+  featureFlagUpdates FeatureFlag[] @relation("FeatureFlagUpdates")
 }
 
 model Profile {
@@ -343,9 +350,9 @@ model Profile {
   // (lib/constants/profileOptions.ts SECTS_BY_RELIGION); `caste` stays free text
   // for communities we don't enumerate. Religion is a HARD matching gate — see
   // lib/matching/score.ts.
-  religion      String?
-  sect          String?
-  caste         String?
+  religion String?
+  sect     String?
+  caste    String?
 
   // Lifestyle attributes
   smokingStatus String?
@@ -373,8 +380,8 @@ model Profile {
   createdAt DateTime @default(now())
 
   images                 ProfileImage[]
-  viewLogs               ProfileViewLog[]         @relation("ProfileViews")
-  serviceRequests        ServiceRequest[]         @relation("ServiceTargets")
+  viewLogs               ProfileViewLog[]        @relation("ProfileViews")
+  serviceRequests        ServiceRequest[]        @relation("ServiceTargets")
   verificationAssignment VerificationAssignment?
   partnerPreference      PartnerPreference?
 
@@ -404,40 +411,40 @@ model PartnerPreference {
   profileId String  @unique
   profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  minAge Int?
-  maxAge Int?
+  minAge    Int?
+  maxAge    Int?
   // Canonical height labels (e.g. 5'4"), resolved to a range via heightsInRange().
   minHeight String?
   maxHeight String?
 
-  religions        String[]
-  sects            String[]
-  districts        String[]
-  professions      String[]
-  educations       String[]
-  maritalStatuses  String[]
+  religions       String[]
+  sects           String[]
+  districts       String[]
+  professions     String[]
+  educations      String[]
+  maritalStatuses String[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model ProfileImage {
-  id          String       @id @default(cuid())
-  profileId   String
-  profile     Profile      @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  privacy     ImagePrivacy @default(BLURRED)
-  originalKey String
-  blurredKey  String
-  isPrimary   Boolean      @default(false)
+  id               String           @id @default(cuid())
+  profileId        String
+  profile          Profile          @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  privacy          ImagePrivacy     @default(BLURRED)
+  originalKey      String
+  blurredKey       String
+  isPrimary        Boolean          @default(false)
   // Stable display order within a profile's gallery (primary aside).
-  sortOrder   Int          @default(0)
+  sortOrder        Int              @default(0)
   // Pre-moderation: PENDING until an admin reviews. Only APPROVED photos are
   // ever served to other viewers (enforced in lib/data/profiles.ts).
   moderationStatus ModerationStatus @default(PENDING)
   reviewedAt       DateTime?
   reviewedById     String? // admin User id (audit only; no FK relation)
   rejectionReason  String?
-  createdAt   DateTime     @default(now())
+  createdAt        DateTime         @default(now())
 
   @@index([profileId])
   @@index([moderationStatus])
@@ -513,36 +520,36 @@ model ServiceRequest {
 // Fee breakdown: totalFee = agentShare + platformFee (all in poisha, BDT×100).
 // Default rates: ৳2,500 total → ৳2,000 agent (80%) + ৳500 platform (20%).
 model VerificationAssignment {
-  id           String           @id @default(cuid())
+  id String @id @default(cuid())
 
   // Admin who created / owns this assignment (audit FK)
   assignedById String
-  assignedBy   User             @relation("AssignmentCreatedBy", fields: [assignedById], references: [id], onDelete: Restrict)
+  assignedBy   User   @relation("AssignmentCreatedBy", fields: [assignedById], references: [id], onDelete: Restrict)
 
   // AGENT user doing the physical verification
-  agentId      String
-  agent        User             @relation("AssignmentAgent", fields: [agentId], references: [id], onDelete: Restrict)
+  agentId String
+  agent   User   @relation("AssignmentAgent", fields: [agentId], references: [id], onDelete: Restrict)
 
   // The candidate whose identity is being verified
-  profileId    String           @unique
-  profile      Profile          @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId String  @unique
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  status       AssignmentStatus @default(PENDING)
+  status AssignmentStatus @default(PENDING)
 
   // Agent's completion report (filled when status → SUBMITTED)
-  agentNote    String?
+  agentNote String?
 
   // Fee split in poisha (BDT × 100). Snapshot at assignment time so later rate
   // changes never rewrite existing jobs.
-  totalFee     Int              @default(250000) // ৳2,500
-  agentShare   Int              @default(200000) // ৳2,000
-  platformFee  Int              @default(50000)  // ৳500
+  totalFee    Int @default(250000) // ৳2,500
+  agentShare  Int @default(200000) // ৳2,000
+  platformFee Int @default(50000) // ৳500
 
-  assignedAt   DateTime         @default(now())
-  startedAt    DateTime?        // set when agent moves to IN_PROGRESS
-  submittedAt  DateTime?        // set when agent submits for review
-  completedAt  DateTime?        // set when admin marks VERIFIED or CANCELLED
-  createdAt    DateTime         @default(now())
+  assignedAt  DateTime  @default(now())
+  startedAt   DateTime? // set when agent moves to IN_PROGRESS
+  submittedAt DateTime? // set when agent submits for review
+  completedAt DateTime? // set when admin marks VERIFIED or CANCELLED
+  createdAt   DateTime  @default(now())
 
   @@index([agentId, status])
   @@index([assignedById])
@@ -553,17 +560,17 @@ model VerificationAssignment {
 // ---------------------------------------------------------------------------
 
 model JobPost {
-  id               String           @id @default(cuid())
-  title            String
-  description      String
-  targetDistrict   String
-  budgetAmount     Int              // in poisha (e.g. 50000 = ৳500)
-  status           JobStatus        @default(OPEN)
-  postedById       String
-  postedBy         User             @relation("PostedJobs", fields: [postedById], references: [id])
-  applications     JobApplication[]
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  id             String           @id @default(cuid())
+  title          String
+  description    String
+  targetDistrict String
+  budgetAmount   Int // in poisha (e.g. 50000 = ৳500)
+  status         JobStatus        @default(OPEN)
+  postedById     String
+  postedBy       User             @relation("PostedJobs", fields: [postedById], references: [id])
+  applications   JobApplication[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 
   @@index([status, targetDistrict])
   @@index([postedById])
@@ -575,9 +582,9 @@ model JobApplication {
   jobPost               JobPost           @relation(fields: [jobPostId], references: [id], onDelete: Cascade)
   agentId               String
   agent                 User              @relation("AgentApplications", fields: [agentId], references: [id])
-  bidAmount             Int               // in poisha (total bid, gross)
-  platformFee           Int               // in poisha (20% of bidAmount)
-  agentShare            Int               // in poisha (bidAmount - platformFee)
+  bidAmount             Int // in poisha (total bid, gross)
+  platformFee           Int // in poisha (20% of bidAmount)
+  agentShare            Int // in poisha (bidAmount - platformFee)
   estimatedDeliveryDays Int
   note                  String?
   status                ApplicationStatus @default(PENDING)
@@ -810,16 +817,16 @@ model Message {
 // drives the resend cooldown. A fresh row is created on each send; verification
 // stamps `consumedAt` so a code can't be reused.
 model MobileOtp {
-  id        String    @id @default(cuid())
-  userId    String
-  user      User      @relation("UserOtps", fields: [userId], references: [id], onDelete: Cascade)
-  mobile    String
-  codeHash  String
-  expiresAt DateTime
-  attempts  Int       @default(0)
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation("UserOtps", fields: [userId], references: [id], onDelete: Cascade)
+  mobile     String
+  codeHash   String
+  expiresAt  DateTime
+  attempts   Int       @default(0)
   consumedAt DateTime?
   lastSentAt DateTime  @default(now())
-  createdAt DateTime  @default(now())
+  createdAt  DateTime  @default(now())
 
   @@index([userId])
 }
@@ -900,4 +907,10 @@ model FeatureFlag {
   enabled     Boolean  @default(false)
   description String?
   updatedAt   DateTime @updatedAt
+  // Who flipped it last. Nullable with SetNull so removing an admin account
+  // never drops the flag itself. Flipping is SUPER_ADMIN-only.
+  updatedById String?
+  updatedBy   User?    @relation("FeatureFlagUpdates", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@index([updatedById])
 }

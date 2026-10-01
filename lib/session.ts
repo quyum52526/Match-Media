@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { isGuestSession } from "@/lib/guest";
+import { isAdminRole, isSuperAdminRole } from "@/lib/rbac";
 
 /** The authenticated viewer's id, or null when signed out. */
 export async function getViewerId(): Promise<string | null> {
@@ -40,10 +41,10 @@ export const getViewerRole = cache(async (): Promise<string | null> => {
 });
 
 /**
- * Authoritative admin gate for admin routes/actions. Redirects to login when
- * signed out, or to `homePath` when the viewer isn't an ADMIN. Re-checks the DB
- * every call, so a demoted admin loses access at once (no stale-token window).
- * Returns the admin's user id on success.
+ * Authoritative gate for the /admin area. Redirects to login when signed out,
+ * or to `homePath` when the viewer is neither ADMIN nor SUPER_ADMIN. Re-checks
+ * the DB every call, so a demoted admin loses access at once (no stale-token
+ * window). Returns the admin's user id on success.
  */
 export async function requireAdmin(
   loginPath: string = "/login",
@@ -55,7 +56,27 @@ export async function requireAdmin(
     where: { id },
     select: { role: true },
   });
-  if (user?.role !== "ADMIN") redirect(homePath);
+  if (!isAdminRole(user?.role)) redirect(homePath);
+  return id;
+}
+
+/**
+ * Owner-only gate for routes that manage feature flags, system settings or
+ * anything destructive. A plain ADMIN (moderator) is sent to `deniedPath`
+ * (the admin overview by default) rather than to the public home page, since
+ * they ARE a legitimate admin — just not for this page.
+ */
+export async function requireSuperAdmin(
+  loginPath: string = "/login",
+  deniedPath: string = "/admin",
+): Promise<string> {
+  const id = await getViewerId();
+  if (!id) redirect(loginPath);
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: { role: true },
+  });
+  if (!isSuperAdminRole(user?.role)) redirect(deniedPath);
   return id;
 }
 
@@ -83,7 +104,10 @@ export async function getViewerIdOrGuest(
   redirect(loginPath);
 }
 
-/** Non-redirecting admin assertion for use inside Server Actions. */
+/**
+ * Non-redirecting admin assertion for use inside Server Actions. Admits both
+ * ADMIN (moderator) and SUPER_ADMIN (owner); returns null for anyone else.
+ */
 export async function assertAdmin(): Promise<string | null> {
   const id = await getViewerId();
   if (!id) return null;
@@ -91,5 +115,30 @@ export async function assertAdmin(): Promise<string | null> {
     where: { id },
     select: { role: true },
   });
-  return user?.role === "ADMIN" ? id : null;
+  return isAdminRole(user?.role) ? id : null;
+}
+
+/**
+ * Non-redirecting OWNER assertion for Server Actions that change system
+ * configuration or do something destructive/irreversible. Returns null for a
+ * plain ADMIN, so callers return FORBIDDEN exactly as they do for a stranger.
+ *
+ * Every such action must gate on this rather than on assertAdmin().
+ */
+export async function assertSuperAdmin(): Promise<string | null> {
+  const id = await getViewerId();
+  if (!id) return null;
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: { role: true },
+  });
+  return isSuperAdminRole(user?.role) ? id : null;
+}
+
+/**
+ * Whether the current viewer is a SUPER_ADMIN. For server components that need
+ * to render an editable-vs-read-only admin UI. `cache`d via getViewerRole().
+ */
+export async function isViewerSuperAdmin(): Promise<boolean> {
+  return isSuperAdminRole(await getViewerRole());
 }

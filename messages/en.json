@@ -514,14 +514,25 @@
     "settings": {
       "title": "Feature flags",
       "intro": "Operational switches that take effect immediately, without a deploy.",
+      "readOnly": "Read-only — only a Super Admin can change these. You can see the current state but not edit it.",
       "saved": "Saved",
       "error": "Could not save — please retry.",
       "inert": "Not wired",
       "warnings": {
+        "messagingOff": "Matched members cannot send new messages. Existing threads stay readable, but nobody can reply.",
+        "callsOff": "Matched members cannot start voice calls. The call button will refuse until this is switched back on.",
         "smsOff": "Mobile numbers are accepted without an SMS code. The \"mobile verified\" badge and its share of the trust score are unearned while this is off, and messaging and calls are open to any well-formed number.",
         "browseGateOn": "Unverified members cannot browse at all. This blocks the core feature for everyone without the Verified badge."
       },
       "flags": {
+        "ENABLE_MESSAGING": {
+          "label": "In-app messaging",
+          "description": "Let matched members send new messages. Off blocks new messages; existing threads stay readable."
+        },
+        "ENABLE_VOICE_CALLS": {
+          "label": "Voice calling",
+          "description": "Let matched members place in-app voice calls. Off blocks new calls; a connected call is unaffected."
+        },
         "ENABLE_SMS_OTP": {
           "label": "SMS OTP verification",
           "description": "Send a real SMS code to prove the member holds the number. Off skips the gateway and its per-message cost."

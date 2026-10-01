@@ -32,6 +32,7 @@ export default async function AdminLayout({
     // only by typing the URL.
     { href: "/admin/verifications", label: t("nav.documents") },
     { href: "/admin/users", label: t("nav.users") },
+    // Shown to both tiers: a moderator gets the live config read-only.
     { href: "/admin/settings", label: t("nav.settings") },
   ];
 

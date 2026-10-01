@@ -4,17 +4,22 @@ import {
   type FlagRow,
 } from "@/components/admin/FeatureFlagToggles";
 import { getFeatureFlags, FEATURE_FLAG_KEYS } from "@/lib/featureFlags";
+import { isViewerSuperAdmin } from "@/lib/session";
 
 export const metadata = {
   title: "Settings · Admin · MatchMedia",
 };
 
+export const dynamic = "force-dynamic";
+
 /**
  * Admin feature-flag settings.
  *
- * The admin LAYOUT already enforces `requireAdmin()`, and `updateFeatureFlag`
- * re-checks `assertAdmin()` server-side, so reading the flags here needs no
- * additional gate — but the write path is never trusted to the page.
+ * The admin LAYOUT already enforces `requireAdmin()`, so both tiers can READ
+ * this page — a moderator seeing the live configuration is useful, and the
+ * panel renders read-only for them. Writing is a different matter:
+ * `updateFeatureFlag` re-checks `assertSuperAdmin()`, so the write path is
+ * never trusted to the page.
  */
 export default async function AdminSettingsPage({
   params,
@@ -25,7 +30,10 @@ export default async function AdminSettingsPage({
   setRequestLocale(locale);
   const t = await getTranslations("Admin.settings");
 
-  const flags = await getFeatureFlags();
+  const [flags, canEdit] = await Promise.all([
+    getFeatureFlags(),
+    isViewerSuperAdmin(),
+  ]);
 
   const rows: FlagRow[] = FEATURE_FLAG_KEYS.map((key) => {
     const enabled = flags[key];
@@ -40,7 +48,11 @@ export default async function AdminSettingsPage({
           ? t("warnings.smsOff")
           : key === "REQUIRE_VERIFICATION_TO_BROWSE" && enabled
             ? t("warnings.browseGateOn")
-            : undefined,
+            : key === "ENABLE_MESSAGING" && !enabled
+              ? t("warnings.messagingOff")
+              : key === "ENABLE_VOICE_CALLS" && !enabled
+                ? t("warnings.callsOff")
+                : undefined,
       // Every flag now drives real behaviour, so nothing is marked inert. Keep
       // the mechanism: the next flag added ahead of its implementation should be
       // labelled rather than silently doing nothing.
@@ -56,6 +68,8 @@ export default async function AdminSettingsPage({
       savedLabel={t("saved")}
       errorLabel={t("error")}
       inertLabel={t("inert")}
+      canEdit={canEdit}
+      readOnlyLabel={t("readOnly")}
     />
   );
 }

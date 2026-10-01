@@ -167,7 +167,17 @@ function ResetModal({ user, onClose }: ResetModalProps) {
 // Main component
 // ---------------------------------------------------------------------------
 
-export function UsersList({ users }: { users: AdminUser[] }) {
+interface UsersListProps {
+  users: AdminUser[];
+  /**
+   * True only for SUPER_ADMIN. Password reset is account takeover, so it is
+   * owner-only — a moderator sees the list without the control. Cosmetic:
+   * resetUserPassword() itself gates on assertSuperAdmin().
+   */
+  canResetPasswords: boolean;
+}
+
+export function UsersList({ users, canResetPasswords }: UsersListProps) {
   const [search, setSearch] = useState("");
   const [resetTarget, setResetTarget] = useState<AdminUser | null>(null);
 
@@ -202,7 +212,9 @@ export function UsersList({ users }: { users: AdminUser[] }) {
                 <th className="px-4 py-3 font-semibold text-ink/60">Role / Category</th>
                 <th className="px-4 py-3 font-semibold text-ink/60">Photos</th>
                 <th className="px-4 py-3 font-semibold text-ink/60">Joined</th>
-                <th className="px-4 py-3 font-semibold text-ink/60">Actions</th>
+                {canResetPasswords && (
+                  <th className="px-4 py-3 font-semibold text-ink/60">Actions</th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/5">
@@ -214,7 +226,15 @@ export function UsersList({ users }: { users: AdminUser[] }) {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-1">
-                      <Badge variant={u.role === "ADMIN" ? "verified" : "neutral"}>
+                      <Badge
+                        variant={
+                          u.role === "SUPER_ADMIN"
+                            ? "gold"
+                            : u.role === "ADMIN"
+                              ? "verified"
+                              : "neutral"
+                        }
+                      >
                         {u.role}
                       </Badge>
                       {u.accountCategory && (
@@ -233,15 +253,17 @@ export function UsersList({ users }: { users: AdminUser[] }) {
                   <td className="whitespace-nowrap px-4 py-3 text-ink/50">
                     {formatDate(u.createdAt)}
                   </td>
-                  <td className="px-4 py-3">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setResetTarget(u)}
-                    >
-                      Reset password
-                    </Button>
-                  </td>
+                  {canResetPasswords && (
+                    <td className="px-4 py-3">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setResetTarget(u)}
+                      >
+                        Reset password
+                      </Button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

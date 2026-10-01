@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { getAdminUsers } from "@/lib/data/admin";
+import { isViewerSuperAdmin } from "@/lib/session";
 import { UsersList } from "@/components/admin/UsersList";
 
 export default async function AdminUsersPage({
@@ -9,6 +10,11 @@ export default async function AdminUsersPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const users = await getAdminUsers();
-  return <UsersList users={users} />;
+  // The /admin layout already gated this to ADMIN | SUPER_ADMIN; this only
+  // decides whether the owner-only password-reset control is rendered.
+  const [users, canResetPasswords] = await Promise.all([
+    getAdminUsers(),
+    isViewerSuperAdmin(),
+  ]);
+  return <UsersList users={users} canResetPasswords={canResetPasswords} />;
 }

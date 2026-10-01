@@ -6,6 +6,7 @@ import { getViewerId } from "@/lib/session";
 import { getOrCreateConversation } from "@/lib/data/messaging";
 import { canInitiateContact } from "@/lib/contactGate";
 import { notify } from "@/lib/notifications/dispatch";
+import { isFeatureEnabled } from "@/lib/featureFlags";
 
 const MESSAGES = "/[locale]/messages";
 const THREAD = "/[locale]/messages/[conversationId]";
@@ -38,6 +39,11 @@ export async function sendMessage(
   // the admin-granted Verified badge is required instead.
   if (!(await canInitiateContact(viewerId))) {
     return { ok: false, error: "NOT_VERIFIED" };
+  }
+  // Operational kill-switch (SUPER_ADMIN, /admin/settings). Checked AFTER
+  // authorization so an unauthorized caller never learns the feature's state.
+  if (!(await isFeatureEnabled("ENABLE_MESSAGING"))) {
+    return { ok: false, error: "DISABLED" };
   }
 
   // Authoritative gate: must be a mutual match.

@@ -52,6 +52,27 @@ export const FEATURE_FLAGS = {
     description: "Collect a live selfie for manual face-match review.",
   },
   /**
+   * Kill-switch for in-app messaging. When OFF, sendMessage refuses with
+   * DISABLED; nothing already sent is hidden or deleted, and existing threads
+   * stay readable. Authorization still runs first (see canInitiateContact) —
+   * this only decides whether the feature is open for business.
+   */
+  ENABLE_MESSAGING: {
+    default: true,
+    description:
+      "Let matched members send new messages. OFF blocks new messages; existing threads stay readable.",
+  },
+  /**
+   * Kill-switch for in-app voice calling. When OFF, startCall refuses with
+   * DISABLED; a call already connected is unaffected. Useful when the TURN/
+   * STUN path is misbehaving and ringing phones is worse than no button.
+   */
+  ENABLE_VOICE_CALLS: {
+    default: true,
+    description:
+      "Let matched members place in-app voice calls. OFF blocks new calls; connected calls are unaffected.",
+  },
+  /**
    * When ON, a signed-in member must hold the Verified badge before they can
    * browse. Off by default — turning it on is a hard block on the core feature.
    */

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { AlertTriangle, Check } from "lucide-react";
+import { AlertTriangle, Check, Lock } from "lucide-react";
 import { updateFeatureFlag } from "@/lib/actions/admin";
 import { Card, CardBody, CardTitle } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
@@ -22,8 +22,13 @@ export interface FlagRow {
  *
  * Optimistic: the switch moves immediately and reverts if the server rejects, so
  * an admin never sits watching a spinner to learn whether a boolean changed. The
- * server action is the authority — it re-checks `assertAdmin()` and validates the
- * key against the catalog, so a tampered request cannot write an unknown flag.
+ * server action is the authority — it re-checks `assertSuperAdmin()` and validates
+ * the key against the catalog, so a tampered request can neither write an unknown
+ * flag nor flip one as a moderator.
+ *
+ * `canEdit` is cosmetic (false for a moderator): it disables the switches and
+ * shows the read-only notice. A tampered client still gets FORBIDDEN, which
+ * surfaces as the per-row error.
  */
 export function FeatureFlagToggles({
   flags,
@@ -32,6 +37,8 @@ export function FeatureFlagToggles({
   savedLabel,
   errorLabel,
   inertLabel,
+  canEdit,
+  readOnlyLabel,
 }: {
   flags: FlagRow[];
   title: string;
@@ -39,6 +46,9 @@ export function FeatureFlagToggles({
   savedLabel: string;
   errorLabel: string;
   inertLabel: string;
+  /** False for a plain ADMIN — the panel renders without working controls. */
+  canEdit: boolean;
+  readOnlyLabel: string;
 }) {
   const [state, setState] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(flags.map((f) => [f.key, f.enabled])),
@@ -49,6 +59,7 @@ export function FeatureFlagToggles({
   const [, startTransition] = useTransition();
 
   function toggle(key: string) {
+    if (!canEdit) return;
     const next = !state[key];
     // Move now, reconcile after — and remember the previous value so a rejection
     // can put the switch back exactly where it was.
@@ -76,6 +87,12 @@ export function FeatureFlagToggles({
         <div>
           <CardTitle>{title}</CardTitle>
           <p className="mt-1 text-sm text-ink/60">{intro}</p>
+          {!canEdit && (
+            <p className="mt-3 flex items-start gap-1.5 rounded-lg border border-hairline bg-ink/5 px-2.5 py-1.5 text-xs leading-relaxed text-ink/70">
+              <Lock size={13} className="mt-0.5 shrink-0" aria-hidden="true" />
+              <span>{readOnlyLabel}</span>
+            </p>
+          )}
         </div>
 
         <ul className="divide-y divide-ink/10">
@@ -126,16 +143,17 @@ export function FeatureFlagToggles({
                     announced with its state, which a <div onClick> is not. */}
                 <label
                   className={cn(
-                    "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors",
+                    "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors",
                     on ? "bg-primary" : "bg-ink/20",
                     busy && "opacity-60",
+                    canEdit ? "cursor-pointer" : "cursor-not-allowed opacity-60",
                   )}
                 >
                   <input
                     type="checkbox"
                     role="switch"
                     checked={on}
-                    disabled={busy}
+                    disabled={busy || !canEdit}
                     onChange={() => toggle(flag.key)}
                     aria-label={flag.label}
                     className="peer sr-only"
