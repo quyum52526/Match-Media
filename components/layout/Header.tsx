@@ -5,6 +5,7 @@ import { logout } from "@/lib/actions/auth";
 import { enterGuestMode, exitGuestMode } from "@/lib/actions/guest";
 import { getViewerId, getViewerRole } from "@/lib/session";
 import { isAdminRole } from "@/lib/rbac";
+import { getAdminNavCounts } from "@/lib/data/admin";
 import { isGuestSession } from "@/lib/guest";
 import { getUnreadCount } from "@/lib/data/messages";
 import { getUnreadNotificationCount } from "@/lib/data/notifications";
@@ -36,6 +37,9 @@ export async function Header() {
     : 0;
   // Guest-preview mode: no session, but the "Explore as Guest" cookie is set.
   const isGuest = !session && (await isGuestSession());
+  // Only queried for an admin, so an ordinary page view pays nothing. `cache`d,
+  // so on an /admin route the admin layout reuses this same result.
+  const adminCounts = isAdmin ? await getAdminNavCounts() : null;
 
   const companyItems = [
     { href: "/about", label: nav("about") },
@@ -52,10 +56,26 @@ export async function Header() {
   // typing the URL.
   const adminItems = [
     { href: "/admin", label: adminT("nav.overview") },
-    { href: "/admin/photos", label: adminT("nav.photos") },
-    { href: "/admin/reports", label: adminT("nav.reports") },
-    { href: "/admin/verification", label: adminT("nav.verification") },
-    { href: "/admin/verifications", label: adminT("nav.documents") },
+    {
+      href: "/admin/photos",
+      label: adminT("nav.photos"),
+      count: adminCounts?.photos,
+    },
+    {
+      href: "/admin/reports",
+      label: adminT("nav.reports"),
+      count: adminCounts?.reports,
+    },
+    {
+      href: "/admin/verification",
+      label: adminT("nav.verification"),
+      count: adminCounts?.verification,
+    },
+    {
+      href: "/admin/verifications",
+      label: adminT("nav.documents"),
+      count: adminCounts?.documents,
+    },
     { href: "/admin/users", label: adminT("nav.users") },
     { href: "/admin/settings", label: adminT("nav.settings") },
   ];

@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/Container";
 import { requireAdmin } from "@/lib/session";
 import { getAdminNavCounts } from "@/lib/data/admin";
+import { CountBadge } from "@/components/ui/CountBadge";
 
 export const metadata = {
   title: "Admin · MatchMedia",
@@ -67,7 +68,7 @@ export default async function AdminLayout({
             {tab.label}
             {/* Rendered only when there is actually work waiting. */}
             {tab.count !== undefined && tab.count > 0 && (
-              <PendingBadge count={tab.count} label={tab.label} />
+              <CountBadge count={tab.count} label={tab.label} />
             )}
           </Link>
         ))}
@@ -75,26 +76,5 @@ export default async function AdminLayout({
 
       {children}
     </Container>
-  );
-}
-
-/**
- * Count pill for a nav tab.
- *
- * Solid garnet rather than a tinted background: the theme's colour tokens are
- * bare `var()` hex values with no `<alpha-value>`, so a `/10`-style opacity
- * utility renders transparent and the badge would vanish.
- *
- * The visible number is capped at 99+ so one large backlog cannot stretch the
- * tab row, while the real figure stays in the accessible label.
- */
-function PendingBadge({ count, label }: { count: number; label: string }) {
-  return (
-    <span
-      className="inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-primary px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white"
-      aria-label={`${label}: ${count} pending`}
-    >
-      {count > 99 ? "99+" : count}
-    </span>
   );
 }

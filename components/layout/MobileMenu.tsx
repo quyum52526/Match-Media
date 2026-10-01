@@ -3,10 +3,13 @@
 import { type ReactNode, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { MenuIcon, XIcon } from "@/components/ui/icons";
+import { CountBadge } from "@/components/ui/CountBadge";
 
 export interface MobileNavItem {
   href: string;
   label: string;
+  /** Pending-work count. Undefined or 0 renders no badge. */
+  count?: number;
 }
 
 interface MobileMenuProps {
@@ -90,9 +93,12 @@ function MobileSection({
             key={item.href}
             href={item.href}
             onClick={onNavigate}
-            className="rounded-lg px-2 py-2 text-sm font-medium text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink"
+            className="flex items-center justify-between gap-2 rounded-lg px-2 py-2 text-sm font-medium text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink"
           >
-            {item.label}
+            <span>{item.label}</span>
+            {item.count !== undefined && item.count > 0 && (
+              <CountBadge count={item.count} label={item.label} />
+            )}
           </Link>
         ))}
       </div>

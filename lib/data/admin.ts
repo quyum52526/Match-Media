@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 import { calcAge } from "@/lib/utils";
 import { signUrls } from "@/lib/storage/supabase";
@@ -39,8 +40,12 @@ export async function getAdminStats(): Promise<AdminStats> {
  * The document queue delegates to getPendingVerificationCount() rather than
  * repeating its three predicates here — two copies would drift and the badge
  * would start disagreeing with the page it points at.
+ *
+ * `cache`d per request: the site header renders these on every page for an
+ * admin, and on an /admin route the admin layout renders them again inside it.
+ * Without the cache that is two identical rounds of COUNTs per page view.
  */
-export async function getAdminNavCounts(): Promise<AdminNavCounts> {
+export const getAdminNavCounts = cache(async (): Promise<AdminNavCounts> => {
   const [photos, reports, verification, documents] = await Promise.all([
     prisma.profileImage.count({ where: { moderationStatus: "PENDING" } }),
     prisma.report.count({ where: { status: "OPEN" } }),
@@ -48,7 +53,7 @@ export async function getAdminNavCounts(): Promise<AdminNavCounts> {
     getPendingVerificationCount(),
   ]);
   return { photos, reports, verification, documents };
-}
+});
 
 /** Photos awaiting moderation, oldest first, with signed original URLs. */
 export async function getPendingPhotos(): Promise<PendingPhoto[]> {

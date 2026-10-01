@@ -3,11 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { ChevronDownIcon } from "@/components/ui/icons";
+import { CountBadge } from "@/components/ui/CountBadge";
 import { cn } from "@/lib/utils";
 
 export interface NavDropdownItem {
   href: string;
   label: string;
+  /** Pending-work count. Undefined or 0 renders no badge. */
+  count?: number;
 }
 
 interface NavDropdownProps {
@@ -18,6 +21,9 @@ interface NavDropdownProps {
 export function NavDropdown({ label, items }: NavDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  // Surfaced on the closed trigger too, otherwise the counts are invisible
+  // until someone thinks to open the menu.
+  const total = items.reduce((sum, item) => sum + (item.count ?? 0), 0);
 
   useEffect(() => {
     if (!open) return;
@@ -52,6 +58,7 @@ export function NavDropdown({ label, items }: NavDropdownProps) {
         )}
       >
         {label}
+        {total > 0 && <CountBadge count={total} label={label} />}
         <ChevronDownIcon
           width={16}
           height={16}
@@ -70,9 +77,12 @@ export function NavDropdown({ label, items }: NavDropdownProps) {
               href={item.href}
               role="menuitem"
               onClick={() => setOpen(false)}
-              className="block px-4 py-2 text-sm text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink"
+              className="flex items-center justify-between gap-2 px-4 py-2 text-sm text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink"
             >
-              {item.label}
+              <span>{item.label}</span>
+              {item.count !== undefined && item.count > 0 && (
+                <CountBadge count={item.count} label={item.label} />
+              )}
             </Link>
           ))}
         </div>
