@@ -22,8 +22,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        // Normalized the SAME way registration stores it (trim + lowercase).
+        // Without this, `findUnique` is an exact, case-sensitive match while
+        // signup lowercases — so a member who registered as "Name@x.com" is
+        // stored lowercase and then cannot log in by typing it back the way
+        // they wrote it. Browsers and phone keyboards capitalize the first
+        // letter by default, so this presented as "Invalid email or password"
+        // on a correct password.
         const email =
-          typeof credentials?.email === "string" ? credentials.email : "";
+          typeof credentials?.email === "string"
+            ? credentials.email.trim().toLowerCase()
+            : "";
         const password =
           typeof credentials?.password === "string" ? credentials.password : "";
         if (!email || !password) return null;
