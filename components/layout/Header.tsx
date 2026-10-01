@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { logout } from "@/lib/actions/auth";
 import { enterGuestMode, exitGuestMode } from "@/lib/actions/guest";
 import { getViewerId, getViewerRole } from "@/lib/session";
+import { isAdminRole } from "@/lib/rbac";
 import { isGuestSession } from "@/lib/guest";
 import { getUnreadCount } from "@/lib/data/messages";
 import { getUnreadNotificationCount } from "@/lib/data/notifications";
@@ -24,8 +25,10 @@ export async function Header() {
   const session = await auth();
   // Cosmetic only — routes are gated server-side by requireAdmin / role checks.
   const role = session ? await getViewerRole() : null;
-  const isAdmin = role === "ADMIN";
-  const isAgent = role === "AGENT" || role === "ADMIN";
+  // isAdminRole, not role === "ADMIN": SUPER_ADMIN sits ABOVE ADMIN, so an
+  // exact comparison hid the entire admin nav from the owner account.
+  const isAdmin = isAdminRole(role);
+  const isAgent = role === "AGENT" || isAdminRole(role);
   const viewerId = session ? await getViewerId() : null;
   const unread = viewerId ? await getUnreadCount(viewerId) : 0;
   const unreadNotifications = viewerId
@@ -44,12 +47,17 @@ export async function Header() {
     { href: "/events", label: nav("events") },
     { href: "/user-guide", label: nav("userGuide") },
   ];
+  // Mirrors the tabs in app/[locale]/admin/layout.tsx — the header dropdown
+  // was missing Documents and Settings, so those pages were reachable only by
+  // typing the URL.
   const adminItems = [
     { href: "/admin", label: adminT("nav.overview") },
     { href: "/admin/photos", label: adminT("nav.photos") },
     { href: "/admin/reports", label: adminT("nav.reports") },
     { href: "/admin/verification", label: adminT("nav.verification") },
+    { href: "/admin/verifications", label: adminT("nav.documents") },
     { href: "/admin/users", label: adminT("nav.users") },
+    { href: "/admin/settings", label: adminT("nav.settings") },
   ];
 
   const mobileNavItems: MobileNavItem[] = session

@@ -10,6 +10,7 @@ import { getProfileViewers } from "@/lib/data/viewers";
 import { getViewerProStatus } from "@/lib/data/billing";
 import { getMyPostedJobs, getAgentApplications } from "@/lib/data/jobs";
 import { prisma } from "@/lib/prisma";
+import { isAdminRole } from "@/lib/rbac";
 
 const DASHBOARD_VIEWERS = 6;
 
@@ -33,7 +34,7 @@ export default async function DashboardPage({
     where: { id: userId },
     select: { accountCategory: true, role: true },
   });
-  const isAdmin = user?.role === "ADMIN";
+  const isAdmin = isAdminRole(user?.role);
   if (!isAdmin && !user?.accountCategory) {
     redirect(locale === "en" ? "/en/onboarding" : "/onboarding");
   }

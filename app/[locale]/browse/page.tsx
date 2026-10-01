@@ -25,6 +25,7 @@ import { getViewerIdOrGuest } from "@/lib/session";
 import { isFeatureEnabled } from "@/lib/featureFlags";
 import { GUEST_VIEWER_ID } from "@/lib/guest";
 import { prisma } from "@/lib/prisma";
+import { isAdminRole } from "@/lib/rbac";
 
 export const metadata = {
   title: "Browse · MatchMedia",
@@ -68,7 +69,8 @@ export default async function BrowsePage({
       });
   const viewerRole = viewer?.role ?? null;
   const viewerCategory = viewer?.accountCategory ?? null;
-  const isPrivilegedViewer = viewerRole === "ADMIN" || viewerCategory === "MEDIA" || viewerCategory === "PARENTS";
+  const isPrivilegedViewer =
+    isAdminRole(viewerRole) || viewerCategory === "MEDIA" || viewerCategory === "PARENTS";
 
   // Optional hard gate (off by default). Applies to signed-in members only:
   // a guest has no profile to verify, and bouncing them here would break the
@@ -79,7 +81,7 @@ export default async function BrowsePage({
       select: { isVerified: true },
     });
     // Admins are exempt — they have no candidate profile to verify.
-    if (viewerRole !== "ADMIN" && !ownProfile?.isVerified) {
+    if (!isAdminRole(viewerRole) && !ownProfile?.isVerified) {
       redirect(locale === "en" ? "/en/profile/verify" : "/profile/verify");
     }
   }

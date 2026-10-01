@@ -19,6 +19,7 @@ import { getOwnPhotos, getClientPhotos } from "@/lib/data/photos";
 import { MAX_PHOTOS } from "@/lib/storage/images";
 import { requireViewerId } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
+import { isAdminRole } from "@/lib/rbac";
 
 export const metadata = {
   title: "Edit Profile · MatchMedia",
@@ -101,7 +102,7 @@ export default async function ProfileEditPage({
 
   // Guard: users who haven't completed onboarding cannot access the edit page.
   // Admins are exempt — they don't have matrimonial profiles.
-  if (!category && role !== "ADMIN") {
+  if (!category && !isAdminRole(role)) {
     redirect(locale === "en" ? "/en/onboarding" : "/onboarding");
   }
 

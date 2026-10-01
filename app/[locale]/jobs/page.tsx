@@ -7,6 +7,7 @@ import { getViewerId } from "@/lib/session";
 import { getJobBoard } from "@/lib/data/jobs";
 import { JobBoard } from "@/components/jobs/JobBoard";
 import { Container } from "@/components/ui/Container";
+import { isAdminRole } from "@/lib/rbac";
 
 export const metadata = {
   title: "Job Board · MatchMedia",
@@ -32,7 +33,7 @@ export default async function JobsPage({
     where: { id: userId },
     select: { role: true },
   });
-  if (user?.role !== "AGENT" && user?.role !== "ADMIN") {
+  if (user?.role !== "AGENT" && !isAdminRole(user?.role)) {
     redirect(locale === "en" ? "/en/dashboard" : "/dashboard");
   }
 

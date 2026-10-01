@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getViewerId } from "@/lib/session";
+import { isAdminRole } from "@/lib/rbac";
 import { MIN_VERIFICATION_BUDGET_BDT } from "@/lib/constants/jobs";
 
 // ── Apply to a job ────────────────────────────────────────────────────────────
@@ -24,7 +25,7 @@ export async function applyToJob(
     where: { id: viewerId },
     select: { role: true },
   });
-  if (user?.role !== "AGENT" && user?.role !== "ADMIN") {
+  if (user?.role !== "AGENT" && !isAdminRole(user?.role)) {
     return { ok: false, error: "NOT_AGENT" };
   }
 
@@ -111,7 +112,7 @@ export async function postJob(formData: FormData): Promise<PostJobResult> {
     where: { id: viewerId },
     select: { role: true },
   });
-  if (user?.role !== "ADMIN") return { ok: false, error: "UNAUTHORIZED" };
+  if (!isAdminRole(user?.role)) return { ok: false, error: "UNAUTHORIZED" };
 
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
@@ -161,7 +162,7 @@ export async function reviewApplication(
     select: { role: true },
   });
   const isOwner = app.jobPost.postedById === viewerId;
-  const isAdmin = user?.role === "ADMIN";
+  const isAdmin = isAdminRole(user?.role);
   if (!isOwner && !isAdmin) return { ok: false, error: "UNAUTHORIZED" };
 
   await prisma.$transaction([
