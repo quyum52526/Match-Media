@@ -11,6 +11,7 @@ import {
   getProfileViewAccess,
 } from "@/lib/data/profiles";
 import { getPhotoRequestQuota } from "@/lib/data/billing";
+import { getContactGateStatus } from "@/lib/contactGate";
 import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
 import { getViewerIdOrGuest } from "@/lib/session";
 
@@ -69,11 +70,14 @@ export default async function ProfilePage({
     );
   }
 
-  const [profile, quota] = await Promise.all([
+  // `gate` drives the Message / Call affordances: without it the buttons would
+  // either dead-end or start a thread the viewer cannot type in.
+  const [profile, quota, gate] = await Promise.all([
     getProfileForViewer(id, viewerId!),
     getPhotoRequestQuota(viewerId!),
+    getContactGateStatus(viewerId!),
   ]);
   if (!profile) notFound();
 
-  return <ProfileDetail data={profile} quota={quota} />;
+  return <ProfileDetail data={profile} quota={quota} gate={gate} />;
 }

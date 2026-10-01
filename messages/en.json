@@ -560,6 +560,32 @@
     "verifyLink": "Verify now",
     "call": "Voice call"
   },
+  "ContactGate": {
+    "modalTitle": "Verification required",
+    "needsVerification": {
+      "title": "Profile verification required for everyone's safety",
+      "body": "To protect every member's privacy and safety, you need to complete NID and selfie verification before contacting someone directly. Our admin team usually reviews profiles within 2–4 hours.",
+      "cta": "Verify now",
+      "hint": "Verification is required before your first message or call."
+    },
+    "needsMobile": {
+      "title": "Verify your mobile number",
+      "body": "Confirm the number on your account with a one-time code before you start a conversation. It takes less than a minute.",
+      "cta": "Verify number",
+      "hint": "Verify your mobile number before your first message or call."
+    },
+    "pending": {
+      "title": "Your verification is under review (Pending Review)",
+      "body": "Contact will switch on the moment it is approved. Our admin team usually reviews profiles within 2–4 hours.",
+      "hint": "Your verification is under review — contact opens as soon as it is approved."
+    },
+    "guest": {
+      "title": "Sign in to continue",
+      "body": "Messaging and calling are available to members. Sign in or create a free account to continue.",
+      "cta": "Sign in",
+      "hint": "Sign in to message or call."
+    }
+  },
   "Calls": {
     "calling": "Calling…",
     "incoming": "Incoming voice call",

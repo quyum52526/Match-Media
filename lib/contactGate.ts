@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { isFeatureEnabled } from "@/lib/featureFlags";
+import type { ContactGateStatus } from "@/types/contactGate";
 
 /**
  * The single authorization gate for INITIATING contact — messaging and voice
@@ -28,21 +29,61 @@ import { isFeatureEnabled } from "@/lib/featureFlags";
  * skippable: whichever branch applies, a real check runs.
  */
 export async function canInitiateContact(userId: string): Promise<boolean> {
+  return (await getContactGateStatus(userId)).allowed;
+}
+
+/**
+ * The same decision as `canInitiateContact`, plus WHY — so the UI can explain
+ * the block instead of dead-ending on a disabled button.
+ *
+ * It is one function, not a parallel one, because a second copy of the rule
+ * would drift from the boolean the server actions enforce and the UI would start
+ * promising contact the action then refuses (or hiding contact that is allowed).
+ * `canInitiateContact` delegates here, so there is exactly one rule.
+ *
+ * PENDING_REVIEW vs NEEDS_VERIFICATION matters for churn: a member whose
+ * documents are already in the queue must not be sent back to the upload form,
+ * because re-uploading does not move them forward and looks like the first
+ * submission was lost.
+ */
+export async function getContactGateStatus(
+  userId: string,
+): Promise<ContactGateStatus> {
   const [smsOtpEnabled, user] = await Promise.all([
     isFeatureEnabled("ENABLE_SMS_OTP"),
     prisma.user.findUnique({
       where: { id: userId },
       select: {
         isMobileVerified: true,
+        // Document review state — only read to pick the right COPY; the
+        // authorization itself still hinges on the admin-granted badge below.
+        nidVerificationStatus: true,
+        selfieVerificationStatus: true,
         // isVerified lives on Profile, not User.
         profile: { select: { isVerified: true } },
       },
     }),
   ]);
-  if (!user) return false;
+  if (!user) return { allowed: false, reason: "UNAUTHENTICATED" };
 
-  if (smsOtpEnabled) return user.isMobileVerified;
-  return Boolean(user.profile?.isVerified);
+  if (smsOtpEnabled) {
+    return user.isMobileVerified
+      ? { allowed: true, reason: "OK" }
+      : { allowed: false, reason: "NEEDS_MOBILE_VERIFICATION" };
+  }
+
+  if (user.profile?.isVerified) return { allowed: true, reason: "OK" };
+
+  // Submitted and waiting beats "go verify": either document sitting in the
+  // queue means the next move is the admin's, not the member's.
+  const awaitingReview =
+    user.nidVerificationStatus === "PENDING" ||
+    user.selfieVerificationStatus === "PENDING";
+
+  return {
+    allowed: false,
+    reason: awaitingReview ? "PENDING_REVIEW" : "NEEDS_VERIFICATION",
+  };
 }
 
 /**

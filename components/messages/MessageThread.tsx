@@ -8,20 +8,45 @@ import { sendMessage, markConversationRead } from "@/lib/actions/messages";
 import { Button } from "@/components/ui/Button";
 import { ShieldCheckIcon, PhoneIcon } from "@/components/ui/icons";
 import { useCallControls } from "@/components/calls/CallProvider";
+import {
+  ContactGateModal,
+  ContactGateNotice,
+  useContactGateHintText,
+} from "@/components/contact/ContactGateNotice";
+import type { ContactGateStatus } from "@/types/contactGate";
 import { CallEventChip } from "./CallEventChip";
 import type { ConversationView } from "./types";
 
 // How often the open thread re-fetches server state (near-real-time).
 const POLL_MS = 5000;
 
-export function MessageThread({ data }: { data: ConversationView }) {
+export function MessageThread({
+  data,
+  gate,
+}: {
+  data: ConversationView;
+  /** Server-resolved contact gate for the VIEWER (see lib/contactGate). */
+  gate: ContactGateStatus;
+}) {
   const t = useTranslations("Messages");
   const router = useRouter();
   const { placeCall, canCall } = useCallControls();
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [gateModalOpen, setGateModalOpen] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  /**
+   * Local mirror of the server gate so a NOT_VERIFIED rejection can flip the UI
+   * immediately, even if the badge was revoked after this page rendered. The
+   * server action stays the authority — this only decides what we SHOW.
+   */
+  const [gateState, setGateState] = useState(gate);
+  useEffect(() => setGateState(gate), [gate]);
+
+  const blocked = !gateState.allowed;
+  const callHint = useContactGateHintText(gateState);
 
   // Mark incoming messages read on open and whenever the message set changes
   // (e.g. a poll surfaced new ones while the thread is focused).
@@ -49,7 +74,17 @@ export function MessageThread({ data }: { data: ConversationView }) {
       const res = await sendMessage(data.otherUserId, text);
       if (!res.ok) {
         setBody(text); // restore on failure so the user doesn't lose it
-        setError(res.error === "NOT_VERIFIED" ? "notVerified" : "sendFailed");
+        if (res.error === "NOT_VERIFIED") {
+          // Swap the composer for the explanatory banner rather than showing a
+          // one-line error the member can only retry into. `refresh()` re-reads
+          // the real reason (pending review vs not submitted) from the server.
+          setGateState((prev) =>
+            prev.allowed ? { allowed: false, reason: "NEEDS_VERIFICATION" } : prev,
+          );
+          router.refresh();
+          return;
+        }
+        setError("sendFailed");
         return;
       }
       router.refresh();
@@ -75,14 +110,26 @@ export function MessageThread({ data }: { data: ConversationView }) {
             <ShieldCheckIcon width={14} height={14} className="text-success" />
           )}
         </Link>
-        {/* Voice call — matched users only, when Realtime is configured. */}
+        {/* Voice call — matched users only, when Realtime is configured.
+            While the contact gate blocks calls the button stays CLICKABLE but
+            reads as unavailable: a truly disabled control explains nothing, and
+            its tooltip never opens on touch. Clicking it opens the gate modal. */}
         {data.canSend && canCall && (
           <button
             type="button"
-            onClick={() => placeCall(data.otherUserId, data.person.displayName)}
-            aria-label={t("call")}
-            title={t("call")}
-            className="ml-auto flex h-9 w-9 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary/10"
+            onClick={() =>
+              blocked
+                ? setGateModalOpen(true)
+                : placeCall(data.otherUserId, data.person.displayName)
+            }
+            aria-label={blocked ? callHint : t("call")}
+            title={blocked ? callHint : t("call")}
+            className={
+              "ml-auto flex h-9 w-9 items-center justify-center rounded-full transition-colors " +
+              (blocked
+                ? "text-ink/30 hover:bg-ink/5"
+                : "text-primary hover:bg-primary/10")
+            }
           >
             <PhoneIcon width={20} height={20} />
           </button>
@@ -122,20 +169,21 @@ export function MessageThread({ data }: { data: ConversationView }) {
       </div>
 
       {/* Composer */}
-      {data.canSend ? (
+      {!data.canSend ? (
+        <div className="border-t border-ink/10 bg-white p-4 text-center text-sm text-ink/50">
+          {t("notMatched")}
+        </div>
+      ) : blocked ? (
+        /* Gated: the banner REPLACES the composer, so the dead input is never
+           rendered and the next step is always on screen. */
+        <div className="border-t border-ink/10 bg-white p-3">
+          <ContactGateNotice status={gateState} />
+        </div>
+      ) : (
         <div className="border-t border-ink/10 bg-white">
           {error && (
             <p className="px-3 pt-2 text-xs font-medium text-red-600">
-              {error === "notVerified" ? (
-                <>
-                  {t("verifyToSend")}{" "}
-                  <Link href="/verify-mobile" className="underline">
-                    {t("verifyLink")}
-                  </Link>
-                </>
-              ) : (
-                t("sendFailed")
-              )}
+              {t("sendFailed")}
             </p>
           )}
           <div className="flex items-end gap-2 p-3">
@@ -157,11 +205,14 @@ export function MessageThread({ data }: { data: ConversationView }) {
             </Button>
           </div>
         </div>
-      ) : (
-        <div className="border-t border-ink/10 bg-white p-4 text-center text-sm text-ink/50">
-          {t("notMatched")}
-        </div>
       )}
+
+      {/* Explains the muted call button without blocking the thread. */}
+      <ContactGateModal
+        open={gateModalOpen}
+        onClose={() => setGateModalOpen(false)}
+        status={gateState}
+      />
     </div>
   );
 }

@@ -31,6 +31,14 @@ import {
   UsersIcon,
 } from "@/components/ui/icons";
 import { useCallControls } from "@/components/calls/CallProvider";
+import {
+  ContactGateHint,
+  ContactGateModal,
+} from "@/components/contact/ContactGateNotice";
+import {
+  GUEST_CONTACT_GATE,
+  type ContactGateStatus,
+} from "@/types/contactGate";
 import { useGuestGate } from "@/components/auth/GuestModeContext";
 import { MaskedContact } from "@/components/privacy/MaskedContact";
 import { computeCompletion } from "@/lib/utils";
@@ -60,9 +68,17 @@ const ExpressInterestModal = dynamic(
   { ssr: false },
 );
 
+/** Links the muted Message / Call buttons to the helper line below them. */
+const CONTACT_HINT_ID = "contact-gate-hint";
+
 interface ProfileDetailProps {
   data: ProfileDetailView;
   quota: PhotoQuota;
+  /**
+   * The VIEWER's contact gate (see lib/contactGate). Omitted on the guest
+   * preview, where the auth gate intercepts every action first.
+   */
+  gate?: ContactGateStatus;
 }
 
 /**
@@ -76,16 +92,27 @@ interface ProfileDetailProps {
  * values (gender, district, profession, bio, ...) are not translated here —
  * they come from the DB and render as stored regardless of locale.
  */
-export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps) {
+export function ProfileDetail({
+  data,
+  quota: initialQuota,
+  gate = GUEST_CONTACT_GATE,
+}: ProfileDetailProps) {
   const t = useTranslations("Profile");
   const locale = useLocale();
   const router = useRouter();
   const { placeCall, canCall } = useCallControls();
-  const { gate } = useGuestGate();
+  const { gate: guestGate } = useGuestGate();
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [interestModalOpen, setInterestModalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [quota, setQuota] = useState(initialQuota);
+  const [gateModalOpen, setGateModalOpen] = useState(false);
+
+  /**
+   * A guest is blocked too, but `guestGate()` already routes them to the auth modal,
+   * so showing the verification copy as well would stack two different asks.
+   */
+  const contactBlocked = !gate.allowed && gate.reason !== "UNAUTHENTICATED";
 
   // UI is driven by server state; mutations + revalidatePath refresh `data`.
   const viewer = data.viewer;
@@ -119,7 +146,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
   ]);
 
   function requestPhotoAccess() {
-    if (gate()) return; // guest -> AuthGateModal shown, no request sent
+    if (guestGate()) return; // guest -> AuthGateModal shown, no request sent
     if (photoLimitReached) return;
     startTransition(async () => {
       const result = await requestPhotoAccessAction(data.id);
@@ -130,7 +157,7 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
   }
 
   function openExpressInterest() {
-    if (gate()) return; // guest -> AuthGateModal shown, modal never opens
+    if (guestGate()) return; // guest -> AuthGateModal shown, modal never opens
     setInterestModalOpen(true);
   }
 
@@ -142,7 +169,10 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
   }
 
   function openConversation() {
-    if (gate()) return; // guest -> AuthGateModal shown, no conversation started
+    if (guestGate()) return; // guest -> AuthGateModal shown, no conversation started
+    // Blocked by the contact gate: explain it instead of starting a thread the
+    // member cannot type in.
+    if (contactBlocked) return setGateModalOpen(true);
     startTransition(async () => {
       const id = await startConversation(data.id);
       if (id) router.push(`${locale === "en" ? "/en" : ""}/messages/${id}`);
@@ -150,7 +180,8 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
   }
 
   function callViewer() {
-    if (gate()) return; // guest -> AuthGateModal shown, no call placed
+    if (guestGate()) return; // guest -> AuthGateModal shown, no call placed
+    if (contactBlocked) return setGateModalOpen(true);
     placeCall(data.id, data.displayName);
   }
 
@@ -178,7 +209,10 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
             pending={isPending}
           />
 
-          {/* Matched users can chat + voice-call in-app (free, no Pro required). */}
+          {/* Matched users can chat + voice-call in-app (free, no Pro required).
+              While the contact gate blocks contact the buttons stay clickable
+              and read as unavailable (opacity + helper line): a disabled button
+              is the dead end that loses the member. */}
           {viewer.isMatched && (
             <>
               <Button
@@ -186,6 +220,8 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
                 fullWidth
                 onClick={openConversation}
                 disabled={isPending}
+                aria-describedby={contactBlocked ? CONTACT_HINT_ID : undefined}
+                className={contactBlocked ? "opacity-60" : undefined}
               >
                 <ChatIcon width={18} height={18} />
                 {t("message")}
@@ -195,11 +231,19 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
                   variant="outline"
                   fullWidth
                   onClick={callViewer}
+                  aria-describedby={contactBlocked ? CONTACT_HINT_ID : undefined}
+                  className={contactBlocked ? "opacity-60" : undefined}
                 >
                   <PhoneIcon width={18} height={18} />
                   {t("call")}
                 </Button>
               )}
+              {/* One-click route to the fix, right under the triggers. */}
+              <ContactGateHint
+                id={CONTACT_HINT_ID}
+                status={gate}
+                className="px-1 text-center"
+              />
             </>
           )}
 
@@ -337,6 +381,13 @@ export function ProfileDetail({ data, quota: initialQuota }: ProfileDetailProps)
         onClose={() => setDetailsOpen(false)}
         details={data.details}
         displayName={data.displayName}
+      />
+
+      {/* Contact gate — why messaging / calling is not open yet */}
+      <ContactGateModal
+        open={gateModalOpen}
+        onClose={() => setGateModalOpen(false)}
+        status={gate}
       />
 
       {/* Express Interest modal — optional introductory note */}

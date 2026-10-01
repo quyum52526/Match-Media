@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { MessageThread } from "@/components/messages/MessageThread";
 import { getConversation } from "@/lib/data/messages";
+import { getContactGateStatus } from "@/lib/contactGate";
 import { requireViewerId } from "@/lib/session";
 
 export const metadata = {
@@ -21,7 +22,12 @@ export default async function ConversationPage({
 
   // Returns null when the conversation doesn't exist or the viewer isn't a
   // participant — the security boundary for the thread.
-  const data = await getConversation(viewerId, conversationId);
+  // `gate` is resolved here so the thread renders the explanatory banner on
+  // FIRST paint instead of after a rejected send.
+  const [data, gate] = await Promise.all([
+    getConversation(viewerId, conversationId),
+    getContactGateStatus(viewerId),
+  ]);
   if (!data) notFound();
 
   return (
@@ -29,7 +35,7 @@ export default async function ConversationPage({
     // app-like screen that runs edge-to-edge on mobile (no px-4 gutter), so
     // it keeps its own narrow wrapper instead of the standard page rail.
     <main className="mx-auto max-w-2xl">
-      <MessageThread data={data} />
+      <MessageThread data={data} gate={gate} />
     </main>
   );
 }
