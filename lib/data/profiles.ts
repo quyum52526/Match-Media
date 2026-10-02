@@ -170,6 +170,19 @@ function resolveManagerType(
 }
 
 /**
+ * How a profile's display photo is picked: the photo flagged primary, else the
+ * earliest one in gallery order. Filtering on `isPrimary: true` alone left a
+ * profile with no display photo whenever no row carried the flag (e.g. photos
+ * uploaded before the primary rule, or a primary still awaiting moderation
+ * while an older photo is approved) — it rendered as an empty frame.
+ */
+const PRIMARY_IMAGE_ORDER: Prisma.ProfileImageOrderByWithRelationInput[] = [
+  { isPrimary: "desc" },
+  { sortOrder: "asc" },
+  { createdAt: "asc" },
+];
+
+/**
  * Shared Prisma `include` for a browse/recommendation card. Kept as one const
  * so the main grid and the "Recommended for You" strip fetch identical shapes
  * and hydrate through the same code path (hydrateProfileCards).
@@ -204,7 +217,8 @@ export const BROWSE_CARD_SELECT = {
   // Just the three fields the reveal decision needs — not moderation notes,
   // reviewer ids or timestamps.
   images: {
-    where: { isPrimary: true, moderationStatus: "APPROVED" },
+    where: { moderationStatus: "APPROVED" },
+    orderBy: PRIMARY_IMAGE_ORDER,
     select: { privacy: true, originalKey: true, blurredKey: true },
     take: 1,
   },
@@ -560,9 +574,8 @@ export async function getProfileForViewer(
       // Admins see the primary photo whatever its moderation state, so they
       // can verify it (a PENDING one is flagged with a link to the queue).
       images: {
-        where: viewerIsAdmin
-          ? { isPrimary: true }
-          : { isPrimary: true, moderationStatus: "APPROVED" },
+        where: viewerIsAdmin ? {} : { moderationStatus: "APPROVED" },
+        orderBy: PRIMARY_IMAGE_ORDER,
         take: 1,
       },
     },
@@ -741,7 +754,11 @@ export async function getGuestProfilePreview(
     include: {
       user: { select: PROFILE_OWNER_USER_SELECT },
       referredBy: { select: { accountCategory: true } },
-      images: { where: { isPrimary: true, moderationStatus: "APPROVED" }, take: 1 },
+      images: {
+        where: { moderationStatus: "APPROVED" },
+        orderBy: PRIMARY_IMAGE_ORDER,
+        take: 1,
+      },
     },
   });
   if (!profile) return null;

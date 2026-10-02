@@ -7,8 +7,10 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
     serverActions: {
-      // Default is 1 MB; raise to 5 MB for logo + trade-license uploads.
-      bodySizeLimit: "5mb",
+      // Default is 1 MB. Files are capped at 5 MB (lib/storage/images.ts), and
+      // the multipart envelope adds a little on top, so allow 6 MB or a photo
+      // right at the cap is rejected before validation can explain why.
+      bodySizeLimit: "6mb",
     },
   },
   images: {

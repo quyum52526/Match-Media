@@ -79,13 +79,26 @@ async function ownImage(imageId: string, clientId?: string | null) {
   return image;
 }
 
-/** Upload one photo to the caller's gallery (or a managed client's gallery). New photos default to BLURRED. */
+/**
+ * Upload one photo to the caller's gallery (or a managed client's gallery).
+ *
+ * Optional form fields:
+ *   - `privacy`: "PUBLIC" | "BLURRED". Defaults to BLURRED (privacy-first);
+ *     onboarding sends the member's "blur / hide my photo" choice here.
+ *   - `makePrimary`: "1" makes this the profile photo, demoting any other.
+ *
+ * A photo also becomes primary whenever the profile has no primary yet, so a
+ * profile with photos always has one to display.
+ */
 export async function uploadProfilePhoto(
   formData: FormData,
 ): Promise<PhotoActionResult> {
   const clientId = formData.get("clientId") as string | null;
   const profileId = await resolveAuthorisedProfileId(clientId);
   if (!profileId) return err("NO_PROFILE");
+
+  const privacy = formData.get("privacy") === "PUBLIC" ? "PUBLIC" : "BLURRED";
+  const forcePrimary = formData.get("makePrimary") === "1";
 
   const file = formData.get("photo");
   if (!(file instanceof File)) return err("EMPTY");
@@ -102,16 +115,32 @@ export async function uploadProfilePhoto(
     return err(e instanceof Error && e.message === "DECODE" ? "DECODE" : "UPLOAD");
   }
 
-  await prisma.profileImage.create({
-    data: {
-      profileId,
-      originalKey: keys.originalKey,
-      blurredKey: keys.blurredKey,
-      privacy: "BLURRED",
-      isPrimary: count === 0, // first photo becomes the primary automatically
-      sortOrder: count,
-    },
-  });
+  const hasPrimary =
+    count > 0 &&
+    (await prisma.profileImage.count({ where: { profileId, isPrimary: true } })) > 0;
+  const isPrimary = forcePrimary || !hasPrimary;
+
+  await prisma.$transaction([
+    // Keep exactly one primary per profile.
+    ...(isPrimary && hasPrimary
+      ? [
+          prisma.profileImage.updateMany({
+            where: { profileId, isPrimary: true },
+            data: { isPrimary: false },
+          }),
+        ]
+      : []),
+    prisma.profileImage.create({
+      data: {
+        profileId,
+        originalKey: keys.originalKey,
+        blurredKey: keys.blurredKey,
+        privacy,
+        isPrimary,
+        sortOrder: count,
+      },
+    }),
+  ]);
 
   revalidateAll();
   return ok;
