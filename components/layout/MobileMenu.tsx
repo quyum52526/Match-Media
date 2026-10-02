@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { MenuIcon, XIcon } from "@/components/ui/icons";
@@ -128,24 +129,39 @@ export function MobileMenu({
 
       {open && (
         <>
-          {/* Backdrop: everything below the header bar. Tapping it closes the
-              drawer, which is what every phone user tries first.
+          {/* Backdrop — PORTALLED TO document.body, and that is the whole fix.
+              The header carries `backdrop-blur`, and a backdrop-filter makes an
+              element a containing block for its position:fixed descendants
+              (same as transform or filter). So this overlay, living inside the
+              header, resolved `inset-0` against the 56px-tall header box
+              instead of the viewport: with top-14 and bottom-0 inside a 56px
+              box it computed to zero height. There was nothing to tap — on
+              desktop or mobile — which is why only the X button ever worked.
 
-              A real <button>, not a div with an onClick: iOS WebKit only
-              dispatches click events reliably to natively interactive elements
-              (or ones carrying cursor:pointer), which is why tapping the
-              overlay did nothing on a phone while it worked on desktop. A
-              button also makes the dismiss reachable by keyboard and by screen
-              readers instead of being mouse-only. onTouchStart is kept as a
-              belt-and-braces path for older WebKit; close() is idempotent, so
-              firing both is harmless. */}
-          <button
-            type="button"
-            aria-label={closeLabel ?? menuLabel}
-            onClick={close}
-            onTouchStart={close}
-            className="fixed inset-x-0 bottom-0 top-14 z-40 cursor-pointer bg-ink/40 touch-manipulation"
-          />
+              At document.body it genuinely covers the viewport. z-30 keeps it
+              under the header (z-40), so the drawer panel, which lives inside
+              the header, still paints above it without any z-index of its own
+              competing across stacking contexts.
+
+              onTouchEnd with preventDefault() closes on the touch itself rather
+              than waiting for WebKit's synthetic click, and preventing the
+              default also stops that click from landing on whatever is beneath
+              once the overlay is gone. It is a real <button> so the dismiss is
+              keyboard-reachable and announced, not mouse-only. */}
+          {typeof document !== "undefined" &&
+            createPortal(
+              <button
+                type="button"
+                aria-label={closeLabel ?? menuLabel}
+                onClick={close}
+                onTouchEnd={(event) => {
+                  event.preventDefault();
+                  close();
+                }}
+                className="fixed inset-0 z-30 h-screen w-screen cursor-pointer bg-ink/50 touch-manipulation lg:hidden"
+              />,
+              document.body,
+            )}
 
           {/* Panel. Capped to the space under the header and scrollable, so a
               long menu (an admin sees ~15 rows) can always be read to the end.
@@ -153,7 +169,7 @@ export function MobileMenu({
               overscroll-contain stops the scroll chaining to the page, and the
               bottom padding clears the phone's home indicator. */}
           <div
-            className="absolute left-0 top-full z-50 max-h-[calc(100dvh-3.5rem)] w-full overflow-y-auto overscroll-contain border-b border-hairline bg-canvas pb-24 shadow-card"
+            className="absolute left-0 top-full z-10 max-h-[calc(100dvh-3.5rem)] w-full overflow-y-auto overscroll-contain border-b border-hairline bg-canvas pb-24 shadow-card"
           >
             <div className="mx-auto max-w-6xl px-4 py-3">
               {/* ── Signed out: the reason they opened this menu ───────── */}
