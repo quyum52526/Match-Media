@@ -1,19 +1,29 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { ChevronDownIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
+import {
+  resolveActiveContext,
+  type RoleContext,
+} from "@/lib/roleContextRules";
 
 /**
- * One row of the context switcher. `active` is where the person currently is,
- * `pending` an application still under review (shown disabled, with a badge).
+ * One row of the context switcher. `pending` marks an application still under
+ * review, which is shown disabled with a badge rather than as a destination.
+ *
+ * Which row is ACTIVE is decided here rather than passed in: the current
+ * pathname is the truth (a bookmark straight into /agency/dashboard is the
+ * agency context), and only a client component can see it. The server's
+ * cookie-based answer comes in as `activeContext` and is the fallback
+ * everywhere outside a role's own area.
  */
 export interface ContextOption {
-  context: "PERSONAL" | "AGENCY" | "AGENT";
+  context: RoleContext;
   icon: string;
   label: string;
-  active: boolean;
   pending?: boolean;
 }
 
@@ -30,6 +40,8 @@ interface UserMenuProps {
    * personal profile — a single-role member sees no switcher at all.
    */
   contexts?: ContextOption[];
+  /** The server's cookie-based answer; used when the path names no role area. */
+  activeContext?: RoleContext;
   switchLabel?: string;
   underReviewLabel?: string;
   switchAction?: (formData: FormData) => void | Promise<void>;
@@ -43,12 +55,24 @@ export function UserMenu({
   logoutAction,
   locale,
   contexts,
+  activeContext,
   switchLabel,
   underReviewLabel,
   switchAction,
 }: UserMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+
+  // A role area the person is not entitled to is never offered as a row, so
+  // "is this an offered, usable row?" is exactly the entitlement test here.
+  const active = resolveActiveContext({
+    pathname,
+    cookieValue: activeContext,
+    isEntitled: (context) =>
+      context === "PERSONAL" ||
+      Boolean(contexts?.some((o) => o.context === context && !o.pending)),
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -125,11 +149,11 @@ export function UserMenu({
                   <button
                     type="submit"
                     role="menuitem"
-                    disabled={option.active || option.pending}
+                    disabled={option.context === active || option.pending}
                     onClick={() => setOpen(false)}
                     className={cn(
                       "flex w-full items-center gap-2 px-4 py-2 text-left text-sm transition-colors",
-                      option.active
+                      option.context === active
                         ? "font-semibold text-ink"
                         : option.pending
                           ? "cursor-default text-ink/40"
@@ -138,7 +162,7 @@ export function UserMenu({
                   >
                     <span aria-hidden>{option.icon}</span>
                     <span className="min-w-0 flex-1 truncate">{option.label}</span>
-                    {option.active && (
+                    {option.context === active && (
                       <span className="shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary">
                         •
                       </span>

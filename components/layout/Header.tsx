@@ -56,7 +56,6 @@ export async function Header() {
           context: "PERSONAL" as const,
           icon: "\u{1F464}",
           label: roleT("personal"),
-          active: activeContext === "PERSONAL",
         },
         ...(entitlements.agency === "APPROVED" || entitlements.agency === "PENDING"
           ? [
@@ -64,7 +63,6 @@ export async function Header() {
                 context: "AGENCY" as const,
                 icon: "\u{1F3E2}",
                 label: entitlements.agencyName || roleT("agency"),
-                active: activeContext === "AGENCY",
                 pending: entitlements.agency === "PENDING",
               },
             ]
@@ -75,7 +73,6 @@ export async function Header() {
                 context: "AGENT" as const,
                 icon: "\u{1F6E1}\u{FE0F}",
                 label: roleT("agent"),
-                active: activeContext === "AGENT",
                 pending: entitlements.agent === "PENDING",
               },
             ]
@@ -255,6 +252,7 @@ export async function Header() {
                 logoutAction={logout}
                 locale={locale}
                 contexts={contextOptions}
+                activeContext={activeContext}
                 switchLabel={roleT("switchLabel")}
                 underReviewLabel={roleT("underReview")}
                 switchAction={switchRoleContext}

@@ -2,6 +2,11 @@ import "server-only";
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import {
+  CONTEXT_COOKIE,
+  resolveActiveContext,
+  type RoleContext,
+} from "@/lib/roleContextRules";
 
 /**
  * Multi-role context.
@@ -13,26 +18,27 @@ import { prisma } from "@/lib/prisma";
  * switch which one they are currently acting as.
  *
  * `role` on the User row is unchanged and still the account's primary identity
- * and the admin gate. The active context is a VIEW preference, kept in a
- * cookie, and it grants nothing: every entitlement is re-derived from the DB
- * here, and each dashboard route checks it again. A forged cookie therefore
- * changes nothing a person is allowed to see.
+ * and the admin gate. The active context is only a VIEW: it is read from where
+ * the person currently is, falling back to the cookie that remembers their last
+ * choice, and it grants nothing. Every entitlement is re-derived from the DB
+ * here, and each dashboard route checks it again — so a forged cookie or a
+ * hand-typed /agency URL changes nothing a person is allowed to see.
  */
-
-export type RoleContext = "PERSONAL" | "AGENCY" | "AGENT";
-
-/** Cookie holding the last context the person chose. */
-export const CONTEXT_COOKIE = "mm_context";
 
 /** A year — this is a preference, not a credential. */
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
-/** Where each context's home screen lives. */
-export const CONTEXT_PATH: Record<RoleContext, string> = {
-  PERSONAL: "/dashboard",
-  AGENCY: "/agency/dashboard",
-  AGENT: "/agent/dashboard",
-};
+// The context names, their home paths and the resolution rules live in
+// lib/roleContextRules.ts, which the client-side account menu can import too.
+// Re-exported here so server callers have one import for the whole concept.
+export {
+  CONTEXT_COOKIE,
+  CONTEXT_PATH,
+  contextFromPathname,
+  isRoleContext,
+  resolveActiveContext,
+  type RoleContext,
+} from "@/lib/roleContextRules";
 
 /** How far along a secondary role is for this account. */
 export type RoleState = "NONE" | "PENDING" | "APPROVED" | "REJECTED";
@@ -44,10 +50,6 @@ export interface RoleEntitlements {
   agencyName: string | null;
   /** True when at least one secondary role is approved. */
   hasSecondaryRole: boolean;
-}
-
-export function isRoleContext(value: unknown): value is RoleContext {
-  return value === "PERSONAL" || value === "AGENCY" || value === "AGENT";
 }
 
 /**
@@ -122,15 +124,34 @@ export function canUseContext(
 }
 
 /**
- * The context this request should render in: the person's choice when they are
- * still entitled to it, otherwise PERSONAL. A revoked role therefore drops the
- * session back to the personal view on its own, with no stale cookie to clear.
+ * The context this request should render in.
+ *
+ * `pathname` wins when the caller knows it (being inside /agency IS being in
+ * the agency context, however the person got there), then the cookie
+ * preference, then personal — see resolveActiveContext(). A revoked role
+ * therefore drops the session back to the personal view on its own, with no
+ * stale cookie to clear.
+ *
+ * Server callers rarely know the pathname: a layout gets params, not the URL.
+ * The account menu is a client component and resolves it there with the same
+ * rules, so this stays the cookie-based answer and the menu refines it.
  */
-export async function getActiveContext(userId: string): Promise<RoleContext> {
-  const raw = (await cookies()).get(CONTEXT_COOKIE)?.value;
-  if (!isRoleContext(raw) || raw === "PERSONAL") return "PERSONAL";
+export async function getActiveContext(
+  userId: string,
+  pathname?: string | null,
+): Promise<RoleContext> {
+  const cookieValue = (await cookies()).get(CONTEXT_COOKIE)?.value;
+  // Nothing to check against: skip the entitlement query entirely.
+  if (!pathname && (!cookieValue || cookieValue === "PERSONAL")) {
+    return "PERSONAL";
+  }
+
   const entitlements = await getRoleEntitlements(userId);
-  return canUseContext(raw, entitlements) ? raw : "PERSONAL";
+  return resolveActiveContext({
+    pathname,
+    cookieValue,
+    isEntitled: (context) => canUseContext(context, entitlements),
+  });
 }
 
 /**
