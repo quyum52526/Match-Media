@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { assertAdmin, assertSuperAdmin } from "@/lib/session";
 import { notify } from "@/lib/notifications/dispatch";
+import { sendModerationEmail } from "@/lib/email/notifications";
 import { FEATURE_FLAGS, isFeatureFlagKey } from "@/lib/constants/featureFlags";
 
 // Dynamic-route literals so revalidation covers every locale param.
@@ -77,13 +78,14 @@ export async function rejectPhoto(
   const adminId = await assertAdmin();
   if (!adminId) return err("FORBIDDEN");
 
+  const rejectionReason = reason?.trim() || null;
   const image = await prisma.profileImage.update({
     where: { id: imageId },
     data: {
       moderationStatus: "REJECTED",
       reviewedAt: new Date(),
       reviewedById: adminId,
-      rejectionReason: reason?.trim() || null,
+      rejectionReason,
     },
     select: { profile: { select: { userId: true } } },
   });
@@ -94,6 +96,7 @@ export async function rejectPhoto(
       type: "PHOTO_REJECTED",
       actorId: adminId,
       link: "/profile/edit",
+      reason: rejectionReason,
     });
   }
 
@@ -192,11 +195,18 @@ export async function rejectNid(
   const adminId = await assertAdmin();
   if (!adminId) return err("FORBIDDEN");
 
+  const reviewNote = note?.trim() || null;
   await prisma.user.update({
     where: { id: userId },
-    data: { nidVerificationStatus: "REJECTED", nidReviewNote: note?.trim() || null },
+    data: { nidVerificationStatus: "REJECTED", nidReviewNote: reviewNote },
   });
-  await notify({ userId, type: "NID_REJECTED", actorId: adminId, link: "/profile/verify" });
+  await notify({
+    userId,
+    type: "NID_REJECTED",
+    actorId: adminId,
+    link: "/profile/verify",
+    reason: reviewNote,
+  });
 
   revalidatePath(ADMIN_VERIFY, "page");
   revalidateAdminNav();
@@ -228,11 +238,18 @@ export async function rejectSelfie(
   const adminId = await assertAdmin();
   if (!adminId) return err("FORBIDDEN");
 
+  const reviewNote = note?.trim() || null;
   await prisma.user.update({
     where: { id: userId },
-    data: { selfieVerificationStatus: "REJECTED", selfieReviewNote: note?.trim() || null },
+    data: { selfieVerificationStatus: "REJECTED", selfieReviewNote: reviewNote },
   });
-  await notify({ userId, type: "SELFIE_REJECTED", actorId: adminId, link: "/profile/verify" });
+  await notify({
+    userId,
+    type: "SELFIE_REJECTED",
+    actorId: adminId,
+    link: "/profile/verify",
+    reason: reviewNote,
+  });
 
   revalidatePath(ADMIN_VERIFY, "page");
   revalidateAdminNav();
@@ -247,19 +264,30 @@ export async function approveAgency(userId: string): Promise<AdminResult> {
     where: { id: userId },
     data: { agencyVerificationStatus: "VERIFIED" },
   });
+  // No NotificationType exists for agency outcomes, so email directly.
+  // Best-effort: sendModerationEmail logs and swallows every failure.
+  await sendModerationEmail(userId, "AGENCY_APPROVED");
 
   revalidatePath(ADMIN_VERIFY, "page");
   revalidateAdminNav();
   return ok;
 }
 
-export async function rejectAgency(userId: string): Promise<AdminResult> {
+export async function rejectAgency(
+  userId: string,
+  note?: string,
+): Promise<AdminResult> {
   const adminId = await assertAdmin();
   if (!adminId) return err("FORBIDDEN");
 
   await prisma.user.update({
     where: { id: userId },
     data: { agencyVerificationStatus: "REJECTED" },
+  });
+  // There is no column for an agency review note, so the reason travels in
+  // the email only.
+  await sendModerationEmail(userId, "AGENCY_REJECTED", {
+    reason: note?.trim() || null,
   });
 
   revalidatePath(ADMIN_VERIFY, "page");

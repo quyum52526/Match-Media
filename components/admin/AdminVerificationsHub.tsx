@@ -205,6 +205,7 @@ function SelfieRow({ item }: { item: PendingSelfie }) {
 // ---------------------------------------------------------------------------
 
 function AgencyRow({ item }: { item: PendingAgency }) {
+  const [note, setNote] = useState("");
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -235,6 +236,14 @@ function AgencyRow({ item }: { item: PendingAgency }) {
         <DocImage url={item.tradeLicenseUrl} alt="Trade license" />
       </div>
 
+      <input
+        type="text"
+        placeholder="Rejection note (optional, emailed to the agency)"
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+        className="mb-3 w-full rounded-lg border border-hairline px-3 py-1.5 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30"
+      />
+
       <div className="flex gap-2">
         <Button
           size="sm"
@@ -250,7 +259,7 @@ function AgencyRow({ item }: { item: PendingAgency }) {
           variant="outline"
           className="flex-1 border-red-200 text-red-600 hover:bg-red-50"
           disabled={isPending}
-          onClick={() => act(() => rejectAgency(item.userId))}
+          onClick={() => act(() => rejectAgency(item.userId, note))}
         >
           ✕ Reject
         </Button>
