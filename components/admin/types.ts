@@ -25,6 +25,8 @@ export interface AdminNavCounts {
   verification: number;
   /** NID + selfie + agency submissions awaiting review. */
   documents: number;
+  /** Agency + agent role applications awaiting review. */
+  applications: number;
 }
 
 /** A photo awaiting moderation (admin sees the clear original). */

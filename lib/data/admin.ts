@@ -7,6 +7,7 @@ import type {
   ReportReason,
   ReportStatus,
 } from "@/components/profile/types";
+import { getPendingApplicationCount } from "@/lib/data/roleApplications";
 import { getPendingVerificationCount } from "@/lib/data/adminVerifications";
 import type {
   AdminNavCounts,
@@ -46,13 +47,15 @@ export async function getAdminStats(): Promise<AdminStats> {
  * Without the cache that is two identical rounds of COUNTs per page view.
  */
 export const getAdminNavCounts = cache(async (): Promise<AdminNavCounts> => {
-  const [photos, reports, verification, documents] = await Promise.all([
-    prisma.profileImage.count({ where: { moderationStatus: "PENDING" } }),
-    prisma.report.count({ where: { status: "OPEN" } }),
-    prisma.profile.count({ where: { isVerified: false } }),
-    getPendingVerificationCount(),
-  ]);
-  return { photos, reports, verification, documents };
+  const [photos, reports, verification, documents, applications] =
+    await Promise.all([
+      prisma.profileImage.count({ where: { moderationStatus: "PENDING" } }),
+      prisma.report.count({ where: { status: "OPEN" } }),
+      prisma.profile.count({ where: { isVerified: false } }),
+      getPendingVerificationCount(),
+      getPendingApplicationCount(),
+    ]);
+  return { photos, reports, verification, documents, applications };
 });
 
 /** Photos awaiting moderation, oldest first, with signed original URLs. */

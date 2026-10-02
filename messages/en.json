@@ -525,7 +525,8 @@
       "verification": "Verification",
       "users": "Users",
       "documents": "Documents",
-      "settings": "Settings"
+      "settings": "Settings",
+      "applications": "Applications"
     },
     "overview": {
       "pendingPhotos": "Photos pending review",
@@ -1231,5 +1232,60 @@
       "AGE_RANGE": "Minimum age cannot be greater than maximum age",
       "HEIGHT_RANGE": "Minimum height cannot be greater than maximum height"
     }
+  },
+  "ExpandAccount": {
+    "pageTitle": "Expand your account",
+    "pageSubtitle": "Add a service to the account you already have. Your personal profile stays exactly as it is.",
+    "title": "Expand account / additional services",
+    "subtitle": "Apply to also run a marriage media agency, or to work as a verification agent — no second account needed.",
+    "selectLabel": "Select service to apply for",
+    "selectPlaceholder": "Choose a service…",
+    "continue": "Continue to application",
+    "nothingToApplyFor": "You already hold every additional service we offer.",
+    "backToServices": "Back to services",
+    "underReview": "Your application is under review. Our team will verify your documents within 24–48 hours.",
+    "lockedNote": "Taken from your account. To change either, update your profile first.",
+    "submit": "Submit application",
+    "submitting": "Submitting…",
+    "status": {
+      "agencyApproved": "Your agency {name} is approved. Switch to it from the menu in the top right.",
+      "agencyPending": "Your marriage media application is under review (24–48 hours).",
+      "agencyRejected": "Your marriage media application was not approved",
+      "agentApproved": "You are an approved verification agent. Switch to the agent view from the menu in the top right.",
+      "agentPending": "Your verification agent application is under review (24–48 hours).",
+      "agentRejected": "Your verification agent application was not approved"
+    },
+    "agency": {
+      "title": "Marriage media application",
+      "subtitle": "Tell us about the agency. We check the trade licence by hand before approving."
+    },
+    "agent": {
+      "title": "Verification agent application",
+      "subtitle": "Agents visit candidates in person, so we verify identity and coverage before approving."
+    },
+    "fields": {
+      "fullName": "Full name",
+      "mobile": "Mobile number",
+      "agencyName": "Agency name",
+      "tradeLicenseNumber": "Trade licence number",
+      "tradeLicenseDocument": "Trade licence document",
+      "officeAddress": "Office address",
+      "nidNumber": "NID number",
+      "nidHint": "10, 13 or 17 digits, as printed on the card.",
+      "nidFront": "NID — front",
+      "nidBack": "NID — back",
+      "policeVerification": "Police verification (optional)",
+      "policeHint": "Attach it if you have one. It is not required to apply.",
+      "operatingDistricts": "Operating districts",
+      "districtsHint": "{count} selected. Choose every district you can travel to.",
+      "documentHint": "JPG, PNG, WebP or PDF, up to 5 MB."
+    }
+  },
+  "RoleSwitcher": {
+    "switchLabel": "Switch profile",
+    "personal": "Personal profile",
+    "agency": "Agency",
+    "agent": "Verification agent",
+    "underReview": "Under review"
   }
 }

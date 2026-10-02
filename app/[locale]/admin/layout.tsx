@@ -46,6 +46,11 @@ export default async function AdminLayout({
       label: t("nav.documents"),
       count: counts.documents,
     },
+    {
+      href: "/admin/applications",
+      label: t("nav.applications"),
+      count: counts.applications,
+    },
     { href: "/admin/users", label: t("nav.users") },
     // Shown to both tiers: a moderator gets the live config read-only.
     { href: "/admin/settings", label: t("nav.settings") },

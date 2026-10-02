@@ -19,6 +19,9 @@ import { getOwnPhotos, getClientPhotos } from "@/lib/data/photos";
 import { MAX_PHOTOS } from "@/lib/storage/images";
 import { requireViewerId } from "@/lib/session";
 import { isEmailGateCleared } from "@/lib/emailVerification";
+import { getRoleEntitlements } from "@/lib/roleContext";
+import { getOwnApplications } from "@/lib/data/roleApplications";
+import { ExpandAccountCard } from "@/components/profile/ExpandAccountCard";
 import { prisma } from "@/lib/prisma";
 import { isAdminRole } from "@/lib/rbac";
 
@@ -235,6 +238,9 @@ export default async function ProfileEditPage({
           <h1 className="mt-1 text-2xl font-bold text-ink">My Dashboard</h1>
         </header>
         <GuardianDashboard data={guardianData} />
+        <div className="mt-6">
+          <ExpandAccountSection viewerId={viewerId} />
+        </div>
       </div></Container>
     );
   }
@@ -282,6 +288,35 @@ export default async function ProfileEditPage({
           <PartnerPreferencesForm initial={preferences} />
         </div>
       )}
+
+      {/* Expand account: apply to ALSO run an agency or work as a verification
+          agent, on this same login. */}
+      <div className="mt-6">
+        <ExpandAccountSection viewerId={viewerId} />
+      </div>
     </div></Container>
+  );
+}
+
+/**
+ * The "Expand account / additional services" card, with this account's current
+ * standing for each service. Kept as its own async component so both the
+ * personal and the guardian branch can drop it in without repeating the two
+ * queries it needs.
+ */
+async function ExpandAccountSection({ viewerId }: { viewerId: string }) {
+  const [entitlements, applications] = await Promise.all([
+    getRoleEntitlements(viewerId),
+    getOwnApplications(viewerId),
+  ]);
+
+  return (
+    <ExpandAccountCard
+      agency={entitlements.agency}
+      agent={entitlements.agent}
+      agencyName={entitlements.agencyName}
+      agencyRejectionReason={applications.agency?.rejectionReason ?? null}
+      agentRejectionReason={applications.agent?.rejectionReason ?? null}
+    />
   );
 }

@@ -5,12 +5,34 @@ import { Link } from "@/i18n/navigation";
 import { ChevronDownIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
+/**
+ * One row of the context switcher. `active` is where the person currently is,
+ * `pending` an application still under review (shown disabled, with a badge).
+ */
+export interface ContextOption {
+  context: "PERSONAL" | "AGENCY" | "AGENT";
+  icon: string;
+  label: string;
+  active: boolean;
+  pending?: boolean;
+}
+
 interface UserMenuProps {
   email: string;
   accountLabel: string;
   profileLabel: string;
   logoutLabel: string;
   logoutAction: (formData: FormData) => void | Promise<void>;
+  /** Locale, submitted with the switch so the redirect keeps the language. */
+  locale: string;
+  /**
+   * Role contexts to offer. Only passed when the account has more than its
+   * personal profile — a single-role member sees no switcher at all.
+   */
+  contexts?: ContextOption[];
+  switchLabel?: string;
+  underReviewLabel?: string;
+  switchAction?: (formData: FormData) => void | Promise<void>;
 }
 
 export function UserMenu({
@@ -19,6 +41,11 @@ export function UserMenu({
   profileLabel,
   logoutLabel,
   logoutAction,
+  locale,
+  contexts,
+  switchLabel,
+  underReviewLabel,
+  switchAction,
 }: UserMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -81,6 +108,51 @@ export function UserMenu({
           >
             {profileLabel}
           </Link>
+
+          {/* Context switcher — rendered only for an account that holds, or has
+              applied for, a second role. Each row is a form post: the server
+              re-checks the entitlement and redirects, so a disabled row here is
+              cosmetic rather than the rule. */}
+          {contexts && contexts.length > 1 && switchAction && (
+            <div className="my-1 border-y border-hairline/70 py-1">
+              <p className="px-4 pb-1 pt-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink/40">
+                {switchLabel}
+              </p>
+              {contexts.map((option) => (
+                <form key={option.context} action={switchAction}>
+                  <input type="hidden" name="locale" value={locale} />
+                  <input type="hidden" name="context" value={option.context} />
+                  <button
+                    type="submit"
+                    role="menuitem"
+                    disabled={option.active || option.pending}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "flex w-full items-center gap-2 px-4 py-2 text-left text-sm transition-colors",
+                      option.active
+                        ? "font-semibold text-ink"
+                        : option.pending
+                          ? "cursor-default text-ink/40"
+                          : "text-ink/70 hover:bg-ink/5 hover:text-ink",
+                    )}
+                  >
+                    <span aria-hidden>{option.icon}</span>
+                    <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                    {option.active && (
+                      <span className="shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary">
+                        •
+                      </span>
+                    )}
+                    {option.pending && (
+                      <span className="shrink-0 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">
+                        {underReviewLabel}
+                      </span>
+                    )}
+                  </button>
+                </form>
+              ))}
+            </div>
+          )}
           <form action={logoutAction}>
             <button
               type="submit"

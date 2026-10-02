@@ -9,11 +9,13 @@ import { getAdminNavCounts } from "@/lib/data/admin";
 import { isGuestSession } from "@/lib/guest";
 import { getUnreadCount } from "@/lib/data/messages";
 import { getUnreadNotificationCount } from "@/lib/data/notifications";
+import { getActiveContext, getRoleEntitlements } from "@/lib/roleContext";
+import { switchRoleContext } from "@/lib/actions/roleContext";
 import { Button } from "@/components/ui/Button";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { NavLinks } from "./NavLinks";
 import { NavDropdown } from "./NavDropdown";
-import { UserMenu } from "./UserMenu";
+import { UserMenu, type ContextOption } from "./UserMenu";
 import { MobileMenu, type MobileNavItem } from "./MobileMenu";
 
 export async function Header() {
@@ -40,6 +42,46 @@ export async function Header() {
   // Only queried for an admin, so an ordinary page view pays nothing. `cache`d,
   // so on an /admin route the admin layout reuses this same result.
   const adminCounts = isAdmin ? await getAdminNavCounts() : null;
+
+  // Multi-role: the rows for the context switcher in the account menu. An
+  // account with nothing but its personal profile gets a single row, and
+  // UserMenu then renders no switcher at all. A role still under review is
+  // listed disabled so the person can see their application exists.
+  const roleT = await getTranslations("RoleSwitcher");
+  const entitlements = viewerId ? await getRoleEntitlements(viewerId) : null;
+  const activeContext = viewerId ? await getActiveContext(viewerId) : "PERSONAL";
+  const contextOptions: ContextOption[] | undefined = entitlements
+    ? [
+        {
+          context: "PERSONAL" as const,
+          icon: "\u{1F464}",
+          label: roleT("personal"),
+          active: activeContext === "PERSONAL",
+        },
+        ...(entitlements.agency === "APPROVED" || entitlements.agency === "PENDING"
+          ? [
+              {
+                context: "AGENCY" as const,
+                icon: "\u{1F3E2}",
+                label: entitlements.agencyName || roleT("agency"),
+                active: activeContext === "AGENCY",
+                pending: entitlements.agency === "PENDING",
+              },
+            ]
+          : []),
+        ...(entitlements.agent === "APPROVED" || entitlements.agent === "PENDING"
+          ? [
+              {
+                context: "AGENT" as const,
+                icon: "\u{1F6E1}\u{FE0F}",
+                label: roleT("agent"),
+                active: activeContext === "AGENT",
+                pending: entitlements.agent === "PENDING",
+              },
+            ]
+          : []),
+      ]
+    : undefined;
 
   const companyItems = [
     { href: "/about", label: nav("about") },
@@ -75,6 +117,11 @@ export async function Header() {
       href: "/admin/verifications",
       label: adminT("nav.documents"),
       count: adminCounts?.documents,
+    },
+    {
+      href: "/admin/applications",
+      label: adminT("nav.applications"),
+      count: adminCounts?.applications,
     },
     { href: "/admin/users", label: adminT("nav.users") },
     { href: "/admin/settings", label: adminT("nav.settings") },
@@ -206,6 +253,11 @@ export async function Header() {
                 profileLabel={nav("editProfile")}
                 logoutLabel={authT("logout")}
                 logoutAction={logout}
+                locale={locale}
+                contexts={contextOptions}
+                switchLabel={roleT("switchLabel")}
+                underReviewLabel={roleT("underReview")}
+                switchAction={switchRoleContext}
               />
             ) : isGuest ? (
               <>

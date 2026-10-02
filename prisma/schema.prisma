@@ -88,6 +88,16 @@ enum AssignmentStatus {
 // UNVERIFIED → PENDING_APPROVAL (agency submits trade license)
 //            → VERIFIED (admin approves) or REJECTED (admin rejects)
 // REJECTED agencies can re-submit, cycling back to PENDING_APPROVAL.
+// Review state of an application to take on a second role. Separate from
+// AgencyVerificationStatus (which tracks a MEDIA account's trade licence) so
+// an application's lifecycle can never be confused with the standing of an
+// agency that is already operating.
+enum RoleApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum AgencyVerificationStatus {
   UNVERIFIED
   PENDING_APPROVAL
@@ -261,6 +271,19 @@ model User {
   // Document / identity verification — manual admin-approval workflow.
   // Keys are Supabase Storage paths in the private "verification-docs" bucket;
   // never stored as public URLs (signed at read time, like profile photos).
+  // Approved SECONDARY roles. `role` stays the account's primary identity (and
+  // the admin gate); these say "this same login also operates an agency / also
+  // works as a verification agent", which is what the context switcher in the
+  // header offers. Set only by an admin approving a role application, so a
+  // member can gain a second role without a second account — no duplicate
+  // User row, no P2002 on the unique email/mobile.
+  hasAgency             Boolean            @default(false)
+  hasAgentRole          Boolean            @default(false)
+  // Districts an approved agent covers. `agencyDistrict` holds a single
+  // district and is reused by legacy AGENT signups; an agent approved through
+  // an application can name several, so they live here.
+  agentDistricts        String[]
+
   nidFrontKey           String?
   nidBackKey            String?
   nidVerificationStatus VerificationStatus @default(UNVERIFIED)
@@ -329,6 +352,10 @@ model User {
 
   // System settings this user (a SUPER_ADMIN) last changed
   featureFlagUpdates FeatureFlag[] @relation("FeatureFlagUpdates")
+
+  // Applications to take on a second role (agency / verification agent)
+  agencyApplications AgencyApplication[] @relation("UserAgencyApplications")
+  agentApplications  AgentApplication[]  @relation("UserAgentApplications")
 }
 
 model Profile {
@@ -883,6 +910,65 @@ model EmailOtp {
   createdAt  DateTime  @default(now())
 
   @@index([userId])
+}
+
+// --- Multi-role: applications to operate as an agency / agent ---------------
+
+// A member asking to ALSO run a marriage-media agency from their existing
+// login. Approval sets User.hasAgency and copies the agency identity onto the
+// User row (which is where the agency dashboard reads it from) — it never
+// creates a second account, so the unique email/mobile are untouched.
+//
+// Documents are Supabase Storage KEYS in the private "verification-docs"
+// bucket, never public URLs; they are signed per request at read time, exactly
+// like the NID images (see lib/storage/verificationDocs.ts).
+model AgencyApplication {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation("UserAgencyApplications", fields: [userId], references: [id], onDelete: Cascade)
+
+  agencyName              String
+  tradeLicenseNumber      String
+  tradeLicenseDocumentKey String
+  officeAddress           String
+  // Snapshot of the contact name at application time; the live value stays on
+  // the User row, which the applicant can keep editing.
+  contactPerson           String
+
+  status          RoleApplicationStatus @default(PENDING)
+  // Required when status is REJECTED — the member is told what to fix.
+  rejectionReason String?
+  createdAt       DateTime              @default(now())
+  reviewedAt      DateTime?
+  reviewedById    String? // admin User id (audit only; no FK relation)
+
+  @@index([userId])
+  @@index([status])
+}
+
+// A member asking to ALSO work as a verification agent. Mirrors
+// AgencyApplication; approval sets User.hasAgentRole and the covered districts.
+model AgentApplication {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation("UserAgentApplications", fields: [userId], references: [id], onDelete: Cascade)
+
+  nidNumber             String
+  nidFrontKey           String
+  nidBackKey            String
+  // Optional: a police-verification document, when the applicant has one.
+  policeVerificationKey String?
+  // Districts the applicant can travel to. An OR-set, never empty.
+  operatingDistricts    String[]
+
+  status          RoleApplicationStatus @default(PENDING)
+  rejectionReason String?
+  createdAt       DateTime              @default(now())
+  reviewedAt      DateTime?
+  reviewedById    String?
+
+  @@index([userId])
+  @@index([status])
 }
 
 // --- Voice calling: WebRTC call sessions ------------------------------------

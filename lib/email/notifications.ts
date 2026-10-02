@@ -29,7 +29,11 @@ import { maskEmail } from "@/lib/privacy";
 export type ModerationEmailKind =
   | NotificationType
   | "AGENCY_APPROVED"
-  | "AGENCY_REJECTED";
+  | "AGENCY_REJECTED"
+  | "AGENCY_ROLE_APPROVED"
+  | "AGENCY_ROLE_REJECTED"
+  | "AGENT_ROLE_APPROVED"
+  | "AGENT_ROLE_REJECTED";
 
 type Status = "approved" | "rejected";
 
@@ -115,6 +119,41 @@ const COPY: Partial<Record<ModerationEmailKind, Copy>> = {
     body: "Our team could not approve your agency's trade licence. Please check the details below and upload it again.",
     cta: "Open your dashboard",
     link: "/profile/edit",
+  },
+  // Role applications: a member who asked to ALSO operate as an agency or an
+  // agent from their existing account. Distinct from the AGENCY_* pair above,
+  // which is about the trade licence of an agency that already operates.
+  AGENCY_ROLE_APPROVED: {
+    status: "approved",
+    subject: "Your agency account is approved",
+    heading: "Your agency is approved",
+    body: "Your marriage media application passed review. Switch to your agency from the menu in the top right to start adding client profiles — your personal profile stays exactly as it is.",
+    cta: "Open your agency dashboard",
+    link: "/agency/dashboard",
+  },
+  AGENCY_ROLE_REJECTED: {
+    status: "rejected",
+    subject: "Your agency application was not approved",
+    heading: "Your agency application was not approved",
+    body: "Our team reviewed your marriage media application and could not approve it. You can apply again once the point below is addressed.",
+    cta: "Review your application",
+    link: "/profile/expand",
+  },
+  AGENT_ROLE_APPROVED: {
+    status: "approved",
+    subject: "You are approved as a verification agent",
+    heading: "Your agent account is approved",
+    body: "Your verification agent application passed review. Switch to the agent view from the menu in the top right to see assignments in the districts you cover.",
+    cta: "Open your agent dashboard",
+    link: "/agent/dashboard",
+  },
+  AGENT_ROLE_REJECTED: {
+    status: "rejected",
+    subject: "Your agent application was not approved",
+    heading: "Your agent application was not approved",
+    body: "Our team reviewed your verification agent application and could not approve it. You can apply again once the point below is addressed.",
+    cta: "Review your application",
+    link: "/profile/expand",
   },
 };
 
