@@ -193,6 +193,7 @@ export async function Header() {
         <div className="relative z-10 flex shrink-0 items-center gap-4">
           <MobileMenu
             menuLabel={nav("menu")}
+            closeLabel={nav("close")}
             navItems={mobileNavItems}
             adminLabel={nav("admin")}
             adminItems={isAdmin ? adminItems : []}
