@@ -20,6 +20,20 @@ import type { ShowcaseProfile } from "@/lib/data/showcase";
  * `onError` only exists on the client, which is the whole reason this is a
  * client component: the surrounding cards stay server-rendered, and only this
  * leaf opts in.
+ *
+ * WHY `unoptimized`: these photos are served through Supabase SIGNED urls, and
+ * the Next image optimizer keys its cache on the full source url, query string
+ * included. Every signature rotation is therefore a brand-new cache key and a
+ * brand-new optimization, so a handful of homepage cards chew through the
+ * optimization quota — and once it is spent the optimizer answers
+ * `/_next/image` with HTTP 402 for every REMOTE source, which is exactly the
+ * broken-image state this component exists to prevent. There is nothing to win
+ * here anyway: lib/storage/images.ts already stores a capped webp original and
+ * a 200px blurred derivative (21 KB and 584 B for a typical row), so the
+ * optimizer would re-encode an already-small file. Pointing the browser
+ * straight at the signed url keeps next/image's layout behaviour (`fill`,
+ * sizing, lazy loading) and costs no quota. Local /public art is unaffected and
+ * stays optimized.
  */
 export function ShowcaseImage({
   profile,
@@ -60,6 +74,7 @@ export function ShowcaseImage({
       sizes={sizes}
       priority={priority}
       className={className}
+      unoptimized
       // A signed URL that 400s (missing object) or 403s (expired signature)
       // swaps to the initials avatar instead of a broken image.
       onError={() => setFailed(true)}
