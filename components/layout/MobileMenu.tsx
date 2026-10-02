@@ -46,11 +46,6 @@ interface MobileMenuProps {
   accountEmail?: string;
   profileLabel?: string;
   expandLabel?: string;
-  /**
-   * Shown under the expand link as subtext. There is no hover on a phone, so
-   * the explanation that is a tooltip on desktop is always visible here.
-   */
-  expandDescription?: string;
   logoutLabel?: string;
   logoutAction?: (formData: FormData) => void | Promise<void>;
 
@@ -78,7 +73,6 @@ export function MobileMenu({
   accountEmail,
   profileLabel,
   expandLabel,
-  expandDescription,
   logoutLabel,
   logoutAction,
   loginLabel,
@@ -208,11 +202,6 @@ export function MobileMenu({
                           +
                         </span>
                       </span>
-                      {expandDescription && (
-                        <span className="mt-0.5 block text-xs leading-relaxed text-muted">
-                          {expandDescription}
-                        </span>
-                      )}
                     </Link>
                   )}
                 </div>

@@ -205,7 +205,6 @@ export async function Header() {
             accountEmail={session?.user ? (session.user.email ?? "") : undefined}
             profileLabel={nav("editProfile")}
             expandLabel={expandT("menuLabel")}
-            expandDescription={expandT("menuTooltip")}
             logoutLabel={authT("logout")}
             logoutAction={logout}
             // Signed out: the two CTAs a visitor came for, above the nav list.
