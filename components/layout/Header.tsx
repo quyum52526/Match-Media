@@ -200,44 +200,22 @@ export async function Header() {
             companyItems={companyItems}
             resourcesLabel={nav("resources")}
             resourcesItems={resourcesItems}
+            locale={locale}
+            // Signed in: identity and own-account links at the top, log out last.
             accountEmail={session?.user ? (session.user.email ?? "") : undefined}
             profileLabel={nav("editProfile")}
             expandLabel={expandT("menuLabel")}
             expandDescription={expandT("menuTooltip")}
-          >
-            {session?.user ? (
-              <div className="flex flex-col gap-2 border-t border-hairline/70 pt-3">
-                <form action={logout}>
-                  <Button type="submit" variant="ghost" size="sm" fullWidth>
-                    {authT("logout")}
-                  </Button>
-                </form>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-2 border-t border-hairline/70 pt-3">
-                {isGuest ? (
-                  <form action={exitGuestMode}>
-                    <input type="hidden" name="locale" value={locale} />
-                    <Button type="submit" variant="ghost" size="sm" fullWidth>
-                      {guestT("exit")}
-                    </Button>
-                  </form>
-                ) : (
-                  <form action={enterGuestMode}>
-                    <input type="hidden" name="locale" value={locale} />
-                    <Button type="submit" variant="outline" size="sm" fullWidth>
-                      {guestT("explore")}
-                    </Button>
-                  </form>
-                )}
-                <Link href="/login">
-                  <Button variant="outline" size="sm" fullWidth>
-                    {authT("login")}
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </MobileMenu>
+            logoutLabel={authT("logout")}
+            logoutAction={logout}
+            // Signed out: the two CTAs a visitor came for, above the nav list.
+            loginLabel={authT("login")}
+            signUpLabel={authT("registerLink")}
+            isGuest={isGuest}
+            guestExploreLabel={guestT("explore")}
+            guestExitLabel={guestT("exit")}
+            guestAction={isGuest ? exitGuestMode : enterGuestMode}
+          />
           <LocaleSwitcher />
           <div className="hidden items-center gap-2.5 lg:flex">
             {session?.user ? (
