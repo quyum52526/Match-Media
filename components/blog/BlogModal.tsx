@@ -55,7 +55,7 @@ export function BlogModal({ post, onClose }: BlogModalProps) {
         onClick={onClose}
         aria-hidden
       />
-      <article className="relative z-10 flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-card bg-surface shadow-card">
+      <article className="relative z-10 flex max-h-[90dvh] w-full max-w-2xl flex-col overflow-hidden rounded-card bg-surface shadow-card">
         {/* Header: date + title, sticky while the article scrolls */}
         <div className="flex items-start justify-between gap-4 border-b border-hairline p-5 sm:p-6">
           <div>
@@ -70,7 +70,7 @@ export function BlogModal({ post, onClose }: BlogModalProps) {
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="shrink-0 rounded-lg p-1 text-ink/50 transition-colors hover:bg-ink/5 hover:text-ink"
+            className="-mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-ink/50 transition-colors hover:bg-ink/5 hover:text-ink"
           >
             <XIcon width={18} height={18} />
           </button>

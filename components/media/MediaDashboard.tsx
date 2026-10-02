@@ -118,22 +118,22 @@ export function MediaDashboard({ data }: Props) {
       </Card>
 
       {/* ── Stats row ─────────────────────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="flex flex-col items-center gap-1 rounded-card border border-hairline bg-canvas p-4 text-center">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        <div className="flex flex-col items-center gap-1 rounded-card border border-hairline bg-canvas p-3 text-center sm:p-4">
           <UsersIcon width={20} height={20} className="text-primary" />
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">
             {t("stats.total")}
           </p>
           <p className="text-2xl font-bold text-ink">{data.totalCount}</p>
         </div>
-        <div className="flex flex-col items-center gap-1 rounded-card border border-hairline bg-canvas p-4 text-center">
+        <div className="flex flex-col items-center gap-1 rounded-card border border-hairline bg-canvas p-3 text-center sm:p-4">
           <CheckCircleIcon width={20} height={20} className="text-success" />
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">
             {t("stats.active")}
           </p>
           <p className="text-2xl font-bold text-success">{data.activeCount}</p>
         </div>
-        <div className="flex flex-col items-center gap-1 rounded-card border border-hairline bg-canvas p-4 text-center">
+        <div className="flex flex-col items-center gap-1 rounded-card border border-hairline bg-canvas p-3 text-center sm:p-4">
           <ClockIcon width={20} height={20} className="text-amber-500" />
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">
             {t("stats.pending")}

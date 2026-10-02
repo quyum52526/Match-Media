@@ -205,9 +205,9 @@ export function FullDetailsModal({
         aria-hidden
       />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col overflow-hidden rounded-card bg-white shadow-card">
+      <div className="relative z-10 mx-auto flex max-h-[90dvh] w-full max-w-2xl flex-col overflow-hidden rounded-card bg-white shadow-card">
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 border-b border-gray-100 p-4 sm:px-6">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-gray-100 p-4 sm:px-6">
           <div className="min-w-0">
             <h2 className="truncate text-base font-semibold text-ink sm:text-lg">
               {t("title")}
@@ -220,14 +220,14 @@ export function FullDetailsModal({
             type="button"
             onClick={onClose}
             aria-label={t("close")}
-            className="-mr-1 shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
+            className="-mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
           >
             <X size={18} strokeWidth={2} />
           </button>
         </div>
 
         {/* Body — scrolls on its own when the content overflows. */}
-        <div className="max-h-[80vh] overflow-y-auto p-4 sm:p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           <div className="space-y-6">
             <Section title={t("personalSection")} items={personal} />
             <Section title={t("careerSection")} items={career} />

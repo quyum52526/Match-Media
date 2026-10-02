@@ -109,7 +109,7 @@ export function UserMenu({
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={accountLabel}
-        className="flex items-center gap-1 rounded-pill p-1 pr-1.5 transition-colors hover:bg-ink/5"
+        className="flex h-11 items-center gap-1 rounded-pill px-1.5 transition-colors hover:bg-ink/5"
       >
         <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary font-body text-xs font-semibold text-white">
           {initial}

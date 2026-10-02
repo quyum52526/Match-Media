@@ -43,19 +43,20 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
         onClick={onClose}
         aria-hidden
       />
-      <div className="relative z-10 w-full max-w-md overflow-hidden rounded-card bg-surface shadow-card">
-        <div className="flex items-center justify-between border-b border-hairline p-4">
+      <div className="relative z-10 flex max-h-[90dvh] w-full max-w-md flex-col overflow-hidden rounded-card bg-surface shadow-card">
+        <div className="flex shrink-0 items-center justify-between border-b border-hairline p-4">
           <h2 className="text-base font-semibold text-ink">{title}</h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="rounded-lg p-1 text-ink/50 transition-colors hover:bg-ink/5 hover:text-ink"
+            // 44px hit area: the icon stays 18px, the target around it does not.
+            className="-mr-2 flex h-11 w-11 items-center justify-center rounded-lg text-ink/50 transition-colors hover:bg-ink/5 hover:text-ink"
           >
             <XIcon width={18} height={18} />
           </button>
         </div>
-        <div className="p-5">{children}</div>
+        <div className="flex-1 overflow-y-auto p-5">{children}</div>
       </div>
     </div>
   );

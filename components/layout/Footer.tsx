@@ -148,7 +148,7 @@ export async function Footer() {
           <p className="m-0 text-[13px] font-normal leading-relaxed text-[rgba(251,247,242,0.5)]">
             {t("rights", { year: String(year) })}
           </p>
-          <p className="m-0 max-w-[62ch] text-right text-[13px] font-normal leading-relaxed text-[rgba(251,247,242,0.5)]">
+          <p className="m-0 max-w-[62ch] text-[13px] font-normal leading-relaxed text-[rgba(251,247,242,0.5)] sm:text-right">
             {t("disclaimer")}
           </p>
         </div>

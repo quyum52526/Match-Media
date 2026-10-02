@@ -63,7 +63,7 @@ export function MobileMenu({
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-label={menuLabel}
-        className="flex h-9 w-9 items-center justify-center rounded-pill text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink"
+        className="flex h-11 w-11 items-center justify-center rounded-pill text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink"
       >
         {open ? <XIcon width={20} height={20} /> : <MenuIcon width={20} height={20} />}
       </button>

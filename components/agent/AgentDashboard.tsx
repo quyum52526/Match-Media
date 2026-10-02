@@ -38,22 +38,22 @@ export async function AgentDashboard({
       />
 
       {/* Earnings summary chips */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="flex flex-col items-center gap-1 rounded-card border border-hairline bg-canvas p-4 text-center">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        <div className="flex flex-col items-center gap-1 rounded-card border border-hairline bg-canvas p-3 text-center sm:p-4">
           <BanknoteIcon width={20} height={20} className="text-success" />
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">
             {t("totalEarned")}
           </p>
           <p className="text-lg font-bold text-success">{formatTaka(data.totalEarned)}</p>
         </div>
-        <div className="flex flex-col items-center gap-1 rounded-card border border-hairline bg-canvas p-4 text-center">
+        <div className="flex flex-col items-center gap-1 rounded-card border border-hairline bg-canvas p-3 text-center sm:p-4">
           <ClockIcon width={20} height={20} className="text-amber-500" />
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">
             {t("pending")}
           </p>
           <p className="text-lg font-bold text-ink">{data.pendingCount}</p>
         </div>
-        <div className="flex flex-col items-center gap-1 rounded-card border border-hairline bg-canvas p-4 text-center">
+        <div className="flex flex-col items-center gap-1 rounded-card border border-hairline bg-canvas p-3 text-center sm:p-4">
           <CheckCircleIcon width={20} height={20} className="text-primary" />
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">
             {t("completed")}

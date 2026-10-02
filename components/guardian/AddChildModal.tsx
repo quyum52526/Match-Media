@@ -82,7 +82,7 @@ export function AddChildModal({ open, onClose }: Props) {
               placeholder={t("fullNamePlaceholder")} className={INPUT} required />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <label className={LABEL}>{t("gender")} <span className="text-primary">*</span></label>
               <select value={gender} onChange={(e) => setGender(e.target.value)} className={INPUT} required>
@@ -106,7 +106,7 @@ export function AddChildModal({ open, onClose }: Props) {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <label className={LABEL}>{t("profession")}</label>
               <select value={profession} onChange={(e) => setProfession(e.target.value)} className={INPUT}>

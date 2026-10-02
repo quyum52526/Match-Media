@@ -10,6 +10,15 @@
     scroll-behavior: smooth;
   }
 
+  /* A rotated card, a wide carousel item or a long unbroken string can push the
+     document wider than the viewport, and the result on a phone is a page that
+     slides sideways with a strip of background down one edge. Clipping at the
+     root contains that: nothing in this app scrolls the PAGE horizontally — the
+     carousels scroll their own overflow-x-auto containers, which still work. */
+  body {
+    overflow-x: hidden;
+  }
+
   h1,
   h2,
   h3,
@@ -48,4 +57,19 @@
   --radius-pill: 999px;
   --radius-md: 14px;
   --shadow-card: 0 2px 12px rgba(30, 36, 54, 0.06);
+}
+
+/* iOS Safari zooms the page in when a focused form control has a font smaller
+   than 16px, and then leaves it zoomed — on a phone that reads as the layout
+   breaking the moment someone taps a field. Every control in this app is
+   `text-sm` (14px) by design, so rather than scatter `text-base sm:text-sm`
+   across ~30 components (and let the next form forget it), the floor is set
+   once here for small screens only. Checkboxes and radios are excluded: they
+   have no text and the rule would resize the box itself. */
+@media (max-width: 639.98px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }

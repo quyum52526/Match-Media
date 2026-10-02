@@ -252,7 +252,7 @@ function PhotoViewer({
             src={photo.url}
             alt={t("alt", { name })}
             className={
-              "max-h-[85vh] max-w-[92vw] rounded-lg object-contain" +
+              "max-h-[85dvh] max-w-[92vw] rounded-lg object-contain" +
               (photo.revealed ? "" : " blur-2xl")
             }
           />
