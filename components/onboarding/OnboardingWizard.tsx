@@ -8,38 +8,43 @@ import { StepCategorySelect, type AccountCategory } from "./steps/StepCategorySe
 import { StepBasicDetails } from "./steps/StepBasicDetails";
 import { StepMediaDetails } from "./steps/StepMediaDetails";
 import { StepPhotoUpload } from "./steps/StepPhotoUpload";
-import { StepMobileVerify } from "./steps/StepMobileVerify";
 
 // ---------------------------------------------------------------------------
 // Step routing
 //
 // Each AccountCategory maps to its own ordered step list:
 //
-//  SELF     → Category → Basic Details → Photo → Mobile Verify
-//  PARENTS  → Category → Mobile Verify  (no matrimonial profile; they manage
-//             child profiles from their Guardian Dashboard after onboarding)
-//  MEDIA    → Category → Basic Details → Mobile Verify  (no photo; they
-//             manage client profiles separately after onboarding)
-//  AGENT    → Category → Mobile Verify  (no matrimonial profile at all;
-//             goes straight to admin-verification queue after this)
+//  SELF     → Category → Basic Details → Photo
+//  PARENTS  → Category  (no matrimonial profile; they manage child profiles
+//             from their Guardian Dashboard after onboarding)
+//  MEDIA    → Category → Agency Details  (no photo; they manage client
+//             profiles separately after onboarding)
+//  AGENT    → Category  (no matrimonial profile at all; goes straight to the
+//             admin-verification queue after this)
+//
+// There is no mobile-verification step: the number is collected and stored at
+// registration (lib/actions/auth.ts) and SMS OTP is off, so the step asked for
+// it a second time and pretended to check a code that was never sent. Email is
+// the one verification signup blocks on, and it happens before the wizard at
+// /verify-email.
 // ---------------------------------------------------------------------------
 
-type StepId = "CATEGORY" | "BASIC" | "PHOTO" | "VERIFY" | "DONE";
+type StepId = "CATEGORY" | "BASIC" | "PHOTO" | "DONE";
 
 function stepsFor(category: AccountCategory | null): StepId[] {
   switch (category) {
     case "SELF":
-      return ["CATEGORY", "BASIC", "PHOTO", "VERIFY"];
+      return ["CATEGORY", "BASIC", "PHOTO"];
     case "PARENTS":
-      return ["CATEGORY", "VERIFY"];
+      return ["CATEGORY"];
     case "MEDIA":
-      return ["CATEGORY", "BASIC", "VERIFY"];
+      return ["CATEGORY", "BASIC"];
     case "AGENT":
-      return ["CATEGORY", "VERIFY"];
+      return ["CATEGORY"];
     default:
-      // Pre-selection: show the standard 4-step path as a preview so the
-      // counter reads "Step 1 of 4" rather than the confusing "Step 1 of 1".
-      return ["CATEGORY", "BASIC", "PHOTO", "VERIFY"];
+      // Pre-selection: show the standard path as a preview so the counter reads
+      // "Step 1 of 3" rather than the confusing "Step 1 of 1".
+      return ["CATEGORY", "BASIC", "PHOTO"];
   }
 }
 
@@ -47,7 +52,6 @@ const STEP_LABELS: Record<StepId, string> = {
   CATEGORY: "Account Type",
   BASIC: "Basic Details",
   PHOTO: "Photo",
-  VERIFY: "Verify",
   DONE: "Done",
 };
 
@@ -231,9 +235,6 @@ export function OnboardingWizard() {
         )}
         {currentStep === "PHOTO" && (
           <StepPhotoUpload onNext={next} onBack={back} />
-        )}
-        {currentStep === "VERIFY" && (
-          <StepMobileVerify onNext={next} onBack={back} />
         )}
       </div>
     </div>
