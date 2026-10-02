@@ -44,10 +44,22 @@ export function PhotoModerationQueue({ photos }: { photos: PendingPhoto[] }) {
           key={photo.id}
           className="overflow-hidden rounded-2xl border border-ink/10 bg-white"
         >
-          <div className="aspect-[3/4] w-full bg-ink/5">
+          {/* The signed ORIGINAL (never the blurred derivative) — moderators
+              must see the raw photo. Click opens it full size in a new tab. */}
+          <a
+            href={photo.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={t("openFull")}
+            className="block aspect-[3/4] w-full bg-ink/5"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={photo.url} alt="" className="h-full w-full object-cover" />
-          </div>
+            <img
+              src={photo.url}
+              alt=""
+              className="h-full w-full object-cover hover:opacity-90"
+            />
+          </a>
           <div className="space-y-3 p-3">
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-ink">

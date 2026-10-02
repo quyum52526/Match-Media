@@ -1,8 +1,14 @@
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/Button";
-import { LockIcon, ClockIcon, CheckIcon } from "@/components/ui/icons";
+import {
+  LockIcon,
+  ClockIcon,
+  CheckIcon,
+  ShieldCheckIcon,
+} from "@/components/ui/icons";
 import { PrivacyBlur } from "@/components/privacy/PrivacyBlur";
-import type { ImagePrivacy, PhotoAccessState } from "./types";
+import type { ImagePrivacy, ModerationStatus, PhotoAccessState } from "./types";
 
 interface BlurredImageProps {
   privacy: ImagePrivacy;
@@ -15,11 +21,22 @@ interface BlurredImageProps {
   pending?: boolean;
   /** Blocked by the free-tier daily request cap. */
   requestDisabled?: boolean;
+  /**
+   * ADMIN / SUPER_ADMIN viewer: the server already signed the original, so the
+   * photo renders clear and the request flow is replaced by admin controls.
+   */
+  adminView?: boolean;
+  /** Primary photo's moderation state (admin viewers only). */
+  moderation?: ModerationStatus;
 }
 
 /** Has the viewer earned a clear look at the photo? */
-function isRevealed(privacy: ImagePrivacy, state: PhotoAccessState): boolean {
-  return privacy === "PUBLIC" || state === "APPROVED";
+function isRevealed(
+  privacy: ImagePrivacy,
+  state: PhotoAccessState,
+  adminView: boolean,
+): boolean {
+  return adminView || privacy === "PUBLIC" || state === "APPROVED";
 }
 
 export function BlurredImage({
@@ -30,9 +47,11 @@ export function BlurredImage({
   onRequest,
   pending,
   requestDisabled,
+  adminView = false,
+  moderation,
 }: BlurredImageProps) {
   const t = useTranslations("Profile.photo");
-  const revealed = isRevealed(privacy, state);
+  const revealed = isRevealed(privacy, state, adminView);
 
   return (
     <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-ink/5">
@@ -102,8 +121,51 @@ export function BlurredImage({
         </div>
       )}
 
+      {/* Admin: raw original, plus moderation shortcuts instead of a request */}
+      {adminView && (
+        <>
+          <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-ink/80 px-2.5 py-1 text-xs font-medium text-white">
+            <ShieldCheckIcon width={14} height={14} />
+            {t("adminView")}
+          </span>
+          <div className="absolute inset-x-3 bottom-3 flex flex-wrap items-center justify-end gap-2">
+            {moderation && moderation !== "APPROVED" && (
+              <span
+                className={
+                  "mr-auto inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium text-white " +
+                  (moderation === "PENDING" ? "bg-accent" : "bg-red-600")
+                }
+              >
+                <ClockIcon width={14} height={14} />
+                {moderation === "PENDING"
+                  ? t("moderationPending")
+                  : t("moderationRejected")}
+              </span>
+            )}
+            {src && (
+              <a
+                href={src}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-ink hover:bg-white"
+              >
+                {t("openFull")}
+              </a>
+            )}
+            {moderation === "PENDING" && (
+              <Link
+                href="/admin/photos"
+                className="rounded-full bg-primary px-2.5 py-1 text-xs font-medium text-white hover:opacity-90"
+              >
+                {t("reviewInQueue")}
+              </Link>
+            )}
+          </div>
+        </>
+      )}
+
       {/* Small confirmation chip when access is granted */}
-      {revealed && privacy === "BLURRED" && (
+      {!adminView && revealed && privacy === "BLURRED" && (
         <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-success px-2.5 py-1 text-xs font-medium text-white">
           <CheckIcon width={14} height={14} />
           {t("granted")}

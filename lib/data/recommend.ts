@@ -76,6 +76,7 @@ async function fallbackRecommendations(
   candidateArm: Prisma.ProfileWhereInput,
   preferredGender: string | null,
   acceptedReligions: readonly string[] | null = null,
+  viewerIsAdmin = false,
 ): Promise<RecommendationResult> {
   // The religion gate is mandatory, so it applies to the fallback too — an
   // unscored suggestion must never cross a religion the viewer ruled out.
@@ -94,7 +95,7 @@ async function fallbackRecommendations(
     take: RECOMMENDED_LIMIT,
     select: BROWSE_CARD_SELECT,
   });
-  const cards = await hydrateProfileCards(rows, viewerId);
+  const cards = await hydrateProfileCards(rows, viewerId, viewerIsAdmin);
   return {
     kind: "fallback",
     profiles: cards.map((card) => ({ ...card, matchScore: 0 })),
@@ -122,6 +123,7 @@ async function fallbackRecommendations(
 export async function getRecommendedProfiles(
   viewerId: string,
   filters: SearchFilters = {},
+  viewerIsAdmin = false,
 ): Promise<RecommendationResult> {
   // Candidate visibility mirrors the browse feed for a regular viewer:
   //   • managed profiles (userId = null), OR
@@ -149,7 +151,9 @@ export async function getRecommendedProfiles(
       partnerPreference: { select: PARTNER_PREFERENCE_SELECT },
     },
   });
-  if (!viewer) return fallbackRecommendations(viewerId, candidateArm, null);
+  if (!viewer) {
+    return fallbackRecommendations(viewerId, candidateArm, null, null, viewerIsAdmin);
+  }
 
   const viewerAge = calcAge(viewer.dateOfBirth);
   const preferredAge = resolvePreferredAge(filters, viewerAge);
@@ -264,6 +268,7 @@ export async function getRecommendedProfiles(
       candidateArm,
       preferredGender,
       acceptedReligions,
+      viewerIsAdmin,
     );
   }
 
@@ -279,7 +284,7 @@ export async function getRecommendedProfiles(
     (a, b) => (scoreById.get(b.id) ?? 0) - (scoreById.get(a.id) ?? 0),
   );
 
-  const cards = await hydrateProfileCards(rows, viewerId);
+  const cards = await hydrateProfileCards(rows, viewerId, viewerIsAdmin);
   // hydrateProfileCards preserves input order, so cards[i] aligns with rows[i].
   return {
     kind: "scored",

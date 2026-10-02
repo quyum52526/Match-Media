@@ -9,6 +9,7 @@ import { maskEmail, maskPhone } from "@/lib/privacy";
 import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
 import { heightsInRange } from "@/lib/constants/profileOptions";
 import { parseFamilyDetails } from "@/lib/data/familyDetails";
+import { isAdminRole } from "@/lib/rbac";
 import type {
   ProfileDetailView,
   ProfileSummary,
@@ -17,6 +18,7 @@ import type {
   PhotoAccessState,
   InterestState,
   ImagePrivacy,
+  ModerationStatus,
 } from "@/components/profile/types";
 
 // Placeholder shown when a profile chooses to hide its name.
@@ -246,6 +248,7 @@ export type BrowseCardRow = Prisma.ProfileGetPayload<{
 export async function hydrateProfileCards(
   profiles: BrowseCardRow[],
   viewerId: string,
+  viewerIsAdmin = false,
 ): Promise<ProfileSummary[]> {
   // Photo-access state only applies to profiles that have a User account.
   // Managed profiles (userId = null) have no ownerId, so they always show as "NONE".
@@ -283,7 +286,9 @@ export async function hydrateProfileCards(
     const access = p.userId ? (statusByOwner.get(p.userId) ?? "NONE") : "NONE";
     const isPublic = img.privacy === "PUBLIC";
     if (isPublic) ungatedKeys.push(img.originalKey);
-    else if (access === "APPROVED") gatedKeys.push(img.originalKey);
+    // Admins review photos, so they bypass the member privacy gate — but the
+    // original still goes in the short-TTL bucket, same as an APPROVED grant.
+    else if (viewerIsAdmin || access === "APPROVED") gatedKeys.push(img.originalKey);
     else ungatedKeys.push(img.blurredKey);
   }
   const [ungatedSigned, gatedSigned] = await Promise.all([
@@ -300,7 +305,8 @@ export async function hydrateProfileCards(
     const access: PhotoAccessState = p.userId
       ? (statusByOwner.get(p.userId) ?? "NONE")
       : "NONE";
-    const revealed = !!img && (img.privacy === "PUBLIC" || access === "APPROVED");
+    const revealed =
+      !!img && (viewerIsAdmin || img.privacy === "PUBLIC" || access === "APPROVED");
     const key = img ? (revealed ? img.originalKey : img.blurredKey) : undefined;
     return {
       id: cardId,
@@ -316,6 +322,7 @@ export async function hydrateProfileCards(
       primaryImagePrivacy: (img?.privacy as ImagePrivacy) ?? "BLURRED",
       imageUrl: key ? signed.get(key) : undefined,
       photoAccess: access,
+      adminView: viewerIsAdmin,
       // Trust signals, scored as a share of the signals that are actually
       // EARNABLE. The mobile component is dropped entirely — numerator AND
       // denominator — while ENABLE_SMS_OTP is off, because then it is set for
@@ -461,7 +468,7 @@ export async function getBrowseProfiles(
   });
 
   return {
-    profiles: await hydrateProfileCards(rows, viewerId),
+    profiles: await hydrateProfileCards(rows, viewerId, isAdminRole(viewerRole)),
     total,
     page,
     pageCount,
@@ -502,9 +509,10 @@ export async function getProfileViewAccess(
 
   const viewer = await prisma.user.findUnique({
     where: { id: viewerId },
-    select: { isPro: true, proExpiresAt: true },
+    select: { isPro: true, proExpiresAt: true, role: true },
   });
-  if (isProActive(viewer)) return unlimited;
+  // Moderators must be able to open any number of profiles to review them.
+  if (isProActive(viewer) || isAdminRole(viewer?.role)) return unlimited;
 
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
@@ -539,6 +547,7 @@ export async function getProfileViewAccess(
 export async function getProfileForViewer(
   profileId: string,
   viewerId: string,
+  viewerIsAdmin = false,
 ): Promise<ProfileDetailView | null> {
   // Look up by userId OR profile.id — managed profiles have userId = null and
   // are identified by their profile.id in the browse feed.
@@ -547,8 +556,15 @@ export async function getProfileForViewer(
     include: {
       user: { select: PROFILE_OWNER_USER_SELECT },
       referredBy: { select: { accountCategory: true } },
-      // Pre-moderation: only an APPROVED primary photo is served to viewers.
-      images: { where: { isPrimary: true, moderationStatus: "APPROVED" }, take: 1 },
+      // Pre-moderation: only an APPROVED primary photo is served to members.
+      // Admins see the primary photo whatever its moderation state, so they
+      // can verify it (a PENDING one is flagged with a link to the queue).
+      images: {
+        where: viewerIsAdmin
+          ? { isPrimary: true }
+          : { isPrimary: true, moderationStatus: "APPROVED" },
+        take: 1,
+      },
     },
   });
   if (!profile) return null;
@@ -564,7 +580,8 @@ export async function getProfileForViewer(
 
   // Log a daily-unique profile view (skip self-views and managed profiles with
   // no user account, since there's no meaningful "owner" to attribute the view to).
-  if (ownerUserId && viewerId !== ownerUserId) {
+  // Admin reviews are not member interest, so they are not logged either.
+  if (ownerUserId && viewerId !== ownerUserId && !viewerIsAdmin) {
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
     try {
@@ -629,13 +646,17 @@ export async function getProfileForViewer(
     interest: (sentInterest?.status as InterestState) ?? "NONE",
     isPro: viewerIsPro,
     isMatched: Boolean(acceptedInterest),
+    isAdmin: viewerIsAdmin,
   };
 
   const primary = profile.images[0];
 
+  // Admins bypass the member photo-privacy gate: they always get the original.
   const photoRevealed =
     !!primary &&
-    (primary.privacy === "PUBLIC" || photoReq?.status === "APPROVED");
+    (viewerIsAdmin ||
+      primary.privacy === "PUBLIC" ||
+      photoReq?.status === "APPROVED");
   const imageUrl = primary
     ? (await signUrl(photoRevealed ? primary.originalKey : primary.blurredKey)) ??
       undefined
@@ -662,6 +683,11 @@ export async function getProfileForViewer(
     managedBy: resolveManagerType(profile.referredBy?.accountCategory ?? null),
     primaryImagePrivacy: (primary?.privacy as ImagePrivacy) ?? "BLURRED",
     imageUrl,
+    // Admin-only: lets the photo panel flag a photo still awaiting review.
+    primaryImageModeration:
+      viewerIsAdmin && primary
+        ? (primary.moderationStatus as ModerationStatus)
+        : undefined,
     details: {
       height: profile.height ?? "",
       weight: profile.weight ?? "",
@@ -770,7 +796,13 @@ export async function getGuestProfilePreview(
     },
     // Guest baseline: nothing requested, nothing sent, no match — identical to
     // what a fresh authenticated free member sees on someone new.
-    viewer: { photoAccess: "NONE", interest: "NONE", isPro: false, isMatched: false },
+    viewer: {
+      photoAccess: "NONE",
+      interest: "NONE",
+      isPro: false,
+      isMatched: false,
+      isAdmin: false,
+    },
     // Contact is never handed to a guest (it otherwise requires a mutual
     // ACCEPTED interest, which a signed-out visitor can never have).
     maskedContact: undefined,

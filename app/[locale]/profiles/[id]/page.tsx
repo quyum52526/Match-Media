@@ -13,7 +13,8 @@ import {
 import { getPhotoRequestQuota } from "@/lib/data/billing";
 import { getContactGateStatus } from "@/lib/contactGate";
 import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
-import { getViewerIdOrGuest } from "@/lib/session";
+import { getViewerIdOrGuest, getViewerRole } from "@/lib/session";
+import { isAdminRole } from "@/lib/rbac";
 
 export const metadata = {
   title: "Profile · MatchMedia",
@@ -70,10 +71,13 @@ export default async function ProfilePage({
     );
   }
 
+  // Admins (ADMIN / SUPER_ADMIN) bypass the member photo-privacy gate so they
+  // can review and verify photos. Role is re-read from the DB, never the JWT.
+  const viewerIsAdmin = isAdminRole(await getViewerRole());
   // `gate` drives the Message / Call affordances: without it the buttons would
   // either dead-end or start a thread the viewer cannot type in.
   const [profile, quota, gate] = await Promise.all([
-    getProfileForViewer(id, viewerId!),
+    getProfileForViewer(id, viewerId!, viewerIsAdmin),
     getPhotoRequestQuota(viewerId!),
     getContactGateStatus(viewerId!),
   ]);

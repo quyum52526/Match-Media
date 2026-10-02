@@ -43,6 +43,11 @@ export interface ViewerState {
   isPro: boolean;
   /** Mutual ACCEPTED interest (either direction) — unlocks in-app messaging. */
   isMatched: boolean;
+  /**
+   * ADMIN / SUPER_ADMIN viewer. Bypasses the member photo-privacy gate (the
+   * server already signed the original) and hides the photo-request flow.
+   */
+  isAdmin: boolean;
 }
 
 /**
@@ -171,6 +176,8 @@ export interface ProfileSummary {
   imageUrl?: string;
   /** The current viewer's photo-access state for this profile. */
   photoAccess: PhotoAccessState;
+  /** Viewer is an admin: the photo is the unblurred original, no request flow. */
+  adminView?: boolean;
   /**
    * 0–100 trust score derived from completed verifications (mobile, email,
    * photo, NID). Drives the mini progress bar on the browse card.
@@ -206,6 +213,8 @@ export interface ProfileDetailView {
    * viewer may see it, otherwise the pre-blurred teaser). Absent when no photo.
    */
   imageUrl?: string;
+  /** Moderation state of the primary photo — set only for admin viewers. */
+  primaryImageModeration?: ModerationStatus;
   details: ProfileFullDetails;
   verifications: ProfileVerifications;
   viewer: ViewerState;

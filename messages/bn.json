@@ -283,6 +283,11 @@
       "revoked": "Photo দেখার অনুমতি প্রত্যাহার করা হয়েছে",
       "requestAgain": "আবার Request পাঠান",
       "granted": "Photo access পেয়েছেন",
+      "adminView": "Admin view · আসল ছবি",
+      "moderationPending": "Moderation-এর অপেক্ষায়",
+      "moderationRejected": "Moderation-এ বাতিল",
+      "reviewInQueue": "Photo queue-তে review করুন",
+      "openFull": "পূর্ণ আকারে দেখুন",
       "alt": "{name} এর Photo",
       "quota": {
         "remaining": "আজ {limit} টির মধ্যে {n} টি free photo request বাকি",
@@ -481,6 +486,7 @@
     "photos": {
       "empty": "পর্যালোচনার জন্য কোনো ছবি নেই।",
       "uploadedOn": "আপলোড {date}",
+      "openFull": "পূর্ণ আকারে দেখুন",
       "approve": "অনুমোদন",
       "reject": "প্রত্যাখ্যান",
       "confirmReject": "নিশ্চিত করুন",

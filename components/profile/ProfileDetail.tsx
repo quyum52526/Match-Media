@@ -121,8 +121,11 @@ export function ProfileDetail({
   const isNewRequest = viewer.photoAccess === "NONE";
   const photoLimitReached =
     !quota.unlimited && isNewRequest && quota.remaining <= 0;
+  // Admins bypass the photo-privacy gate entirely (server signed the original).
   const photoRevealed =
-    data.primaryImagePrivacy === "PUBLIC" || viewer.photoAccess === "APPROVED";
+    viewer.isAdmin ||
+    data.primaryImagePrivacy === "PUBLIC" ||
+    viewer.photoAccess === "APPROVED";
 
   // Freemium: completion is derived purely from which data fields are present.
   const completion = computeCompletion([
@@ -198,6 +201,8 @@ export function ProfileDetail({
             onRequest={requestPhotoAccess}
             pending={isPending}
             requestDisabled={photoLimitReached}
+            adminView={viewer.isAdmin}
+            moderation={data.primaryImageModeration}
           />
 
           {/* Quota feedback — only while the photo is still gated */}

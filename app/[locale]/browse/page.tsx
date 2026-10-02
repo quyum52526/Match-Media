@@ -121,7 +121,7 @@ export default async function BrowsePage({
   const [recommended, completion, quota, viewQuota] = await Promise.all([
     // Recommendations are shown to every viewer, guests included (guests get
     // the gender-agnostic fallback set, same as a profile-less MEDIA/ADMIN).
-    getRecommendedProfiles(effectiveViewerId, filters),
+    getRecommendedProfiles(effectiveViewerId, filters, isAdminRole(viewerRole)),
     // MEDIA/ADMIN users and guests have no personal profile to score.
     isPrivilegedViewer || isGuest ? Promise.resolve(null) : getProfileCompletion(effectiveViewerId),
     isGuest ? Promise.resolve(guestQuota) : getPhotoRequestQuota(effectiveViewerId),

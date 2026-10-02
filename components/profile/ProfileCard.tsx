@@ -33,7 +33,12 @@ interface ProfileCardProps {
 }
 
 function isRevealed(profile: ProfileSummary, state: PhotoAccessState): boolean {
-  return profile.primaryImagePrivacy === "PUBLIC" || state === "APPROVED";
+  // Admins bypass the member photo-privacy gate (server signed the original).
+  return (
+    !!profile.adminView ||
+    profile.primaryImagePrivacy === "PUBLIC" ||
+    state === "APPROVED"
+  );
 }
 
 export function ProfileCard({ profile, matchScore }: ProfileCardProps) {
@@ -214,22 +219,24 @@ export function ProfileCard({ profile, matchScore }: ProfileCardProps) {
           </div>
         </div>
 
-        {/* Actions: Request + View Profile */}
+        {/* Actions: Request + View Profile (admins have no request flow) */}
         <div className="flex gap-2 pt-2">
-          <Button
-            variant="primary"
-            size="sm"
-            className="flex-1"
-            onClick={requestPhoto}
-            disabled={pending || revealed || isSubmitting || blockedByLimit}
-            title={blockedByLimit ? t("photo.quota.limitReachedTitle") : undefined}
-          >
-            {pending
-              ? t("card.requested")
-              : blockedByLimit
-                ? t("photo.quota.cardButton")
-                : t("card.request")}
-          </Button>
+          {!profile.adminView && (
+            <Button
+              variant="primary"
+              size="sm"
+              className="flex-1"
+              onClick={requestPhoto}
+              disabled={pending || revealed || isSubmitting || blockedByLimit}
+              title={blockedByLimit ? t("photo.quota.limitReachedTitle") : undefined}
+            >
+              {pending
+                ? t("card.requested")
+                : blockedByLimit
+                  ? t("photo.quota.cardButton")
+                  : t("card.request")}
+            </Button>
+          )}
           <Link href={`/profiles/${profile.id}`} className="flex-1">
             <Button variant="outline" size="sm" fullWidth>
               {t("card.viewProfile")}
