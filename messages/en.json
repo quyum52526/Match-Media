@@ -1239,7 +1239,11 @@
     "title": "Expand account / additional services",
     "subtitle": "Apply to also run a marriage media agency, or to work as a verification agent — no second account needed.",
     "selectLabel": "Select service to apply for",
-    "selectPlaceholder": "Choose a service…",
+    "selectPlaceholder": "Choose an account type to expand to…",
+    "options": {
+      "agency": "Expand account to Marriage Media Account",
+      "agent": "Expand account to Verification Agent Account"
+    },
     "continue": "Continue to application",
     "nothingToApplyFor": "You already hold every additional service we offer.",
     "backToServices": "Back to services",
