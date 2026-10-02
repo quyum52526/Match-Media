@@ -48,6 +48,7 @@ export async function Header() {
   // UserMenu then renders no switcher at all. A role still under review is
   // listed disabled so the person can see their application exists.
   const roleT = await getTranslations("RoleSwitcher");
+  const expandT = await getTranslations("ExpandAccount");
   const entitlements = viewerId ? await getRoleEntitlements(viewerId) : null;
   const activeContext = viewerId ? await getActiveContext(viewerId) : "PERSONAL";
   const contextOptions: ContextOption[] | undefined = entitlements
@@ -256,6 +257,8 @@ export async function Header() {
                 switchLabel={roleT("switchLabel")}
                 underReviewLabel={roleT("underReview")}
                 switchAction={switchRoleContext}
+                expandLabel={expandT("menuLabel")}
+                expandTooltip={expandT("menuTooltip")}
               />
             ) : isGuest ? (
               <>

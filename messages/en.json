@@ -1234,6 +1234,8 @@
     }
   },
   "ExpandAccount": {
+    "menuLabel": "Expand account",
+    "menuTooltip": "Apply to become a Marriage Media Agency or Verification Agent with your existing account.",
     "pageTitle": "Expand your account",
     "pageSubtitle": "Add a service to the account you already have. Your personal profile stays exactly as it is.",
     "title": "Expand account / additional services",

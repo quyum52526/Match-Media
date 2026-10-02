@@ -45,6 +45,9 @@ interface UserMenuProps {
   switchLabel?: string;
   underReviewLabel?: string;
   switchAction?: (formData: FormData) => void | Promise<void>;
+  /** "Expand account" row — omitted when the labels are not supplied. */
+  expandLabel?: string;
+  expandTooltip?: string;
 }
 
 export function UserMenu({
@@ -59,6 +62,8 @@ export function UserMenu({
   switchLabel,
   underReviewLabel,
   switchAction,
+  expandLabel,
+  expandTooltip,
 }: UserMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -132,6 +137,45 @@ export function UserMenu({
           >
             {profileLabel}
           </Link>
+
+          {/* Expand account — the one promotional row in this menu, so it
+              carries the brand garnet and a chip instead of the plain link
+              treatment. The anchor lands on the card's own id, which exists on
+              both /profile/edit and /profile/expand. */}
+          {expandLabel && (
+            <div className="group relative">
+              <Link
+                href="/profile/edit#expand-account"
+                role="menuitem"
+                onClick={() => setOpen(false)}
+                aria-describedby={expandTooltip ? "expand-account-tip" : undefined}
+                className="flex items-center justify-between gap-2 px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary/5"
+              >
+                <span className="min-w-0 truncate">{expandLabel}</span>
+                <span
+                  aria-hidden
+                  className="shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary"
+                >
+                  +
+                </span>
+              </Link>
+
+              {/* Tooltip. Opens to the LEFT of the menu: the dropdown is only
+                  56 units wide and anchored to the right edge of the viewport,
+                  so anything placed inside or to the right is unreadable or
+                  off-screen. Shown on hover and on keyboard focus, and
+                  pointer-events-none so it can never swallow the click. */}
+              {expandTooltip && (
+                <span
+                  id="expand-account-tip"
+                  role="tooltip"
+                  className="pointer-events-none absolute right-full top-0 z-50 mr-2 hidden w-60 rounded-card border border-hairline bg-ink px-3 py-2 text-xs leading-relaxed text-white shadow-card group-hover:block group-focus-within:block"
+                >
+                  {expandTooltip}
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Context switcher — rendered only for an account that holds, or has
               applied for, a second role. Each row is a form post: the server

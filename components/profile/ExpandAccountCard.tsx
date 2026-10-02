@@ -43,79 +43,83 @@ export function ExpandAccountCard({
   ].filter(Boolean) as { value: string; label: string }[];
 
   return (
-    <Card>
-      <CardBody className="space-y-4">
-        <div>
-          <CardTitle>{t("title")}</CardTitle>
-          <p className="mt-1 text-sm text-muted">{t("subtitle")}</p>
-        </div>
-
-        {/* Current standing of each service, when there is something to say. */}
-        <div className="space-y-2">
-          {agency === "APPROVED" && (
-            <StatusLine tone="ok">
-              {t("status.agencyApproved", { name: agencyName ?? "" })}
-            </StatusLine>
-          )}
-          {agency === "PENDING" && (
-            <StatusLine tone="pending">{t("status.agencyPending")}</StatusLine>
-          )}
-          {agency === "REJECTED" && (
-            <StatusLine tone="bad">
-              {t("status.agencyRejected")}
-              {agencyRejectionReason ? ` — ${agencyRejectionReason}` : ""}
-            </StatusLine>
-          )}
-          {agent === "APPROVED" && (
-            <StatusLine tone="ok">{t("status.agentApproved")}</StatusLine>
-          )}
-          {agent === "PENDING" && (
-            <StatusLine tone="pending">{t("status.agentPending")}</StatusLine>
-          )}
-          {agent === "REJECTED" && (
-            <StatusLine tone="bad">
-              {t("status.agentRejected")}
-              {agentRejectionReason ? ` — ${agentRejectionReason}` : ""}
-            </StatusLine>
-          )}
-        </div>
-
-        {options.length > 0 ? (
-          <div className="space-y-3">
-            <div className="space-y-1">
-              <label
-                htmlFor="expandService"
-                className="text-sm font-medium text-ink"
-              >
-                {t("selectLabel")}
-              </label>
-              <select
-                id="expandService"
-                value={service}
-                onChange={(e) => setService(e.target.value)}
-                className="h-11 w-full rounded-xl border border-hairline bg-white px-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
-              >
-                <option value="">{t("selectPlaceholder")}</option>
-                {options.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <Button
-              type="button"
-              disabled={!service}
-              onClick={() => router.push(`/profile/expand/${service}`)}
-            >
-              {t("continue")}
-            </Button>
+    // The anchor target for the "Expand account" link in the account menu.
+    // scroll-mt-20 keeps the heading clear of the sticky header after the jump.
+    <div id="expand-account" className="scroll-mt-20">
+      <Card>
+        <CardBody className="space-y-4">
+          <div>
+            <CardTitle>{t("title")}</CardTitle>
+            <p className="mt-1 text-sm text-muted">{t("subtitle")}</p>
           </div>
-        ) : (
-          <p className="text-sm text-muted">{t("nothingToApplyFor")}</p>
-        )}
-      </CardBody>
-    </Card>
+
+          {/* Current standing of each service, when there is something to say. */}
+          <div className="space-y-2">
+            {agency === "APPROVED" && (
+              <StatusLine tone="ok">
+                {t("status.agencyApproved", { name: agencyName ?? "" })}
+              </StatusLine>
+            )}
+            {agency === "PENDING" && (
+              <StatusLine tone="pending">{t("status.agencyPending")}</StatusLine>
+            )}
+            {agency === "REJECTED" && (
+              <StatusLine tone="bad">
+                {t("status.agencyRejected")}
+                {agencyRejectionReason ? ` — ${agencyRejectionReason}` : ""}
+              </StatusLine>
+            )}
+            {agent === "APPROVED" && (
+              <StatusLine tone="ok">{t("status.agentApproved")}</StatusLine>
+            )}
+            {agent === "PENDING" && (
+              <StatusLine tone="pending">{t("status.agentPending")}</StatusLine>
+            )}
+            {agent === "REJECTED" && (
+              <StatusLine tone="bad">
+                {t("status.agentRejected")}
+                {agentRejectionReason ? ` — ${agentRejectionReason}` : ""}
+              </StatusLine>
+            )}
+          </div>
+
+          {options.length > 0 ? (
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <label
+                  htmlFor="expandService"
+                  className="text-sm font-medium text-ink"
+                >
+                  {t("selectLabel")}
+                </label>
+                <select
+                  id="expandService"
+                  value={service}
+                  onChange={(e) => setService(e.target.value)}
+                  className="h-11 w-full rounded-xl border border-hairline bg-white px-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+                >
+                  <option value="">{t("selectPlaceholder")}</option>
+                  {options.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <Button
+                type="button"
+                disabled={!service}
+                onClick={() => router.push(`/profile/expand/${service}`)}
+              >
+                {t("continue")}
+              </Button>
+            </div>
+          ) : (
+            <p className="text-sm text-muted">{t("nothingToApplyFor")}</p>
+          )}
+        </CardBody>
+      </Card>
+    </div>
   );
 }
 
