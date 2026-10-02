@@ -237,6 +237,10 @@ model User {
   mobile                   String?                  @unique
   isMobileVerified         Boolean                  @default(false)
   isEmailVerified          Boolean                  @default(false)
+  // When the email OTP was accepted. `isEmailVerified` is the flag every gate
+  // reads; this is the audit trail behind it (null for the admin seeds and for
+  // anyone verified before this column existed).
+  emailVerifiedAt          DateTime?
   // Pro (paid) membership — drives the VIP badge and contact-reveal gate.
   // `isPro` is the denormalized fast-path flag; `proExpiresAt` is the source of
   // truth that isProActive() checks so access lapses the moment it passes.

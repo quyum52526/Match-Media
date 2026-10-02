@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getViewerId } from "@/lib/session";
 import { calcAge, computeCompletion } from "@/lib/utils";
+import { isEmailGateCleared } from "@/lib/emailVerification";
 
 type AccountCategory = "SELF" | "PARENTS" | "MEDIA" | "AGENT";
 
@@ -16,6 +17,24 @@ const CATEGORY_TO_ROLE: Record<AccountCategory, string> = {
 };
 
 /**
+ * The authenticated caller, or an error — including the email gate.
+ *
+ * Every wizard step goes through this: the page-level redirect only steers the
+ * browser, and a crafted POST would otherwise write profile data for an account
+ * whose address was never confirmed.
+ */
+async function requireVerifiedViewer(): Promise<
+  { userId: string } | { error: string }
+> {
+  const userId = await getViewerId();
+  if (!userId) return { error: "Not authenticated." };
+  if (!(await isEmailGateCleared(userId))) {
+    return { error: "Verify your email address first." };
+  }
+  return { userId };
+}
+
+/**
  * Step 1 — save the chosen account category to the User row.
  * Also syncs the role field (MEDIA/AGENT get matching roles; SELF/PARENTS get GENERAL/GUARDIAN).
  * Revalidates the root layout so the dashboard redirect guard sees the updated category.
@@ -23,8 +42,9 @@ const CATEGORY_TO_ROLE: Record<AccountCategory, string> = {
 export async function saveCategoryAction(
   category: AccountCategory,
 ): Promise<{ ok: true } | { error: string }> {
-  const userId = await getViewerId();
-  if (!userId) return { error: "Not authenticated." };
+  const viewer = await requireVerifiedViewer();
+  if ("error" in viewer) return viewer;
+  const { userId } = viewer;
 
   await prisma.user.update({
     where: { id: userId },
@@ -52,8 +72,9 @@ export async function saveBasicDetailsAction(data: {
   profession?: string;
   district?: string;
 }): Promise<{ ok: true } | { error: string }> {
-  const userId = await getViewerId();
-  if (!userId) return { error: "Not authenticated." };
+  const viewer = await requireVerifiedViewer();
+  if ("error" in viewer) return viewer;
+  const { userId } = viewer;
 
   if (!data.gender) return { error: "Gender is required." };
   if (!data.dateOfBirth) return { error: "Date of birth is required." };
@@ -110,8 +131,9 @@ export async function saveMediaDetailsAction(data: {
   contactPerson: string;
   agencyDistrict?: string;
 }): Promise<{ ok: true } | { error: string }> {
-  const userId = await getViewerId();
-  if (!userId) return { error: "Not authenticated." };
+  const viewer = await requireVerifiedViewer();
+  if ("error" in viewer) return viewer;
+  const { userId } = viewer;
 
   if (!data.agencyName.trim()) return { error: "Agency name is required." };
   if (!data.contactPerson.trim()) return { error: "Contact person is required." };

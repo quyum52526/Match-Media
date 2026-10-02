@@ -31,15 +31,16 @@ export const FEATURE_FLAGS = {
       "Send a real SMS code to verify mobile numbers. OFF records the number without proving ownership.",
   },
   /**
-   * NOT YET IMPLEMENTED. There is no email-sending provider in this project, so
-   * this flag currently controls nothing. It exists so the admin surface and the
-   * seed match the intended flag set; wiring it requires adding a provider, a
-   * token table and a verify route.
+   * The signup email gate. ON: registration mails a 6-digit code and the new
+   * account cannot reach onboarding (or, for MEDIA/AGENT, its dashboard) until
+   * the code is entered. OFF: no code can ever be issued, so the gate opens for
+   * everyone — see isEmailGateCleared() in lib/emailVerification.ts, which
+   * treats OFF as "no gate" rather than locking every signup out.
    */
   ENABLE_EMAIL_OTP: {
     default: true,
     description:
-      "Verify email addresses with a emailed code. Not yet wired — no email provider is configured.",
+      "Require a emailed 6-digit code at signup before onboarding. OFF skips the step entirely.",
   },
   /** When OFF, the NID upload step is hidden and no NID review queue is offered. */
   ENABLE_NID_VERIFICATION: {

@@ -18,6 +18,7 @@ import { getGuardianDashboardData } from "@/lib/data/guardianDashboard";
 import { getOwnPhotos, getClientPhotos } from "@/lib/data/photos";
 import { MAX_PHOTOS } from "@/lib/storage/images";
 import { requireViewerId } from "@/lib/session";
+import { isEmailGateCleared } from "@/lib/emailVerification";
 import { prisma } from "@/lib/prisma";
 import { isAdminRole } from "@/lib/rbac";
 
@@ -83,6 +84,11 @@ export default async function ProfileEditPage({
   const { welcome, clientId } = await searchParams;
   setRequestLocale(locale);
   const viewerId = await requireViewerId(`/${locale}/login`);
+  // MEDIA and AGENT signups land here rather than in the wizard, so the email
+  // gate has to cover this route too — otherwise half the categories skip it.
+  if (!(await isEmailGateCleared(viewerId))) {
+    redirect(locale === "en" ? "/en/verify-email" : "/verify-email");
+  }
   const t = await getTranslations("ProfileEdit");
   const isWelcome = welcome === "1";
 

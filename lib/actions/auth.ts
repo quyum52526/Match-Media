@@ -8,6 +8,9 @@ import { prisma } from "@/lib/prisma";
 import { calcAge, normalizeBdMobile } from "@/lib/utils";
 import { grantSignupSubscription } from "@/lib/billing";
 import { GUEST_COOKIE } from "@/lib/guest";
+import { isFeatureEnabled } from "@/lib/featureFlags";
+import { issueEmailOtp } from "@/lib/emailVerification";
+import { POST_SIGNUP_PATH } from "@/lib/onboardingRoutes";
 
 /**
  * Build the absolute origin from the incoming request headers.
@@ -59,6 +62,9 @@ export async function logout(): Promise<void> {
 const REGISTRABLE_CATEGORIES = ["SELF", "PARENTS", "MEDIA", "AGENT"] as const;
 export type RegistrationCategory = (typeof REGISTRABLE_CATEGORIES)[number];
 
+/** Where a brand-new account is sent before it has verified its email. */
+const EMAIL_GATE_PATH = "/verify-email";
+
 function isRegistrableCategory(value: string): value is RegistrationCategory {
   return (REGISTRABLE_CATEGORIES as readonly string[]).includes(value);
 }
@@ -77,23 +83,6 @@ const CATEGORY_TO_ROLE: Record<
   PARENTS: "GUARDIAN",
   MEDIA: "MEDIA",
   AGENT: "AGENT",
-};
-
-/**
- * Where each account type lands after signup.
- *
- * SELF and PARENTS continue into the wizard, because both still have a candidate
- * profile to build — SELF their own (photos, details, mobile verification),
- * PARENTS the one for their son or daughter. MEDIA and AGENT supplied everything
- * signup needs, so they go straight to their dashboard; both render at
- * /profile/edit, branching on accountCategory (see
- * app/[locale]/profile/edit/page.tsx).
- */
-const POST_SIGNUP_PATH: Record<RegistrationCategory, string> = {
-  SELF: "/onboarding?success=true",
-  PARENTS: "/onboarding?success=true",
-  MEDIA: "/profile/edit",
-  AGENT: "/profile/edit",
 };
 
 /**
@@ -180,6 +169,10 @@ export async function register(
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) return "EXISTS";
 
+  // Decided before the account exists so both the OTP send below and the
+  // redirect target agree on whether this signup is gated.
+  const emailGateActive = await isFeatureEnabled("ENABLE_EMAIL_OTP");
+
   // --- Create user (+ a candidate Profile only for SELF) ---
   try {
     const user = await prisma.user.create({
@@ -220,6 +213,18 @@ export async function register(
     } catch (grantError) {
       console.error("signup grant failed", grantError);
     }
+
+    // Email gate: mail the first verification code now, so the code is already
+    // in the inbox by the time /verify-email renders. Best-effort — a mail
+    // provider having a bad minute must not fail a registration that already
+    // created the account; the gate screen offers a resend.
+    if (emailGateActive) {
+      try {
+        await issueEmailOtp(user.id);
+      } catch (otpError) {
+        console.error("signup email OTP failed", otpError);
+      }
+    }
   } catch (error) {
     // Unique-constraint race (P2002) -> treat as duplicate email.
     if (
@@ -234,7 +239,9 @@ export async function register(
   }
 
   // --- Auto sign-in (throws a redirect on success) ---
-  const dest = POST_SIGNUP_PATH[category];
+  // Gated signups land on the code screen first; it forwards to the category's
+  // real destination once the address is confirmed.
+  const dest = emailGateActive ? EMAIL_GATE_PATH : POST_SIGNUP_PATH[category];
   const target = locale === "en" ? `/en${dest}` : dest;
   const origin = await getOrigin();
   (await cookies()).delete(GUEST_COOKIE);

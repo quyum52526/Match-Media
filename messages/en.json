@@ -837,6 +837,28 @@
       "INVALID": "That code is incorrect. Try again."
     }
   },
+  "VerifyEmail": {
+    "title": "Verify your email",
+    "subtitle": "We sent a 6-digit code to your email address. Enter it to finish setting up your account.",
+    "sentTo": "We sent a code to <b>{email}</b>.",
+    "sent": "Code sent. Check your inbox.",
+    "codeLabel": "Verification code",
+    "verify": "Verify and continue",
+    "verifying": "Verifying…",
+    "resend": "Resend code",
+    "resendIn": "Resend in {s}s",
+    "errors": {
+      "UNAUTH": "Please log in again.",
+      "DISABLED": "Email verification is currently turned off.",
+      "ALREADY": "Your email is already verified.",
+      "RATE_LIMITED": "Please wait a moment before requesting another code.",
+      "SEND_FAILED": "We couldn't send the email. Please try again.",
+      "NO_CODE": "No active code. Request a new one.",
+      "EXPIRED": "That code expired. Request a new one.",
+      "TOO_MANY": "Too many attempts. Request a new code.",
+      "INVALID": "That code is incorrect. Try again."
+    }
+  },
   "Notifications": {
     "title": "Notifications",
     "empty": "No notifications yet",
