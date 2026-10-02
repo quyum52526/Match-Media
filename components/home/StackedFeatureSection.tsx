@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
-import Image from "next/image";
 import { BadgeCheck, Crown, Lock } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { ShowcaseProfile } from "@/lib/data/showcase";
 import { ShowcaseAvatar } from "./ShowcaseAvatar";
+import { ShowcaseImage } from "./ShowcaseImage";
 
 export interface StackedFeatureSectionProps {
   title: string;
@@ -39,15 +39,17 @@ function CardFace({
   // Three states, in order: a real signed photo; a real profile with no usable
   // photo (initials avatar); or no profile at all, when the DB returned fewer
   // than three rows for this section (decorative gradient, no initials).
-  const body = profile?.imageUrl ? (
+  // ShowcaseImage keeps the initials fallback for a photo whose signed URL
+  // resolves to nothing (see its own note); a card with no profile at all still
+  // falls through to the decorative gradient below.
+  const body = profile ? (
     <div className="relative h-full w-full">
-      <Image
-        src={profile.imageUrl}
+      <ShowcaseImage
+        profile={profile}
         alt={isFront ? profile.displayName : ""}
-        fill
-        className="object-cover"
         sizes="220px"
         priority={isFront}
+        fallbackTextClass="text-5xl"
       />
     </div>
   ) : (

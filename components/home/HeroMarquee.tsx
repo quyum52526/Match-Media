@@ -1,8 +1,8 @@
-import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { ShieldCheckIcon } from "@/components/ui/icons";
 import type { ShowcaseProfile } from "@/lib/data/showcase";
+import { ShowcaseImage } from "./ShowcaseImage";
 import { initialsOf } from "./ShowcaseAvatar";
 
 /**
@@ -57,12 +57,13 @@ function Avatar({ profile, hue }: { profile: ShowcaseProfile; hue: string }) {
         className="relative shrink-0 overflow-hidden rounded-full"
         style={{ width: size, height: size }}
       >
-        <Image
-          src={profile.imageUrl}
+        {/* Falls back to initials when the signed URL resolves to nothing. */}
+        <ShowcaseImage
+          profile={profile}
           alt=""
-          fill
           sizes={`${size}px`}
-          className="object-cover"
+          fallbackTextClass="text-[11px]"
+          rounded
         />
       </span>
     );

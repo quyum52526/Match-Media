@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/Button";
@@ -45,6 +45,9 @@ export function ProfileCard({ profile, matchScore }: ProfileCardProps) {
   const t = useTranslations("Profile");
   const locale = useLocale();
   const [isSubmitting, startTransition] = useTransition();
+  // Set when the photo's signed URL fails to load (missing object / expired
+  // signature); the card then shows its gradient placeholder.
+  const [imageFailed, setImageFailed] = useState(false);
   const quotaCtx = usePhotoQuota();
   const { gate } = useGuestGate();
 
@@ -81,11 +84,15 @@ export function ProfileCard({ profile, matchScore }: ProfileCardProps) {
           When gated, the server already supplied the pre-blurred teaser; the
           CSS blur is harmless defense-in-depth. */}
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink/5">
-        {profile.imageUrl ? (
+        {profile.imageUrl && !imageFailed ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={profile.imageUrl}
             alt=""
+            // A signed URL whose object is missing (or whose signature has
+            // expired) would otherwise render the broken-image glyph on top of
+            // the card. Fall through to the gradient instead.
+            onError={() => setImageFailed(true)}
             className={
               "h-full w-full object-cover" + (revealed ? "" : " blur-2xl scale-110")
             }

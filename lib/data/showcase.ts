@@ -88,11 +88,18 @@ async function toShowcaseProfiles(rows: ShowcaseRow[]): Promise<ShowcaseProfile[
   return Promise.all(
     rows.map(async (r) => {
       const imgKey = pickShowcaseKey(r.images[0]);
-      // A failed signature (storage unconfigured, or the object is missing —
-      // e.g. seeded placeholder keys) leaves imageUrl undefined, and the card
-      // renders its initials avatar. We deliberately do NOT fall back to an
-      // unsigned public-object URL: it only resolves on a public-read bucket,
-      // otherwise it renders as a broken image instead of the styled fallback.
+      // A failed signature (storage unconfigured) leaves imageUrl undefined and
+      // the card renders its initials avatar. We deliberately do NOT fall back
+      // to an unsigned public-object URL: it only resolves on a public-read
+      // bucket, otherwise it renders as a broken image instead of the styled
+      // fallback.
+      //
+      // NOTE: signing does NOT prove the object exists. createSignedUrl() signs
+      // a PATH, so a row pointing at a missing object (seeded placeholder keys,
+      // a file deleted from the bucket) returns a valid URL that then 400s on
+      // fetch. Verifying here would cost a HEAD request per card, so the guard
+      // lives at the leaf instead: ShowcaseImage swaps to the initials avatar
+      // on the image's own error event.
       // PUBLIC_URL_TTL, not the gated default: pickShowcaseKey has already
       // reduced this to a publishable key (original only when the owner marked
       // the photo PUBLIC, otherwise the blurred derivative), so there is no

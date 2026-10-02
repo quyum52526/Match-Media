@@ -42,7 +42,7 @@ export function initialsOf(name: string): string {
 export function ShowcaseAvatar({
   profile,
   /** Tailwind text-size class for the initials — tune per card size. */
-  textClass = "text-4xl",
+  textClass,
   rounded = false,
 }: {
   profile?: Pick<ShowcaseProfile, "displayName">;
@@ -59,7 +59,11 @@ export function ShowcaseAvatar({
       }`}
     >
       {name && (
-        <span className={`font-display font-semibold tracking-wide ${textClass}`}>
+        <span
+          className={`font-display font-semibold tracking-wide ${
+            textClass ?? "text-4xl"
+          }`}
+        >
           {initialsOf(name)}
         </span>
       )}

@@ -27,18 +27,19 @@ const nextConfig = {
     minimumCacheTTL: 86400,
     remotePatterns: [
       {
-        // Supabase Storage signed URLs (private bucket):
-        // https://<project>.supabase.co/storage/v1/object/sign/…
+        // Supabase Storage, every object route in one rule:
+        //   /storage/v1/object/sign/…           signed URL (private bucket)
+        //   /storage/v1/object/public/…         public-read bucket
+        //   /storage/v1/object/authenticated/…  RLS-authenticated read
+        //
+        // One pattern rather than three: the previous pair listed sign and
+        // public only, so adding a route (or the SDK changing which one it
+        // mints) failed as an un-whitelisted host rather than as anything
+        // legible. The host wildcard matches any Supabase project, so a staging
+        // project needs no config change.
         protocol: "https",
         hostname: "*.supabase.co",
-        pathname: "/storage/v1/object/sign/**",
-      },
-      {
-        // Supabase Storage public URLs (public-read fallback):
-        // https://<project>.supabase.co/storage/v1/object/public/…
-        protocol: "https",
-        hostname: "*.supabase.co",
-        pathname: "/storage/v1/object/public/**",
+        pathname: "/storage/v1/object/**",
       },
     ],
   },
