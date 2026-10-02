@@ -288,6 +288,13 @@
       "moderationRejected": "Rejected in moderation",
       "reviewInQueue": "Review in photo queue",
       "openFull": "Open full size",
+      "gallery": {
+        "count": "{n}/{total}",
+        "prev": "Previous photo",
+        "next": "Next photo",
+        "close": "Close",
+        "thumb": "Show photo {n} of {total}"
+      },
       "alt": "{name}'s photo",
       "quota": {
         "remaining": "{n} of {limit} free photo requests left today",

@@ -2,7 +2,7 @@ import "server-only";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { calcAge } from "@/lib/utils";
-import { PUBLIC_URL_TTL, signUrl, signUrls } from "@/lib/storage/supabase";
+import { PUBLIC_URL_TTL, signUrls } from "@/lib/storage/supabase";
 import { isProActive } from "@/lib/billing";
 import { mobileCountsTowardTrust } from "@/lib/contactGate";
 import { maskEmail, maskPhone } from "@/lib/privacy";
@@ -19,6 +19,7 @@ import type {
   InterestState,
   ImagePrivacy,
   ModerationStatus,
+  ProfilePhoto,
 } from "@/components/profile/types";
 
 // Placeholder shown when a profile chooses to hide its name.
@@ -490,6 +491,54 @@ export async function getBrowseProfiles(
   };
 }
 
+/** The storage fields signGallery needs from a ProfileImage row. */
+interface GalleryRow {
+  id: string;
+  privacy: string;
+  originalKey: string;
+  blurredKey: string;
+  moderationStatus: string;
+}
+
+/**
+ * Sign a profile's gallery for one viewer. Each photo gets the ORIGINAL when
+ * it is PUBLIC or `unlocked` (an APPROVED access grant, or an admin), else the
+ * pre-blurred derivative — the original key of a gated photo is never signed.
+ *
+ * TTLs follow hydrateProfileCards: an original unlocked by a grant is a
+ * revocable capability (short SIGNED_URL_TTL); public originals and blurred
+ * derivatives have nothing to revoke (PUBLIC_URL_TTL).
+ */
+async function signGallery(
+  rows: GalleryRow[],
+  unlocked: boolean,
+  viewerIsAdmin: boolean,
+): Promise<ProfilePhoto[]> {
+  const plan = rows.map((img) => {
+    const isPublic = img.privacy === "PUBLIC";
+    const revealed = isPublic || unlocked;
+    return {
+      img,
+      revealed,
+      key: revealed ? img.originalKey : img.blurredKey,
+      gated: revealed && !isPublic,
+    };
+  });
+  const [ungated, gated] = await Promise.all([
+    signUrls(plan.filter((p) => !p.gated).map((p) => p.key), PUBLIC_URL_TTL),
+    signUrls(plan.filter((p) => p.gated).map((p) => p.key)),
+  ]);
+  return plan.map(({ img, revealed, key, gated: g }) => ({
+    id: img.id,
+    url: (g ? gated : ungated).get(key),
+    privacy: img.privacy as ImagePrivacy,
+    revealed,
+    moderation: viewerIsAdmin
+      ? (img.moderationStatus as ModerationStatus)
+      : undefined,
+  }));
+}
+
 /**
  * Build the Profile Detail view model for a given viewer.
  *
@@ -573,10 +622,10 @@ export async function getProfileForViewer(
       // Pre-moderation: only an APPROVED primary photo is served to members.
       // Admins see the primary photo whatever its moderation state, so they
       // can verify it (a PENDING one is flagged with a link to the queue).
+      // The whole gallery (primary first). Upload caps it at MAX_PHOTOS.
       images: {
         where: viewerIsAdmin ? {} : { moderationStatus: "APPROVED" },
         orderBy: PRIMARY_IMAGE_ORDER,
-        take: 1,
       },
     },
   });
@@ -665,15 +714,13 @@ export async function getProfileForViewer(
   const primary = profile.images[0];
 
   // Admins bypass the member photo-privacy gate: they always get the original.
-  const photoRevealed =
-    !!primary &&
-    (viewerIsAdmin ||
-      primary.privacy === "PUBLIC" ||
-      photoReq?.status === "APPROVED");
-  const imageUrl = primary
-    ? (await signUrl(photoRevealed ? primary.originalKey : primary.blurredKey)) ??
-      undefined
-    : undefined;
+  // A photo-access grant is per owner, so it unlocks every BLURRED photo.
+  const photos = await signGallery(
+    profile.images,
+    viewerIsAdmin || photoReq?.status === "APPROVED",
+    viewerIsAdmin,
+  );
+  const imageUrl = photos[0]?.url;
 
   const view: ProfileDetailView = {
     // Use userId when available; fall back to referredById (parent/agency) so
@@ -696,6 +743,7 @@ export async function getProfileForViewer(
     managedBy: resolveManagerType(profile.referredBy?.accountCategory ?? null),
     primaryImagePrivacy: (primary?.privacy as ImagePrivacy) ?? "BLURRED",
     imageUrl,
+    photos,
     // Admin-only: lets the photo panel flag a photo still awaiting review.
     primaryImageModeration:
       viewerIsAdmin && primary
@@ -757,7 +805,6 @@ export async function getGuestProfilePreview(
       images: {
         where: { moderationStatus: "APPROVED" },
         orderBy: PRIMARY_IMAGE_ORDER,
-        take: 1,
       },
     },
   });
@@ -767,11 +814,8 @@ export async function getGuestProfilePreview(
   const primary = profile.images[0];
   // No photoAccessRequest exists for a guest, so a photo is only ever visible
   // when the owner made it PUBLIC — never gated-and-approved.
-  const photoRevealed = !!primary && primary.privacy === "PUBLIC";
-  const imageUrl = primary
-    ? (await signUrl(photoRevealed ? primary.originalKey : primary.blurredKey)) ??
-      undefined
-    : undefined;
+  const photos = await signGallery(profile.images, false, false);
+  const imageUrl = photos[0]?.url;
 
   return {
     id: profile.userId ?? profile.referredById ?? profile.id,
@@ -792,6 +836,7 @@ export async function getGuestProfilePreview(
     managedBy: resolveManagerType(profile.referredBy?.accountCategory ?? null),
     primaryImagePrivacy: (primary?.privacy as ImagePrivacy) ?? "BLURRED",
     imageUrl,
+    photos,
     details: {
       height: profile.height ?? "",
       weight: profile.weight ?? "",

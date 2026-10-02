@@ -43,7 +43,7 @@ import { useGuestGate } from "@/components/auth/GuestModeContext";
 import { MaskedContact } from "@/components/privacy/MaskedContact";
 import { computeCompletion } from "@/lib/utils";
 import { localize } from "@/lib/constants/labels";
-import { BlurredImage } from "./BlurredImage";
+import { ProfilePhotoGallery } from "./ProfilePhotoGallery";
 import { ReportButton } from "./ReportButton";
 import { TrustCard } from "./TrustCard";
 import type { ProfileDetailView, ViewerState } from "./types";
@@ -122,10 +122,13 @@ export function ProfileDetail({
   const photoLimitReached =
     !quota.unlimited && isNewRequest && quota.remaining <= 0;
   // Admins bypass the photo-privacy gate entirely (server signed the original).
+  // With a gallery, a request is still worth making while ANY photo is gated.
   const photoRevealed =
     viewer.isAdmin ||
-    data.primaryImagePrivacy === "PUBLIC" ||
-    viewer.photoAccess === "APPROVED";
+    viewer.photoAccess === "APPROVED" ||
+    (data.photos.length > 0
+      ? data.photos.every((p) => p.revealed)
+      : data.primaryImagePrivacy === "PUBLIC");
 
   // Freemium: completion is derived purely from which data fields are present.
   const completion = computeCompletion([
@@ -193,19 +196,18 @@ export function ProfileDetail({
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[360px,1fr]">
         {/* ---------- Left: photo + primary actions ---------- */}
         <div className="space-y-4">
-          <BlurredImage
-            privacy={data.primaryImagePrivacy}
-            state={viewer.photoAccess}
-            src={data.imageUrl}
+          <ProfilePhotoGallery
+            photos={data.photos}
+            fallbackPrivacy={data.primaryImagePrivacy}
+            accessState={viewer.photoAccess}
             name={data.displayName}
             onRequest={requestPhotoAccess}
             pending={isPending}
             requestDisabled={photoLimitReached}
             adminView={viewer.isAdmin}
-            moderation={data.primaryImageModeration}
           />
 
-          {/* Quota feedback — only while the photo is still gated */}
+          {/* Quota feedback — only while some photo is still gated */}
           {!photoRevealed && <QuotaNote quota={quota} />}
 
           <InterestAction

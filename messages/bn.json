@@ -288,6 +288,13 @@
       "moderationRejected": "Moderation-এ বাতিল",
       "reviewInQueue": "Photo queue-তে review করুন",
       "openFull": "পূর্ণ আকারে দেখুন",
+      "gallery": {
+        "count": "{n}/{total}",
+        "prev": "আগের ছবি",
+        "next": "পরের ছবি",
+        "close": "বন্ধ করুন",
+        "thumb": "{total}টির মধ্যে {n} নম্বর ছবি দেখুন"
+      },
       "alt": "{name} এর Photo",
       "quota": {
         "remaining": "আজ {limit} টির মধ্যে {n} টি free photo request বাকি",

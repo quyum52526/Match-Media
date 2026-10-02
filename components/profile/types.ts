@@ -185,6 +185,18 @@ export interface ProfileSummary {
   trustScore: number;
 }
 
+/** One gallery photo, already signed for the current viewer. */
+export interface ProfilePhoto {
+  id: string;
+  /** Original when `revealed`, else the pre-blurred derivative. */
+  url?: string;
+  privacy: ImagePrivacy;
+  /** Viewer may see this photo clearly (PUBLIC, APPROVED access, or admin). */
+  revealed: boolean;
+  /** Moderation state — set only for admin viewers. */
+  moderation?: ModerationStatus;
+}
+
 /** Composed, presentation-ready profile for the detail page. */
 export interface ProfileDetailView {
   id: string;
@@ -213,6 +225,11 @@ export interface ProfileDetailView {
    * viewer may see it, otherwise the pre-blurred teaser). Absent when no photo.
    */
   imageUrl?: string;
+  /**
+   * Every photo the viewer may see, primary first: approved photos for
+   * members/guests, all photos (any moderation state) for admins.
+   */
+  photos: ProfilePhoto[];
   /** Moderation state of the primary photo — set only for admin viewers. */
   primaryImageModeration?: ModerationStatus;
   details: ProfileFullDetails;
