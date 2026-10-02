@@ -200,17 +200,13 @@ export async function Header() {
             companyItems={companyItems}
             resourcesLabel={nav("resources")}
             resourcesItems={resourcesItems}
+            accountEmail={session?.user ? (session.user.email ?? "") : undefined}
+            profileLabel={nav("editProfile")}
+            expandLabel={expandT("menuLabel")}
+            expandDescription={expandT("menuTooltip")}
           >
             {session?.user ? (
               <div className="flex flex-col gap-2 border-t border-hairline/70 pt-3">
-                <p className="truncate px-2 font-body text-xs text-ink/60">
-                  {session.user.email}
-                </p>
-                <Link href="/profile/edit">
-                  <Button variant="ghost" size="sm" fullWidth>
-                    {nav("editProfile")}
-                  </Button>
-                </Link>
                 <form action={logout}>
                   <Button type="submit" variant="ghost" size="sm" fullWidth>
                     {authT("logout")}

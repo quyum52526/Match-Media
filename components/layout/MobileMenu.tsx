@@ -21,6 +21,20 @@ interface MobileMenuProps {
   companyItems: MobileNavItem[];
   resourcesLabel: string;
   resourcesItems: MobileNavItem[];
+  /**
+   * The signed-in account block. It lives here rather than in `children`
+   * because these links have to close the drawer, and only this component
+   * holds that state — a Link passed in from the server header navigates with
+   * the menu still covering the page it navigated to.
+   */
+  accountEmail?: string;
+  profileLabel?: string;
+  expandLabel?: string;
+  /**
+   * Shown under the expand link as subtext. There is no hover on a phone, so
+   * the explanation that is a tooltip on desktop is always visible here.
+   */
+  expandDescription?: string;
   children?: ReactNode;
 }
 
@@ -33,6 +47,10 @@ export function MobileMenu({
   companyItems,
   resourcesLabel,
   resourcesItems,
+  accountEmail,
+  profileLabel,
+  expandLabel,
+  expandDescription,
   children,
 }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
@@ -61,6 +79,48 @@ export function MobileMenu({
             )}
             <MobileSection label={companyLabel} items={companyItems} onNavigate={close} />
             <MobileSection label={resourcesLabel} items={resourcesItems} onNavigate={close} />
+
+            {accountEmail && (
+              <div className="flex flex-col gap-1 border-t border-hairline/70 pt-3">
+                <p className="truncate px-2 pb-1 font-body text-xs text-ink/60">
+                  {accountEmail}
+                </p>
+                {profileLabel && (
+                  <Link
+                    href="/profile/edit"
+                    onClick={close}
+                    className="rounded-lg px-2 py-2 text-sm font-medium text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink"
+                  >
+                    {profileLabel}
+                  </Link>
+                )}
+                {expandLabel && (
+                  <Link
+                    href="/profile/expand"
+                    onClick={close}
+                    className="rounded-lg px-2 py-2 transition-colors hover:bg-primary/5"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-primary">
+                        {expandLabel}
+                      </span>
+                      <span
+                        aria-hidden
+                        className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary"
+                      >
+                        +
+                      </span>
+                    </span>
+                    {expandDescription && (
+                      <span className="mt-0.5 block text-xs leading-relaxed text-muted">
+                        {expandDescription}
+                      </span>
+                    )}
+                  </Link>
+                )}
+              </div>
+            )}
+
             {children && (
               <div className="pt-3">{children}</div>
             )}

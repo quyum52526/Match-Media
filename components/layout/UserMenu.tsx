@@ -140,12 +140,13 @@ export function UserMenu({
 
           {/* Expand account — the one promotional row in this menu, so it
               carries the brand garnet and a chip instead of the plain link
-              treatment. The anchor lands on the card's own id, which exists on
-              both /profile/edit and /profile/expand. */}
+              treatment. It goes to the dedicated page rather than an anchor on
+              /profile/edit, which only renders the card for some account
+              types. */}
           {expandLabel && (
             <div className="group relative">
               <Link
-                href="/profile/edit#expand-account"
+                href="/profile/expand"
                 role="menuitem"
                 onClick={() => setOpen(false)}
                 aria-describedby={expandTooltip ? "expand-account-tip" : undefined}
