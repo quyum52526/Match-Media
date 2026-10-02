@@ -123,10 +123,6 @@ export function RegisterForm() {
   const isMedia = category === "MEDIA";
   const isAgent = category === "AGENT";
 
-  // Only a candidate may defer their number (the wizard verifies it later).
-  // Every other category is contacted directly. Mirrors the server rule.
-  const mobileRequired = !isSelf;
-
   // Whose name the name field asks for: the guardian, the agent, or the
   // candidate. MEDIA asks for an agency + contact person instead.
   const nameRequired = isParents || isAgent;
@@ -342,27 +338,25 @@ export function RegisterForm() {
       <div className="space-y-1">
         <label htmlFor="mobile" className="text-sm font-medium text-ink">
           {t("mobile")}
-          {mobileRequired ? (
-            <Req />
-          ) : (
-            <>
-              {" "}
-              <span className="font-normal text-ink/40">({t("optional")})</span>
-            </>
-          )}
+          <Req />
         </label>
         <input
           id="mobile"
           name="mobile"
           type="tel"
           inputMode="tel"
-          required={mobileRequired}
+          required
+          // Accepts 01XXXXXXXXX with an optional 88 / +88 country prefix, the
+          // same shape normalizeBdMobile() enforces server-side. The browser
+          // check is a courtesy; the server re-validates every submission.
+          pattern="(?:\+?88)?01[3-9][0-9]{8}"
+          title={t("errors.MOBILE")}
           autoComplete="tel"
           placeholder="01XXXXXXXXX"
           className={`${inputClass} font-body`}
         />
         <p className="font-body text-xs text-ink/50">
-          {mobileRequired ? t("mobileHintRequired") : t("mobileHint")}
+          {t("mobileHintRequired")}
         </p>
       </div>
 

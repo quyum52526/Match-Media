@@ -154,16 +154,13 @@ export async function register(
     if (!fullName) return "MISSING";
   }
 
-  // Mobile is optional only for a candidate, who verifies it later in the
-  // wizard. Every other category is contacted directly — about clients,
-  // assignments, or a child profile — so their number is mandatory up front.
-  const mobileRequired = category !== "SELF";
-  if (mobileRequired && !mobileRaw) return "MOBILE_REQUIRED";
-  let mobile: string | null = null;
-  if (mobileRaw) {
-    mobile = normalizeBdMobile(mobileRaw);
-    if (!mobile) return "MOBILE";
-  }
+  // Every account states a mobile number at signup: it identifies the person
+  // behind the account and is how support, agencies and agents actually reach
+  // them. It is only RECORDED here, not proven — SMS OTP stays off (see
+  // ENABLE_SMS_OTP), and email is the one verification signup blocks on.
+  if (!mobileRaw) return "MOBILE_REQUIRED";
+  const mobile = normalizeBdMobile(mobileRaw);
+  if (!mobile) return "MOBILE";
 
   // --- Email uniqueness ---
   const existing = await prisma.user.findUnique({ where: { email } });
@@ -226,14 +223,19 @@ export async function register(
       }
     }
   } catch (error) {
-    // Unique-constraint race (P2002) -> treat as duplicate email.
+    // Unique-constraint race (P2002). Both `email` and `mobile` are unique, and
+    // now that a number is mandatory a collision on it is a normal thing for a
+    // user to hit — so report which field actually clashed instead of telling
+    // someone their email is taken when it is their number.
     if (
       typeof error === "object" &&
       error !== null &&
       "code" in error &&
       (error as { code?: string }).code === "P2002"
     ) {
-      return "EXISTS";
+      const target = (error as { meta?: { target?: unknown } }).meta?.target;
+      const fields = Array.isArray(target) ? target.map(String) : [String(target ?? "")];
+      return fields.some((f) => f.includes("mobile")) ? "MOBILE_EXISTS" : "EXISTS";
     }
     throw error;
   }

@@ -690,7 +690,6 @@
       "optional": "optional",
       "email": "Email",
       "mobile": "Mobile number",
-      "mobileHint": "Bangladeshi number — you'll verify it with a code.",
       "password": "Password",
       "passwordHint": "At least 8 characters",
       "gender": "Gender",
@@ -714,7 +713,8 @@
         "AGENCY_NAME": "Agency name is required",
         "CONTACT_PERSON": "Contact person name is required",
         "DISTRICT": "Please select your service district",
-        "MOBILE_REQUIRED": "Mobile number is required for this account type"
+        "MOBILE_REQUIRED": "Mobile number is required",
+        "MOBILE_EXISTS": "An account with this mobile number already exists"
       },
       "accountType": {
         "label": "I am signing up as",
@@ -745,7 +745,7 @@
       "district": "Service district",
       "districtPlaceholder": "Select your district",
       "districtHint": "Where you can travel to verify candidates.",
-      "mobileHintRequired": "Bangladeshi number — required so we can reach you.",
+      "mobileHintRequired": "Bangladeshi number — required so we can reach you about your account.",
       "guardianName": "Your full name",
       "guardianNameHint": "The parent or guardian name. You will add your son or daughter details next."
     }
