@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { calcAge, computeCompletion, resolveImmutableGender } from "@/lib/utils";
 import { getViewerId } from "@/lib/session";
 import { GENDERS, sectsFor } from "@/lib/constants/profileOptions";
+import { hasFamilyInfo } from "@/lib/data/familyDetails";
 
 const PROFILE_EDIT = "/[locale]/profile/edit";
 const BROWSE = "/[locale]/browse";
@@ -24,6 +25,42 @@ function sectFor(religion: string, submitted: string): string {
   if (!religion || !submitted) return "";
   const valid = sectsFor(religion);
   return valid.some((o) => o.value === submitted) ? submitted : "";
+}
+
+/**
+ * Parse a sibling count input. Blank stays null (unknown, not zero), and
+ * anything non-numeric or negative is rejected the same way, so a typo can
+ * never land as a bogus count. Capped at 30 — past that it is bad input.
+ */
+function countField(formData: FormData, name: string): number | null {
+  const raw = field(formData, name);
+  if (!raw) return null;
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n < 0 || n > 30) return null;
+  return n;
+}
+
+/**
+ * The structured family + education/career fields, read once and shared by the
+ * self-edit and agency-edit paths so neither can drift from the other.
+ */
+function familyAndCareerFields(formData: FormData) {
+  return {
+    fatherProfession: field(formData, "fatherProfession") || null,
+    fatherStatus: field(formData, "fatherStatus") || null,
+    motherProfession: field(formData, "motherProfession") || null,
+    motherStatus: field(formData, "motherStatus") || null,
+    numberOfBrothers: countField(formData, "numberOfBrothers"),
+    brothersDetails: field(formData, "brothersDetails") || null,
+    numberOfSisters: countField(formData, "numberOfSisters"),
+    sistersDetails: field(formData, "sistersDetails") || null,
+    paternalBackground: field(formData, "paternalBackground") || null,
+    maternalBackground: field(formData, "maternalBackground") || null,
+    familyClass: field(formData, "familyClass") || null,
+    familyType: field(formData, "familyType") || null,
+    educationInstitute: field(formData, "educationInstitute") || null,
+    educationMajor: field(formData, "educationMajor") || null,
+  };
 }
 
 /**
@@ -99,12 +136,16 @@ export async function updateProfile(
   const weight = field(formData, "weight");
   const childrenStatus = field(formData, "childrenStatus");
   const familyDetails = field(formData, "familyDetails");
+  const family = familyAndCareerFields(formData);
   const bio = field(formData, "bio");
   const nameHidden = formData.get("nameHidden") === "on";
 
   const completionScore = computeCompletion([
     gender, birthDate, district, upazila, profession, education,
-    maritalStatus, bio, height, weight, childrenStatus, familyDetails,
+    maritalStatus, bio, height, weight, childrenStatus,
+    // The structured fields count too — a member who filled those but left the
+    // free-text note empty has still described their family.
+    hasFamilyInfo({ ...family, familyDetails }) ? "1" : "",
   ]);
 
   const data = {
@@ -125,6 +166,7 @@ export async function updateProfile(
     weight: weight || null,
     childrenStatus: childrenStatus || null,
     familyDetails: familyDetails || null,
+    ...family,
     bio: bio || null,
     nameHidden,
     completionScore,
@@ -176,12 +218,16 @@ async function updateProfileById(
   const weight = field(formData, "weight");
   const childrenStatus = field(formData, "childrenStatus");
   const familyDetails = field(formData, "familyDetails");
+  const family = familyAndCareerFields(formData);
   const bio = field(formData, "bio");
   const nameHidden = formData.get("nameHidden") === "on";
 
   const completionScore = computeCompletion([
     gender, birthDate, district, upazila, profession, education,
-    maritalStatus, bio, height, weight, childrenStatus, familyDetails,
+    maritalStatus, bio, height, weight, childrenStatus,
+    // The structured fields count too — a member who filled those but left the
+    // free-text note empty has still described their family.
+    hasFamilyInfo({ ...family, familyDetails }) ? "1" : "",
   ]);
 
   await prisma.profile.update({
@@ -204,6 +250,7 @@ async function updateProfileById(
       weight: weight || null,
       childrenStatus: childrenStatus || null,
       familyDetails: familyDetails || null,
+      ...family,
       bio: bio || null,
       nameHidden,
       completionScore,

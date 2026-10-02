@@ -15,6 +15,9 @@ import {
   DIETS,
   SMOKING_STATUSES,
   HEIGHTS,
+  PARENT_STATUSES,
+  FAMILY_CLASSES,
+  FAMILY_TYPES,
   sectsFor,
 } from "@/lib/constants/profileOptions";
 import { DISTRICTS, upazilasFor } from "@/lib/constants/bdGeo";
@@ -190,6 +193,27 @@ export function ProfileEditForm({
                 locale={locale}
               />
             </Field>
+
+            {/* Education & career detail: the level/profession selects above
+                say little on their own once names and photos are masked. */}
+            <Field label={t("fields.educationInstitute")}>
+              <input
+                name="educationInstitute"
+                type="text"
+                defaultValue={initial.educationInstitute}
+                placeholder={t("placeholders.educationInstitute")}
+                className={inputClass}
+              />
+            </Field>
+            <Field label={t("fields.educationMajor")}>
+              <input
+                name="educationMajor"
+                type="text"
+                defaultValue={initial.educationMajor}
+                placeholder={t("placeholders.educationMajor")}
+                className={inputClass}
+              />
+            </Field>
           </div>
         </CardBody>
       </Card>
@@ -302,14 +326,163 @@ export function ProfileEditForm({
               />
             </Field>
           </div>
-          <Field label={t("fields.familyDetails")}>
-            <textarea
-              name="familyDetails"
-              rows={2}
-              defaultValue={initial.familyDetails}
-              className={areaClass}
-            />
-          </Field>
+        </CardBody>
+      </Card>
+
+      {/* Family background — the heaviest signal on a platform where photos
+          and names are often masked, so it gets its own card split into
+          immediate family, relatives and household environment. */}
+      <Card>
+        <CardBody className="space-y-6">
+          <CardTitle>{t("sections.family")}</CardTitle>
+
+          {/* Group 1 — immediate family */}
+          <div className="space-y-4">
+            <GroupTitle>{t("groups.immediateFamily")}</GroupTitle>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field label={t("fields.fatherProfession")}>
+                <input
+                  name="fatherProfession"
+                  type="text"
+                  defaultValue={initial.fatherProfession}
+                  placeholder={t("placeholders.fatherProfession")}
+                  className={inputClass}
+                />
+              </Field>
+              <Field label={t("fields.fatherStatus")}>
+                <StdSelect
+                  name="fatherStatus"
+                  value={initial.fatherStatus}
+                  options={PARENT_STATUSES}
+                  placeholder={t("select")}
+                  locale={locale}
+                />
+              </Field>
+              <Field label={t("fields.motherProfession")}>
+                <input
+                  name="motherProfession"
+                  type="text"
+                  defaultValue={initial.motherProfession}
+                  placeholder={t("placeholders.motherProfession")}
+                  className={inputClass}
+                />
+              </Field>
+              <Field label={t("fields.motherStatus")}>
+                <StdSelect
+                  name="motherStatus"
+                  value={initial.motherStatus}
+                  options={PARENT_STATUSES}
+                  placeholder={t("select")}
+                  locale={locale}
+                />
+              </Field>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <Field label={t("fields.numberOfBrothers")}>
+                <input
+                  name="numberOfBrothers"
+                  type="number"
+                  min={0}
+                  max={30}
+                  defaultValue={initial.numberOfBrothers}
+                  className={`${inputClass} font-body`}
+                />
+              </Field>
+              <div className="sm:col-span-2">
+                <Field label={t("fields.brothersDetails")}>
+                  <input
+                    name="brothersDetails"
+                    type="text"
+                    defaultValue={initial.brothersDetails}
+                    placeholder={t("placeholders.brothersDetails")}
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <Field label={t("fields.numberOfSisters")}>
+                <input
+                  name="numberOfSisters"
+                  type="number"
+                  min={0}
+                  max={30}
+                  defaultValue={initial.numberOfSisters}
+                  className={`${inputClass} font-body`}
+                />
+              </Field>
+              <div className="sm:col-span-2">
+                <Field label={t("fields.sistersDetails")}>
+                  <input
+                    name="sistersDetails"
+                    type="text"
+                    defaultValue={initial.sistersDetails}
+                    placeholder={t("placeholders.sistersDetails")}
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+            </div>
+          </div>
+
+          {/* Group 2 — extended family */}
+          <div className="space-y-4">
+            <GroupTitle>{t("groups.extendedFamily")}</GroupTitle>
+            <Field label={t("fields.paternalBackground")}>
+              <textarea
+                name="paternalBackground"
+                rows={2}
+                defaultValue={initial.paternalBackground}
+                placeholder={t("placeholders.paternalBackground")}
+                className={areaClass}
+              />
+            </Field>
+            <Field label={t("fields.maternalBackground")}>
+              <textarea
+                name="maternalBackground"
+                rows={2}
+                defaultValue={initial.maternalBackground}
+                placeholder={t("placeholders.maternalBackground")}
+                className={areaClass}
+              />
+            </Field>
+          </div>
+
+          {/* Group 3 — family environment */}
+          <div className="space-y-4">
+            <GroupTitle>{t("groups.familyEnvironment")}</GroupTitle>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field label={t("fields.familyClass")}>
+                <StdSelect
+                  name="familyClass"
+                  value={initial.familyClass}
+                  options={FAMILY_CLASSES}
+                  placeholder={t("select")}
+                  locale={locale}
+                />
+              </Field>
+              <Field label={t("fields.familyType")}>
+                <StdSelect
+                  name="familyType"
+                  value={initial.familyType}
+                  options={FAMILY_TYPES}
+                  placeholder={t("select")}
+                  locale={locale}
+                />
+              </Field>
+            </div>
+            <Field label={t("fields.familyDetails")}>
+              <textarea
+                name="familyDetails"
+                rows={3}
+                defaultValue={initial.familyDetails}
+                placeholder={t("placeholders.familyDetails")}
+                className={areaClass}
+              />
+            </Field>
+          </div>
         </CardBody>
       </Card>
 
@@ -394,6 +567,15 @@ function StdSelect({
         </option>
       ))}
     </select>
+  );
+}
+
+/** Sub-heading inside a card, one per input group. */
+function GroupTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <h3 className="text-xs font-semibold uppercase tracking-wide text-primary">
+      {children}
+    </h3>
   );
 }
 

@@ -362,7 +362,36 @@ model Profile {
   height         String?
   weight         String?
   childrenStatus String?
+  // Free-text family blurb. Kept alongside the structured columns below as the
+  // "anything else" note; legacy rows hold ALL their family info here and are
+  // parsed into rows at read time (lib/data/familyDetails.ts).
   familyDetails  String?
+
+  // Structured family background. Photos and names are often masked on this
+  // platform, so matches evaluate on family and career: these are first-class
+  // columns rather than prose, so the Full Details modal can render labelled
+  // rows and nothing depends on parsing heuristics.
+  fatherProfession String?
+  // Canonical "Alive" / "Deceased" (lib/constants/profileOptions.ts PARENT_STATUSES).
+  fatherStatus     String?
+  motherProfession String?
+  motherStatus     String?
+  numberOfBrothers Int?
+  // Free text, e.g. "1 elder brother (Engineer, married)".
+  brothersDetails  String?
+  numberOfSisters  Int?
+  sistersDetails   String?
+  // Extended family: চাচা/ফুফু (paternal) and মামা/খালা (maternal) — who they
+  // are and their social standing.
+  paternalBackground String?
+  maternalBackground String?
+  // Canonical FAMILY_CLASSES / FAMILY_TYPES values.
+  familyClass      String?
+  familyType       String?
+
+  // Education & career detail beyond the `education` level and `profession`.
+  educationInstitute String?
+  educationMajor     String?
 
   // True when this profile was created by a MEDIA agency on behalf of a client
   // who has no User account of their own. Drives the "Managed by Agency" badge.

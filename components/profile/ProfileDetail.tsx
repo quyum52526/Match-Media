@@ -143,7 +143,16 @@ export function ProfileDetail({
     data.details.height,
     data.details.weight,
     data.details.childrenStatus,
-    data.details.family.raw,
+    // Family counts as filled through either the structured fields or the note.
+    data.details.family.fatherProfession ||
+      data.details.family.motherProfession ||
+      data.details.family.familyType ||
+      data.details.family.familyClass ||
+      data.details.family.brothers ||
+      data.details.family.sisters ||
+      data.details.family.paternalBackground ||
+      data.details.family.maternalBackground ||
+      data.details.family.raw,
     data.details.religion,
     data.details.sect,
     data.details.caste,

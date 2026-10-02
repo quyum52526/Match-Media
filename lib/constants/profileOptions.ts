@@ -116,6 +116,26 @@ export const SMOKING_STATUSES: readonly Option[] = [
   { value: "Regularly", bn: "নিয়মিত" },
 ];
 
+/** Whether a parent is living. Shown next to each parent's profession. */
+export const PARENT_STATUSES: readonly Option[] = [
+  { value: "Alive", bn: "জীবিত" },
+  { value: "Deceased", bn: "মৃত" },
+];
+
+/** Self-reported economic standing of the family. */
+export const FAMILY_CLASSES: readonly Option[] = [
+  { value: "Lower Middle Class", bn: "নিম্ন মধ্যবিত্ত" },
+  { value: "Middle Class", bn: "মধ্যবিত্ত" },
+  { value: "Upper Middle Class", bn: "উচ্চ মধ্যবিত্ত" },
+  { value: "Affluent", bn: "সচ্ছল/ধনী" },
+];
+
+/** Household structure. */
+export const FAMILY_TYPES: readonly Option[] = [
+  { value: "Nuclear", bn: "একক পরিবার" },
+  { value: "Joint", bn: "যৌথ পরিবার" },
+];
+
 export const MARITAL_STATUSES: readonly Option[] = [
   { value: "Single", bn: "অবিবাহিত" },
   { value: "Married", bn: "বিবাহিত" },

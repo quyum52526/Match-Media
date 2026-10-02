@@ -14,6 +14,12 @@ import {
   HeartHandshake,
   BookOpen,
   Landmark,
+  Home,
+  Wallet,
+  GraduationCap,
+  School,
+  UsersRound,
+  Network,
   Utensils,
   Cigarette,
   type LucideIcon,
@@ -112,12 +118,78 @@ export function FullDetailsModal({
     },
   ];
 
+  // Education & career: the institute/subject pair reads as one block with the
+  // profession already shown on the key-facts card.
+  const career: DetailItem[] = [
+    {
+      icon: School,
+      label: t("educationInstitute"),
+      value: details.educationInstitute,
+    },
+    {
+      icon: GraduationCap,
+      label: t("educationMajor"),
+      value: details.educationMajor,
+    },
+  ];
+
+  // Parent status ("Alive" / "Deceased") and the family class/type are
+  // canonical values, so they localize; the professions and sibling blurbs are
+  // free text and pass through. A parent's status is appended to the
+  // profession so each parent reads as one row instead of two.
   const familyRows: DetailItem[] = [
-    { icon: Users, label: t("familyStatus"), value: family.status },
-    { icon: Briefcase, label: t("fatherProfession"), value: family.fatherProfession },
-    { icon: UserRound, label: t("motherProfession"), value: family.motherProfession },
+    {
+      icon: Briefcase,
+      label: t("fatherProfession"),
+      value: withStatus(family.fatherProfession, localize(family.fatherStatus ?? "", locale)),
+    },
+    {
+      icon: UserRound,
+      label: t("motherProfession"),
+      value: withStatus(family.motherProfession, localize(family.motherStatus ?? "", locale)),
+    },
+    {
+      icon: Users,
+      label: t("brothers"),
+      value: withStatus(family.brothers, family.brothersDetails),
+    },
+    {
+      icon: Users,
+      label: t("sisters"),
+      value: withStatus(family.sisters, family.sistersDetails),
+    },
+    // Legacy rows that only ever had the free-text blurb.
     { icon: Users, label: t("numberOfSiblings"), value: family.siblings },
     { icon: HeartHandshake, label: t("familyValues"), value: family.values },
+  ];
+
+  // Household environment: how the family lives and where it sits socially.
+  const environment: DetailItem[] = [
+    {
+      icon: Home,
+      label: t("familyType"),
+      value: localize(family.familyType ?? "", locale) || family.status,
+    },
+    {
+      icon: Wallet,
+      label: t("familyClass"),
+      value: localize(family.familyClass ?? "", locale),
+    },
+  ];
+
+  // Relatives — chacha/fufu and mama/khala, a standard part of how a match is
+  // evaluated here, so they get their own section rather than a note.
+  const relatives: DetailItem[] = [
+    {
+      icon: Network,
+      label: t("paternalBackground"),
+      value: family.paternalBackground,
+    },
+    {
+      icon: UsersRound,
+      label: t("maternalBackground"),
+      value: family.maternalBackground,
+    },
   ];
 
   return (
@@ -158,16 +230,19 @@ export function FullDetailsModal({
         <div className="max-h-[80vh] overflow-y-auto p-4 sm:p-6">
           <div className="space-y-6">
             <Section title={t("personalSection")} items={personal} />
+            <Section title={t("careerSection")} items={career} />
             <Section title={t("beliefsSection")} items={beliefs} />
+            <Section title={t("familySection")} items={familyRows} />
+            <Section title={t("environmentSection")} items={environment} />
             <Section
-              title={t("familySection")}
-              items={familyRows}
+              title={t("relativesSection")}
+              items={relatives}
               note={family.note}
               noteLabel={t("familyNote")}
             />
-            {!personal.some(hasValue) &&
-              !beliefs.some(hasValue) &&
-              !familyRows.some(hasValue) &&
+            {![personal, career, beliefs, familyRows, environment, relatives].some(
+              (section) => section.some(hasValue),
+            ) &&
               !family.note && (
                 <p className="py-6 text-center text-sm text-gray-500">
                   {t("empty")}
@@ -186,6 +261,18 @@ export function FullDetailsModal({
 
 function hasValue(item: DetailItem): boolean {
   return Boolean(item.value && item.value.trim());
+}
+
+/**
+ * Join a value with its qualifier — "Business (Alive)", "2 (1 elder, married)".
+ * Either side may be missing: with no qualifier the value stands alone, and a
+ * qualifier with no value is shown on its own rather than as empty parentheses.
+ */
+function withStatus(value?: string, qualifier?: string): string | undefined {
+  const main = value?.trim();
+  const extra = qualifier?.trim();
+  if (!main) return extra || undefined;
+  return extra ? `${main} (${extra})` : main;
 }
 
 function Section({

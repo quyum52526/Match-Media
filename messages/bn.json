@@ -253,7 +253,18 @@
       "sect": "মাযহাব/সম্প্রদায়",
       "caste": "বর্ণ/সম্প্রদায়",
       "diet": "খাদ্যাভ্যাস",
-      "smoking": "ধূমপান"
+      "smoking": "ধূমপান",
+      "careerSection": "শিক্ষা ও পেশা",
+      "environmentSection": "পারিবারিক পরিবেশ",
+      "relativesSection": "আত্মীয়স্বজন",
+      "educationInstitute": "শিক্ষাপ্রতিষ্ঠান",
+      "educationMajor": "বিষয়",
+      "brothers": "ভাই",
+      "sisters": "বোন",
+      "familyType": "পরিবারের ধরন",
+      "familyClass": "পারিবারিক অবস্থা",
+      "paternalBackground": "চাচা-ফুফুদের পরিচয়",
+      "maternalBackground": "মামা-খালাদের পরিচয়"
     },
     "facts": {
       "address": "ঠিকানা",
@@ -379,7 +390,8 @@
       "background": "ঠিকানা ও background",
       "details": "অতিরিক্ত তথ্য",
       "about": "আপনার সম্পর্কে",
-      "religion": "ধর্ম ও সম্প্রদায়"
+      "religion": "ধর্ম ও সম্প্রদায়",
+      "family": "পারিবারিক পরিচয়"
     },
     "fields": {
       "fullName": "Full name",
@@ -400,7 +412,21 @@
       "sect": "মাযহাব/সম্প্রদায়",
       "caste": "বর্ণ/সম্প্রদায়",
       "diet": "খাদ্যাভ্যাস",
-      "smokingStatus": "ধূমপান"
+      "smokingStatus": "ধূমপান",
+      "fatherProfession": "বাবার পেশা",
+      "fatherStatus": "বাবা — জীবিত/মৃত",
+      "motherProfession": "মায়ের পেশা",
+      "motherStatus": "মা — জীবিত/মৃত",
+      "numberOfBrothers": "ভাইয়ের সংখ্যা",
+      "brothersDetails": "ভাইদের সম্পর্কে",
+      "numberOfSisters": "বোনের সংখ্যা",
+      "sistersDetails": "বোনদের সম্পর্কে",
+      "paternalBackground": "চাচা-ফুফুদের পরিচয় ও সামাজিক অবস্থান",
+      "maternalBackground": "মামা-খালাদের পরিচয় ও সামাজিক অবস্থান",
+      "familyClass": "পারিবারিক অবস্থা",
+      "familyType": "পরিবারের ধরন",
+      "educationInstitute": "শিক্ষাপ্রতিষ্ঠান (কলেজ/বিশ্ববিদ্যালয়)",
+      "educationMajor": "বিষয় / অধ্যয়নের ক্ষেত্র"
     },
     "gender": {
       "placeholder": "Gender নির্বাচন করুন",
@@ -453,7 +479,23 @@
         "NO_PROFILE": "আগে আপনার মূল তথ্য সংরক্ষণ করুন, তারপর ছবি যোগ করুন।"
       }
     },
-    "selectReligionFirst": "আগে ধর্ম নির্বাচন করুন"
+    "selectReligionFirst": "আগে ধর্ম নির্বাচন করুন",
+    "groups": {
+      "immediateFamily": "নিকটাত্মীয় (বাবা-মা ও ভাইবোন)",
+      "extendedFamily": "আত্মীয়স্বজন",
+      "familyEnvironment": "পারিবারিক পরিবেশ"
+    },
+    "placeholders": {
+      "fatherProfession": "যেমন: ব্যবসায়ী, অবসরপ্রাপ্ত শিক্ষক",
+      "motherProfession": "যেমন: গৃহিণী, স্কুলশিক্ষক",
+      "brothersDetails": "যেমন: ১ বড় ভাই (ইঞ্জিনিয়ার, বিবাহিত)",
+      "sistersDetails": "যেমন: ১ ছোট বোন (শিক্ষার্থী)",
+      "paternalBackground": "চাচা-ফুফুরা কে, কী করেন — সংক্ষেপে লিখুন",
+      "maternalBackground": "মামা-খালারা কে, কী করেন — সংক্ষেপে লিখুন",
+      "familyDetails": "পরিবার সম্পর্কে আর যা জানানো দরকার",
+      "educationInstitute": "যেমন: ঢাকা বিশ্ববিদ্যালয়",
+      "educationMajor": "যেমন: কম্পিউটার সায়েন্স অ্যান্ড ইঞ্জিনিয়ারিং"
+    }
   },
   "Report": {
     "button": "রিপোর্ট",

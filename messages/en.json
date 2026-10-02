@@ -253,7 +253,18 @@
       "sect": "Sect",
       "caste": "Caste / community",
       "diet": "Diet",
-      "smoking": "Smoking"
+      "smoking": "Smoking",
+      "careerSection": "Education & career",
+      "environmentSection": "Family environment",
+      "relativesSection": "Extended family",
+      "educationInstitute": "Institution",
+      "educationMajor": "Subject / field",
+      "brothers": "Brothers",
+      "sisters": "Sisters",
+      "familyType": "Family type",
+      "familyClass": "Family class",
+      "paternalBackground": "Paternal family (uncles & aunts)",
+      "maternalBackground": "Maternal family (uncles & aunts)"
     },
     "facts": {
       "address": "Address",
@@ -379,7 +390,8 @@
       "background": "Location & background",
       "details": "Additional details",
       "about": "About you",
-      "religion": "Religion & community"
+      "religion": "Religion & community",
+      "family": "Family background"
     },
     "fields": {
       "fullName": "Full name",
@@ -400,7 +412,21 @@
       "sect": "Sect",
       "caste": "Caste / community",
       "diet": "Diet",
-      "smokingStatus": "Smoking"
+      "smokingStatus": "Smoking",
+      "fatherProfession": "Father's occupation",
+      "fatherStatus": "Father — living status",
+      "motherProfession": "Mother's occupation",
+      "motherStatus": "Mother — living status",
+      "numberOfBrothers": "Number of brothers",
+      "brothersDetails": "About the brothers",
+      "numberOfSisters": "Number of sisters",
+      "sistersDetails": "About the sisters",
+      "paternalBackground": "Paternal family (uncles & aunts)",
+      "maternalBackground": "Maternal family (uncles & aunts)",
+      "familyClass": "Family class",
+      "familyType": "Family type",
+      "educationInstitute": "Institution (college / university)",
+      "educationMajor": "Subject / field of study"
     },
     "gender": {
       "placeholder": "Select gender",
@@ -453,7 +479,23 @@
         "NO_PROFILE": "Save your basic details first, then add photos."
       }
     },
-    "selectReligionFirst": "Select religion first"
+    "selectReligionFirst": "Select religion first",
+    "groups": {
+      "immediateFamily": "Immediate family",
+      "extendedFamily": "Extended family / relatives",
+      "familyEnvironment": "Family environment"
+    },
+    "placeholders": {
+      "fatherProfession": "e.g. Businessman, retired teacher",
+      "motherProfession": "e.g. Homemaker, school teacher",
+      "brothersDetails": "e.g. 1 elder brother (Engineer, married)",
+      "sistersDetails": "e.g. 1 younger sister (Student)",
+      "paternalBackground": "Who your paternal uncles and aunts are, and what they do",
+      "maternalBackground": "Who your maternal uncles and aunts are, and what they do",
+      "familyDetails": "Anything else a match should know about your family",
+      "educationInstitute": "e.g. University of Dhaka",
+      "educationMajor": "e.g. Computer Science & Engineering"
+    }
   },
   "Report": {
     "button": "Report",

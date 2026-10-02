@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { computeCompletion } from "@/lib/utils";
+import { hasFamilyInfo } from "@/lib/data/familyDetails";
 
 /**
  * The fields that make up the completion score. Each key doubles as the
@@ -61,7 +62,9 @@ export async function getProfileCompletion(
     height: p.height,
     weight: p.weight,
     childrenStatus: p.childrenStatus,
-    familyDetails: p.familyDetails,
+    // Any of the structured family columns counts as "family filled" — the
+    // free-text note is no longer the only way to describe a family.
+    familyDetails: hasFamilyInfo(p) ? "1" : "",
   };
 
   const missing = COMPLETION_FIELDS.filter((k) => !isFilled(values[k]));

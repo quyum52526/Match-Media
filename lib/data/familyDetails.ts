@@ -9,9 +9,10 @@ import type { FamilyBackground } from "@/components/profile/types";
  * This module bridges the two: it segments the stored text into those fields
  * and keeps whatever it cannot classify as a plain note, so nothing is lost.
  *
- * Display-only — writes still go through the single free-text field. When the
- * schema eventually gains real columns for these, delete the heuristics below
- * and map the columns straight through; `FamilyBackground` stays the same.
+ * The schema now has real columns for most of this (fatherProfession,
+ * numberOfBrothers, familyType, …). New writes go there; the heuristics below
+ * exist only so profiles written before those columns still render as rows.
+ * `buildFamilyBackground()` layers the columns on top of the parsed text.
  */
 
 /** Redundant lead-ins to drop, e.g. "Family Details: বাবা ব্যবসায়ী". */
@@ -121,4 +122,90 @@ export function parseFamilyDetails(raw: string | null | undefined): FamilyBackgr
 
   if (leftovers.length) family.note = leftovers.join("। ");
   return family;
+}
+
+/** The structured family columns of a `Profile` row. */
+export interface FamilyColumns {
+  familyDetails: string | null;
+  fatherProfession: string | null;
+  fatherStatus: string | null;
+  motherProfession: string | null;
+  motherStatus: string | null;
+  numberOfBrothers: number | null;
+  brothersDetails: string | null;
+  numberOfSisters: number | null;
+  sistersDetails: string | null;
+  paternalBackground: string | null;
+  maternalBackground: string | null;
+  familyClass: string | null;
+  familyType: string | null;
+}
+
+function text(v: string | null | undefined): string | undefined {
+  const s = (v ?? "").trim();
+  return s || undefined;
+}
+
+function count(v: number | null | undefined): string | undefined {
+  return v === null || v === undefined ? undefined : String(v);
+}
+
+/**
+ * The family background to display: the structured columns, falling back to
+ * whatever can still be recovered from the legacy free-text blurb.
+ *
+ * Columns always win — a member who filled the real fields never sees a guess
+ * from their old prose contradicting them. When structured sibling counts
+ * exist, the parsed `siblings` sentence is dropped so the modal doesn't show
+ * the same fact twice.
+ */
+export function buildFamilyBackground(p: FamilyColumns): FamilyBackground {
+  const parsed = parseFamilyDetails(p.familyDetails);
+
+  const family: FamilyBackground = {
+    ...parsed,
+    fatherProfession: text(p.fatherProfession) ?? parsed.fatherProfession,
+    fatherStatus: text(p.fatherStatus),
+    motherProfession: text(p.motherProfession) ?? parsed.motherProfession,
+    motherStatus: text(p.motherStatus),
+    brothers: count(p.numberOfBrothers),
+    brothersDetails: text(p.brothersDetails),
+    sisters: count(p.numberOfSisters),
+    sistersDetails: text(p.sistersDetails),
+    paternalBackground: text(p.paternalBackground),
+    maternalBackground: text(p.maternalBackground),
+    familyClass: text(p.familyClass),
+    familyType: text(p.familyType),
+  };
+
+  if (family.brothers || family.sisters || family.brothersDetails || family.sistersDetails) {
+    family.siblings = undefined;
+  }
+  // `status` was the legacy joint/nuclear guess — the real column replaces it.
+  if (family.familyType) family.status = undefined;
+
+  return family;
+}
+
+/**
+ * Whether a profile says anything at all about its family, through either the
+ * structured columns or the free-text note. Used by the completion score so
+ * filling the new fields counts, even with the old textarea left empty.
+ */
+export function hasFamilyInfo(p: Partial<FamilyColumns>): boolean {
+  return [
+    p.familyDetails,
+    p.fatherProfession,
+    p.fatherStatus,
+    p.motherProfession,
+    p.motherStatus,
+    p.brothersDetails,
+    p.sistersDetails,
+    p.paternalBackground,
+    p.maternalBackground,
+    p.familyClass,
+    p.familyType,
+  ].some((v) => Boolean(v && String(v).trim())) ||
+    p.numberOfBrothers != null ||
+    p.numberOfSisters != null;
 }

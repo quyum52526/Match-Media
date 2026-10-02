@@ -69,16 +69,35 @@ export interface ProfileVerifications {
 /**
  * Family background, split into the rows the Full Details modal renders.
  *
- * Every field is optional because the DB holds a single free-text column that
- * is parsed into these (see `lib/data/familyDetails.ts`): a value is present
- * only when it could be identified. `note` carries whatever did not classify,
- * and `raw` is the untouched original (used for the completion score).
+ * Most values now come straight from structured `Profile` columns. Older rows
+ * only have the single free-text column, which is parsed into the same shape
+ * (see `lib/data/familyDetails.ts`) and overridden wherever a real column has
+ * a value — so a field is present only when it is actually known. `note`
+ * carries the free-text remainder, and `raw` is the untouched original (used
+ * for the completion score).
  */
 export interface FamilyBackground {
-  /** Joint / nuclear, as written by the member. */
+  /** Legacy free-text family status; superseded by `familyType`. */
   status?: string;
   fatherProfession?: string;
+  /** Canonical "Alive" / "Deceased" — localize at render time. */
+  fatherStatus?: string;
   motherProfession?: string;
+  motherStatus?: string;
+  /** Sibling counts as entered (strings so "0" stays printable). */
+  brothers?: string;
+  brothersDetails?: string;
+  sisters?: string;
+  sistersDetails?: string;
+  /** চাচা/ফুফু — paternal relatives and their standing. */
+  paternalBackground?: string;
+  /** মামা/খালা — maternal relatives and their standing. */
+  maternalBackground?: string;
+  /** Canonical FAMILY_CLASSES value. */
+  familyClass?: string;
+  /** Canonical FAMILY_TYPES value (Nuclear / Joint). */
+  familyType?: string;
+  /** Legacy parsed sibling blurb, shown only when no structured counts exist. */
   siblings?: string;
   /** Religious / cultural values the member described. */
   values?: string;
@@ -96,6 +115,10 @@ export interface ProfileFullDetails {
   /** Duplicated from the key-facts card so the modal reads standalone. */
   maritalStatus: string;
   family: FamilyBackground;
+  /** College / university attended. Free text. */
+  educationInstitute: string;
+  /** Subject / field of study. Free text. */
+  educationMajor: string;
   /** Canonical English values — localize at render time via `localize()`. */
   religion: string;
   sect: string;
@@ -124,7 +147,23 @@ export interface EditableProfile {
   height: string;
   weight: string;
   childrenStatus: string;
+  /** Free-text "anything else about the family" note. */
   familyDetails: string;
+  fatherProfession: string;
+  fatherStatus: string;
+  motherProfession: string;
+  motherStatus: string;
+  /** Counts are strings so the number inputs stay controlled-friendly (""=unset). */
+  numberOfBrothers: string;
+  brothersDetails: string;
+  numberOfSisters: string;
+  sistersDetails: string;
+  paternalBackground: string;
+  maternalBackground: string;
+  familyClass: string;
+  familyType: string;
+  educationInstitute: string;
+  educationMajor: string;
   diet: string;
   smokingStatus: string;
   bio: string;

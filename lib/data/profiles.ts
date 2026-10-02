@@ -8,7 +8,7 @@ import { mobileCountsTowardTrust } from "@/lib/contactGate";
 import { maskEmail, maskPhone } from "@/lib/privacy";
 import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
 import { heightsInRange } from "@/lib/constants/profileOptions";
-import { parseFamilyDetails } from "@/lib/data/familyDetails";
+import { buildFamilyBackground } from "@/lib/data/familyDetails";
 import { isAdminRole } from "@/lib/rbac";
 import type {
   ProfileDetailView,
@@ -41,6 +41,20 @@ const EMPTY_EDITABLE: EditableProfile = {
   weight: "",
   childrenStatus: "",
   familyDetails: "",
+  fatherProfession: "",
+  fatherStatus: "",
+  motherProfession: "",
+  motherStatus: "",
+  numberOfBrothers: "",
+  brothersDetails: "",
+  numberOfSisters: "",
+  sistersDetails: "",
+  paternalBackground: "",
+  maternalBackground: "",
+  familyClass: "",
+  familyType: "",
+  educationInstitute: "",
+  educationMajor: "",
   diet: "",
   smokingStatus: "",
   bio: "",
@@ -68,6 +82,20 @@ function toEditableProfile(profile: {
   weight: string | null;
   childrenStatus: string | null;
   familyDetails: string | null;
+  fatherProfession: string | null;
+  fatherStatus: string | null;
+  motherProfession: string | null;
+  motherStatus: string | null;
+  numberOfBrothers: number | null;
+  brothersDetails: string | null;
+  numberOfSisters: number | null;
+  sistersDetails: string | null;
+  paternalBackground: string | null;
+  maternalBackground: string | null;
+  familyClass: string | null;
+  familyType: string | null;
+  educationInstitute: string | null;
+  educationMajor: string | null;
   diet: string | null;
   smokingStatus: string | null;
   bio: string | null;
@@ -91,6 +119,20 @@ function toEditableProfile(profile: {
     weight: profile.weight ?? "",
     childrenStatus: profile.childrenStatus ?? "",
     familyDetails: profile.familyDetails ?? "",
+    fatherProfession: profile.fatherProfession ?? "",
+    fatherStatus: profile.fatherStatus ?? "",
+    motherProfession: profile.motherProfession ?? "",
+    motherStatus: profile.motherStatus ?? "",
+    numberOfBrothers: profile.numberOfBrothers?.toString() ?? "",
+    brothersDetails: profile.brothersDetails ?? "",
+    numberOfSisters: profile.numberOfSisters?.toString() ?? "",
+    sistersDetails: profile.sistersDetails ?? "",
+    paternalBackground: profile.paternalBackground ?? "",
+    maternalBackground: profile.maternalBackground ?? "",
+    familyClass: profile.familyClass ?? "",
+    familyType: profile.familyType ?? "",
+    educationInstitute: profile.educationInstitute ?? "",
+    educationMajor: profile.educationMajor ?? "",
     diet: profile.diet ?? "",
     smokingStatus: profile.smokingStatus ?? "",
     bio: profile.bio ?? "",
@@ -754,8 +796,10 @@ export async function getProfileForViewer(
       weight: profile.weight ?? "",
       childrenStatus: profile.childrenStatus ?? "",
       maritalStatus: profile.maritalStatus ?? "",
-      // One free-text column -> the labelled rows the Full Details modal shows.
-      family: parseFamilyDetails(profile.familyDetails),
+      // Structured columns (+ legacy free text) -> the Full Details rows.
+      family: buildFamilyBackground(profile),
+      educationInstitute: profile.educationInstitute ?? "",
+      educationMajor: profile.educationMajor ?? "",
       religion: profile.religion ?? "",
       sect: profile.sect ?? "",
       caste: profile.caste ?? "",
@@ -842,8 +886,10 @@ export async function getGuestProfilePreview(
       weight: profile.weight ?? "",
       childrenStatus: profile.childrenStatus ?? "",
       maritalStatus: profile.maritalStatus ?? "",
-      // One free-text column -> the labelled rows the Full Details modal shows.
-      family: parseFamilyDetails(profile.familyDetails),
+      // Structured columns (+ legacy free text) -> the Full Details rows.
+      family: buildFamilyBackground(profile),
+      educationInstitute: profile.educationInstitute ?? "",
+      educationMajor: profile.educationMajor ?? "",
       religion: profile.religion ?? "",
       sect: profile.sect ?? "",
       caste: profile.caste ?? "",
