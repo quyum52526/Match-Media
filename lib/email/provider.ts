@@ -11,8 +11,7 @@ import { Resend } from "resend";
  * account and no spend.
  */
 
-export const EMAIL_FROM =
-  process.env.EMAIL_FROM ?? "MatchMedia <onboarding@resend.dev>";
+export const EMAIL_FROM = "Match Media <noreply@matchmediabd.xyz>";
 
 let cached: Resend | null | undefined;
 
