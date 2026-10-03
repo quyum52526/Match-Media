@@ -30,7 +30,7 @@ export default async function Home({
 
   // Public homepage renders for everyone — signed-in users reach their
   // personal dashboard via the "Dashboard" link in the nav.
-  const [tf, { premiumProfiles, newProfiles, verifiedProfiles }, marqueeProfiles] =
+  const [tf, { recommendedProfiles, premiumProfiles, newProfiles, verifiedProfiles }, marqueeProfiles] =
     await Promise.all([
       getTranslations("Home.featured"),
       getCachedHomepageShowcase(),
@@ -41,7 +41,16 @@ export default async function Home({
     <main>
       <HomeHero marqueeProfiles={marqueeProfiles} />
       <div className="flex flex-col gap-24 py-20 w-full max-w-6xl mx-auto px-4">
-        {/* 1. Premium Members (cards on the right) */}
+        {/* Recommended profiles are curated by admins, then filled with verified members. */}
+        <StackedFeatureSection
+          imagePosition="right"
+          icon={<Sparkles size={24} />}
+          title={tf("recommendedTitle")}
+          description={tf("recommendedDesc")}
+          redirectLink="/browse"
+          profiles={recommendedProfiles}
+        />
+        {/* Premium Members (cards on the right) */}
         <StackedFeatureSection
           imagePosition="right"
           icon={<Crown size={24} />}

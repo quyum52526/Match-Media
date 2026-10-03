@@ -137,6 +137,7 @@ export async function getMarqueeProfiles(limit = 10): Promise<ShowcaseProfile[]>
 }
 
 export interface HomepageShowcase {
+  recommendedProfiles: ShowcaseProfile[];
   premiumProfiles: ShowcaseProfile[];
   newProfiles: ShowcaseProfile[];
   verifiedProfiles: ShowcaseProfile[];
@@ -145,11 +146,43 @@ export interface HomepageShowcase {
 /**
  * Waterfall query: each section excludes IDs already claimed by higher-priority
  * sections, so no profile appears twice on the homepage.
- * Priority: Premium → New → Verified
+ * Priority: Recommended → Premium → New → Verified. Recommendations prefer
+ * admin-featured profiles, then fill remaining slots with recent verified ones.
  */
 export async function getHomepageShowcase(): Promise<HomepageShowcase> {
+  const featuredRows = await prisma.profile.findMany({
+    where: { ...showcaseWhere, isFeatured: true },
+    take: 3,
+    orderBy: { createdAt: "desc" },
+    include: showcaseInclude,
+  });
+  const fallbackRows = featuredRows.length < 3
+    ? await prisma.profile.findMany({
+        where: {
+          ...showcaseWhere,
+          isVerified: true,
+          id: { notIn: featuredRows.map((r) => r.id) },
+        },
+        take: 3 - featuredRows.length,
+        orderBy: { createdAt: "desc" },
+        include: showcaseInclude,
+      })
+    : [];
+  const recommendedRows = [...featuredRows, ...fallbackRows];
+  const recommendedIds = recommendedRows.map((r) => r.id);
+  const recommendedOwnerIds = recommendedRows
+    .map((r) => r.userId)
+    .filter((id): id is string => id !== null);
+
   const premiumRows = await prisma.profile.findMany({
-    where: { ...showcaseWhere, user: { accountCategory: "SELF", isPro: true } },
+    where: {
+      ...showcaseWhere,
+      user: { accountCategory: "SELF", isPro: true },
+      NOT: [
+        { id: { in: recommendedIds } },
+        { userId: { in: recommendedOwnerIds } },
+      ],
+    },
     take: 3,
     orderBy: { createdAt: "desc" },
     include: showcaseInclude,
@@ -157,27 +190,46 @@ export async function getHomepageShowcase(): Promise<HomepageShowcase> {
   const premiumIds = premiumRows.map((r) => r.userId).filter((id): id is string => id !== null);
 
   const newRows = await prisma.profile.findMany({
-    where: { ...showcaseWhere, userId: { not: null, notIn: premiumIds } },
+    where: {
+      ...showcaseWhere,
+      userId: { not: null, notIn: [...recommendedOwnerIds, ...premiumIds] },
+      id: { notIn: recommendedIds },
+    },
     take: 3,
     orderBy: { createdAt: "desc" },
     include: showcaseInclude,
   });
-  const excludeIds = [...premiumIds, ...newRows.map((r) => r.userId).filter((id): id is string => id !== null)];
+  const excludeIds = [
+    ...recommendedOwnerIds,
+    ...premiumIds,
+    ...newRows.map((r) => r.userId).filter((id): id is string => id !== null),
+  ];
+  const excludeProfileIds = [
+    ...recommendedIds,
+    ...premiumRows.map((r) => r.id),
+    ...newRows.map((r) => r.id),
+  ];
 
   const verifiedRows = await prisma.profile.findMany({
-    where: { ...showcaseWhere, isVerified: true, userId: { not: null, notIn: excludeIds } },
+    where: {
+      ...showcaseWhere,
+      isVerified: true,
+      userId: { not: null, notIn: excludeIds },
+      id: { notIn: excludeProfileIds },
+    },
     take: 3,
     orderBy: { createdAt: "desc" },
     include: showcaseInclude,
   });
 
-  const [premiumProfiles, newProfiles, verifiedProfiles] = await Promise.all([
+  const [recommendedProfiles, premiumProfiles, newProfiles, verifiedProfiles] = await Promise.all([
+    toShowcaseProfiles(recommendedRows),
     toShowcaseProfiles(premiumRows),
     toShowcaseProfiles(newRows),
     toShowcaseProfiles(verifiedRows),
   ]);
 
-  return { premiumProfiles, newProfiles, verifiedProfiles };
+  return { recommendedProfiles, premiumProfiles, newProfiles, verifiedProfiles };
 }
 
 // ---------------------------------------------------------------------------

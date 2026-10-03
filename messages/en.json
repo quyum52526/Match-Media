@@ -49,6 +49,8 @@
       "active": "Active now"
     },
     "featured": {
+      "recommendedTitle": "Recommended Profiles",
+      "recommendedDesc": "Profiles selected by our team, alongside recently verified members.",
       "newTitle": "New Profiles",
       "newDesc": "Freshly joined members, ready to begin their search. Be among the first to say hello.",
       "premiumTitle": "Premium Members",
@@ -223,6 +225,9 @@
   },
   "Profile": {
     "nameHidden": "Name hidden",
+    "featureOnHome": "Feature on Home",
+    "featuredOnHome": "Featured on Home",
+    "featureToggleError": "Could not update the homepage feature. Please try again.",
     "verified": "Verified",
     "vip": "Premium Verified",
     "managedByParents": "Managed by Parents",

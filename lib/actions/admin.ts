@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { assertAdmin, assertSuperAdmin } from "@/lib/session";
@@ -140,6 +140,31 @@ export async function setVerified(
   revalidatePath(BROWSE, "page");
   revalidatePath(PROFILE, "page");
   revalidateAdminNav();
+  return ok;
+}
+
+/** Toggle a profile's appearance in the homepage recommendations. */
+export async function toggleFeaturedProfile(
+  profileId: string,
+): Promise<AdminResult> {
+  const adminId = await assertAdmin();
+  if (!adminId) return err("FORBIDDEN");
+
+  const current = await prisma.profile.findUnique({
+    where: { id: profileId },
+    select: { isFeatured: true },
+  });
+  if (!current) return err("NOT_FOUND");
+
+  await prisma.profile.update({
+    where: { id: profileId },
+    data: { isFeatured: !current.isFeatured },
+  });
+
+  revalidatePath(PROFILE, "page");
+  revalidatePath("/", "page");
+  revalidatePath("/[locale]", "page");
+  revalidateTag("showcase");
   return ok;
 }
 

@@ -239,6 +239,8 @@ export interface ProfilePhoto {
 /** Composed, presentation-ready profile for the detail page. */
 export interface ProfileDetailView {
   id: string;
+  /** Database Profile id, distinct from its owner's id for managed profiles. */
+  profileId: string;
   /** Already display-resolved: real name, or a placeholder if nameHidden. */
   displayName: string;
   nameHidden: boolean;
@@ -252,6 +254,7 @@ export interface ProfileDetailView {
   bio: string;
   completionScore: number;
   isVerified: boolean;
+  isFeatured: boolean;
   /** Owner has a Pro membership -> shows the golden VIP badge. */
   isPro: boolean;
   /** Who manages this profile: "GUARDIAN" = parent, "MEDIA" = agency, null = self. */

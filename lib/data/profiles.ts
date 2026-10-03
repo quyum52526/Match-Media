@@ -768,6 +768,7 @@ export async function getProfileForViewer(
     // Use userId when available; fall back to referredById (parent/agency) so
     // social actions are routed to them, finally to profile.id as a last resort.
     id: profile.userId ?? profile.referredById ?? profile.id,
+    profileId: profile.id,
     displayName:
       profile.nameHidden || !profile.fullName ? HIDDEN_NAME : profile.fullName,
     nameHidden: profile.nameHidden,
@@ -781,6 +782,7 @@ export async function getProfileForViewer(
     bio: profile.bio ?? "",
     completionScore: profile.completionScore,
     isVerified: profile.isVerified,
+    isFeatured: profile.isFeatured,
     isPro: isProActive(profileUser),
     managedBy: resolveManagerType(profile.referredBy?.accountCategory ?? null),
     primaryImagePrivacy: (primary?.privacy as ImagePrivacy) ?? "BLURRED",
@@ -863,6 +865,7 @@ export async function getGuestProfilePreview(
 
   return {
     id: profile.userId ?? profile.referredById ?? profile.id,
+    profileId: profile.id,
     displayName:
       profile.nameHidden || !profile.fullName ? HIDDEN_NAME : profile.fullName,
     nameHidden: profile.nameHidden,
@@ -876,6 +879,7 @@ export async function getGuestProfilePreview(
     bio: profile.bio ?? "",
     completionScore: profile.completionScore,
     isVerified: profile.isVerified,
+    isFeatured: profile.isFeatured,
     isPro: isProActive(profileUser),
     managedBy: resolveManagerType(profile.referredBy?.accountCategory ?? null),
     primaryImagePrivacy: (primary?.privacy as ImagePrivacy) ?? "BLURRED",

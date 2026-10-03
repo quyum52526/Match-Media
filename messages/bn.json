@@ -49,6 +49,8 @@
       "active": "এখন সক্রিয়"
     },
     "featured": {
+      "recommendedTitle": "প্রস্তাবিত প্রোফাইল",
+      "recommendedDesc": "আমাদের টিমের নির্বাচিত প্রোফাইল এবং সম্প্রতি যাচাইকৃত সদস্যরা।",
       "newTitle": "নতুন প্রোফাইল",
       "newDesc": "সম্প্রতি যুক্ত হওয়া সদস্যরা, তাঁদের সঙ্গী খোঁজ শুরু করতে প্রস্তুত। প্রথম দিকেই পরিচিত হোন।",
       "premiumTitle": "প্রিমিয়াম সদস্য",
@@ -223,6 +225,9 @@
   },
   "Profile": {
     "nameHidden": "নাম গোপন",
+    "featureOnHome": "হোমপেজে ফিচার করুন",
+    "featuredOnHome": "হোমপেজে ফিচার করা হয়েছে",
+    "featureToggleError": "হোমপেজের ফিচার আপডেট করা যায়নি। আবার চেষ্টা করুন।",
     "verified": "Verified",
     "vip": "Premium Verified",
     "managedByParents": "পিতা-মাতা দ্বারা পরিচালিত",

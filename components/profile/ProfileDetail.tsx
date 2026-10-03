@@ -46,6 +46,7 @@ import { localize } from "@/lib/constants/labels";
 import { ProfilePhotoGallery } from "./ProfilePhotoGallery";
 import { ReportButton } from "./ReportButton";
 import { TrustCard } from "./TrustCard";
+import { FeaturedProfileToggle } from "./FeaturedProfileToggle";
 import type { ProfileDetailView, ViewerState } from "./types";
 
 /**
@@ -309,6 +310,13 @@ export function ProfileDetail({
                 </Badge>
               )}
             </div>
+
+            {viewer.isAdmin && (
+              <FeaturedProfileToggle
+                profileId={data.profileId}
+                isFeatured={data.isFeatured}
+              />
+            )}
 
             <p className="text-sm text-ink/60">
               {t.rich("ageLine", {

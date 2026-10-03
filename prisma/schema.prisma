@@ -430,6 +430,7 @@ model Profile {
 
   // Trust badge: ID/photo verified by an admin/agent.
   isVerified      Boolean @default(false)
+  isFeatured      Boolean @default(false)
   nameHidden      Boolean @default(false)
   completionScore Int     @default(10)
 
@@ -446,6 +447,7 @@ model Profile {
   partnerPreference      PartnerPreference?
 
   @@index([referredById])
+  @@index([isFeatured])
   @@index([district, upazila])
   // Matchmaking recommendation gate: opposite-gender + age-window scans
   // (WHERE gender = $g AND dateOfBirth BETWEEN $lo AND $hi). Keeps the
