@@ -244,6 +244,7 @@ export const BROWSE_CARD_SELECT = {
   district: true,
   upazila: true,
   isVerified: true,
+  isFeatured: true,
   user: {
     select: {
       isPro: true,
@@ -374,6 +375,7 @@ export async function hydrateProfileCards(
       district: p.district ?? "",
       upazila: p.upazila ?? "",
       isVerified: p.isVerified,
+      isFeatured: p.isFeatured,
       isPro: p.user?.isPro ?? false,
       managedBy: resolveManagerType(p.referredBy?.accountCategory ?? null),
       primaryImagePrivacy: (img?.privacy as ImagePrivacy) ?? "BLURRED",
@@ -515,10 +517,14 @@ export async function getBrowseProfiles(
 
   const rows = await prisma.profile.findMany({
     where,
-    // createdAt alone is not a unique ordering, so rows with identical
-    // timestamps could swap between pages and appear twice or not at all.
-    // `id` breaks the tie and makes the sequence stable across requests.
-    orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+    // Keep featured profiles at the front of the listing while retaining a
+    // stable order within each featured/verification group across pages.
+    orderBy: [
+      { isFeatured: "desc" },
+      { isVerified: "desc" },
+      { createdAt: "desc" },
+      { id: "asc" },
+    ],
     skip: (page - 1) * limit,
     take: limit,
     select: BROWSE_CARD_SELECT,

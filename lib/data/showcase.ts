@@ -9,6 +9,7 @@ export interface ShowcaseProfile {
   displayName: string;
   location: string;
   isVerified: boolean;
+  isFeatured: boolean;
   isPro: boolean;
   /**
    * Signed URL for the card photo: the ORIGINAL for a PUBLIC photo, the blurred
@@ -114,6 +115,7 @@ async function toShowcaseProfiles(rows: ShowcaseRow[]): Promise<ShowcaseProfile[
         displayName: r.nameHidden || !r.fullName ? "Member" : r.fullName,
         location: [r.upazila, r.district].filter(Boolean).join(", "),
         isVerified: r.isVerified,
+        isFeatured: r.isFeatured,
         isPro: r.user?.isPro ?? false,
         imageUrl,
       };
@@ -151,9 +153,11 @@ export interface HomepageShowcase {
  */
 export async function getHomepageShowcase(): Promise<HomepageShowcase> {
   const featuredRows = await prisma.profile.findMany({
-    where: { ...showcaseWhere, isFeatured: true },
-    take: 3,
-    orderBy: { createdAt: "desc" },
+    // Admin selection is authoritative: featured profiles are not filtered
+    // out by account category or photo availability. showcaseInclude still
+    // selects only approved photos and pickShowcaseKey preserves privacy.
+    where: { isFeatured: true },
+    orderBy: [{ isVerified: "desc" }, { createdAt: "desc" }, { id: "asc" }],
     include: showcaseInclude,
   });
   const fallbackRows = featuredRows.length < 3

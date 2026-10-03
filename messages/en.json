@@ -225,6 +225,7 @@
   },
   "Profile": {
     "nameHidden": "Name hidden",
+    "featured": "Featured",
     "featureOnHome": "Feature on Home",
     "featuredOnHome": "Featured on Home",
     "featureToggleError": "Could not update the homepage feature. Please try again.",

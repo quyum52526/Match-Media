@@ -225,6 +225,7 @@
   },
   "Profile": {
     "nameHidden": "নাম গোপন",
+    "featured": "ফিচারড",
     "featureOnHome": "হোমপেজে ফিচার করুন",
     "featuredOnHome": "হোমপেজে ফিচার করা হয়েছে",
     "featureToggleError": "হোমপেজের ফিচার আপডেট করা যায়নি। আবার চেষ্টা করুন।",

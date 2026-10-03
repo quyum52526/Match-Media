@@ -127,6 +127,20 @@ export function ProfileCard({ profile, matchScore }: ProfileCardProps) {
           </span>
         )}
 
+        {profile.isFeatured && (
+          <span
+            className={`absolute left-2.5 ${profile.isVerified ? "top-11" : "top-2.5"}`}
+          >
+            <Badge
+              variant="gold"
+              className="bg-amber-50 text-amber-800"
+              icon={<StarIcon width={13} height={13} className="fill-current" />}
+            >
+              {t("featured")}
+            </Badge>
+          </span>
+        )}
+
         {/* Top-right stack: the "% Match" badge (recommendations only) sits
             above the VIP badge so the two never overlap. */}
         {(showMatchBadge || profile.isPro) && (

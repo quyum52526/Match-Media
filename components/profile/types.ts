@@ -199,6 +199,7 @@ export interface ProfileSummary {
   district: string;
   upazila: string;
   isVerified: boolean;
+  isFeatured: boolean;
   /** Owner has a Pro membership -> shows the golden VIP badge on the card. */
   isPro: boolean;
   /**

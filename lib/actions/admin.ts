@@ -162,8 +162,9 @@ export async function toggleFeaturedProfile(
   });
 
   revalidatePath(PROFILE, "page");
-  revalidatePath("/", "page");
+  revalidatePath("/", "layout");
   revalidatePath("/[locale]", "page");
+  revalidatePath("/[locale]/browse", "page");
   revalidateTag("showcase");
   return ok;
 }

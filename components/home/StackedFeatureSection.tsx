@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { BadgeCheck, Crown, Lock } from "lucide-react";
+import { BadgeCheck, Crown, Lock, Star } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { ShowcaseProfile } from "@/lib/data/showcase";
 import { ShowcaseAvatar } from "./ShowcaseAvatar";
@@ -62,6 +62,9 @@ function CardFace({
       {profile ? profile.displayName : badgeName}
       {profile ? (
         <>
+          {profile.isFeatured && (
+            <Star size={13} className="fill-amber-500 text-amber-500" />
+          )}
           {profile.isVerified && <BadgeCheck size={14} className="text-success" />}
           {profile.isPro && <Crown size={12} className="text-accent" />}
         </>
@@ -150,6 +153,37 @@ export function StackedFeatureSection({
           <CardFace profile={profile1} isFront badgeName={badgeName} />
         </div>
       </Link>
+
+      {profiles && profiles.length > 3 && (
+        <div className="flex gap-3 overflow-x-auto pb-2 md:col-span-2">
+          {profiles.slice(3).map((profile) => (
+            <Link
+              key={profile.id}
+              href={`/profiles/${profile.id}`}
+              className="flex w-64 shrink-0 items-center gap-3 rounded-xl border border-ink/10 bg-white p-2 shadow-sm transition hover:shadow-md"
+            >
+              <div className="h-20 w-16 shrink-0 overflow-hidden rounded-lg">
+                <ShowcaseImage
+                  profile={profile}
+                  alt={profile.displayName}
+                  sizes="64px"
+                  priority={false}
+                />
+              </div>
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-semibold text-ink">
+                  {profile.displayName}
+                </span>
+                {profile.location && (
+                  <span className="block truncate text-xs text-ink/60">
+                    {profile.location}
+                  </span>
+                )}
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
