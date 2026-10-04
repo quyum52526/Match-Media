@@ -21,6 +21,12 @@ import type { ShowcaseProfile } from "@/lib/data/showcase";
  * client component: the surrounding cards stay server-rendered, and only this
  * leaf opts in.
  *
+ * CALLER CONTRACT: this renders with `fill`, i.e. position:absolute inset-0.
+ * The element you put it in MUST be positioned (`relative`) and sized. A static
+ * parent sends the photo to the viewport's containing block, where it covers
+ * the page at full size — and `overflow-hidden` on that parent will not clip
+ * it, because the parent is then not its containing block.
+ *
  * WHY `unoptimized`: these photos are served through Supabase SIGNED urls, and
  * the Next image optimizer keys its cache on the full source url, query string
  * included. Every signature rotation is therefore a brand-new cache key and a

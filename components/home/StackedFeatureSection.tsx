@@ -162,7 +162,13 @@ export function StackedFeatureSection({
               href={`/profiles/${profile.id}`}
               className="flex w-64 shrink-0 items-center gap-3 rounded-xl border border-ink/10 bg-white p-2 shadow-sm transition hover:shadow-md"
             >
-              <div className="h-20 w-16 shrink-0 overflow-hidden rounded-lg">
+              {/* `relative` is load-bearing: ShowcaseImage renders with `fill`,
+                  which is position:absolute. Without a positioned ancestor the
+                  photo resolves against the viewport instead of this 64x80 box
+                  and paints itself full-screen over the hero — and `overflow-
+                  hidden` does not clip it, because the clipping box is not its
+                  containing block. */}
+              <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-lg">
                 <ShowcaseImage
                   profile={profile}
                   alt={profile.displayName}
