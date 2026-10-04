@@ -591,7 +591,20 @@ export async function adminCreateUserProfile(
         error: "That email or mobile number was just taken. Try again.",
       };
     }
-    throw error;
+
+    // Anything else is returned, not rethrown. A throw here becomes an
+    // unhandled Server Action rejection: Next renders the error boundary over
+    // /admin/users and the admin sees a digest hash instead of what went
+    // wrong, which is exactly how a missing column default stayed invisible.
+    // The message is safe to show — this screen is already admin-only.
+    console.error("adminCreateUserProfile failed", error);
+    return {
+      ok: false,
+      error:
+        error instanceof Error
+          ? `Could not create the account: ${lastLine(error.message)}`
+          : "Could not create the account.",
+    };
   }
 }
 
@@ -603,4 +616,17 @@ function randomPassword(): string {
     out += chars[Math.floor(Math.random() * chars.length)];
   }
   return out;
+}
+
+/**
+ * The last non-empty line of an error message. Prisma stacks its explanation
+ * over several lines and puts the actual cause last ("Null constraint
+ * violation on the fields: (...)"), which is the part worth showing.
+ */
+function lastLine(message: string): string {
+  const lines = message
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  return lines[lines.length - 1] ?? message;
 }

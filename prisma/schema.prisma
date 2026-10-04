@@ -282,7 +282,12 @@ model User {
   // Districts an approved agent covers. `agencyDistrict` holds a single
   // district and is reused by legacy AGENT signups; an agent approved through
   // an application can name several, so they live here.
-  agentDistricts        String[]
+  //
+  // `@default([])` is load-bearing: without it Prisma leaves the column out of
+  // an INSERT that does not mention it, and a NOT NULL column with no database
+  // default then rejects the row — which broke every user creation, signup
+  // included. Declare the default here, not only in SQL.
+  agentDistricts        String[]           @default([])
 
   nidFrontKey           String?
   nidBackKey            String?
@@ -960,8 +965,9 @@ model AgentApplication {
   nidBackKey            String
   // Optional: a police-verification document, when the applicant has one.
   policeVerificationKey String?
-  // Districts the applicant can travel to. An OR-set, never empty.
-  operatingDistricts    String[]
+  // Districts the applicant can travel to. An OR-set, never empty in practice;
+  // the default only keeps an INSERT that omits it from failing outright.
+  operatingDistricts    String[]              @default([])
 
   status          RoleApplicationStatus @default(PENDING)
   rejectionReason String?
