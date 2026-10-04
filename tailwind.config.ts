@@ -27,6 +27,7 @@ const config: Config = {
         display: ["var(--font-fraunces)", "var(--font-noto-bengali)", "Georgia", "serif"],
         // Body: Plus Jakarta Sans (EN) → Hind Siliguri (BN fallback).
         body: ["var(--font-jakarta)", "var(--font-hind)", "system-ui", "sans-serif"],
+        bengali: ["var(--font-hind)", "system-ui", "sans-serif"],
         // Keep `sans` as the default sans alias pointing at the brand body font
         // (a few non-Tailwind spots and the default may reference it).
         sans: ["var(--font-jakarta)", "var(--font-hind)", "system-ui", "sans-serif"],
