@@ -10,6 +10,9 @@ import { FEATURE_FLAGS, isFeatureFlagKey } from "@/lib/constants/featureFlags";
 import { calcAge, computeCompletion, normalizeBdMobile } from "@/lib/utils";
 import { GENDERS } from "@/lib/constants/profileOptions";
 import { MAX_PHOTOS, storeProfileImage, validateUpload } from "@/lib/storage/images";
+import { removeObjects } from "@/lib/storage/supabase";
+import { getSupabaseAdmin } from "@/lib/storage/supabase";
+import { isAdminRole } from "@/lib/rbac";
 
 // Dynamic-route literals so revalidation covers every locale param.
 const ADMIN = "/[locale]/admin";
@@ -737,5 +740,155 @@ export async function adminUploadProfilePhoto(
         ? `Upload failed: ${lastLine(error.message)}`
         : "Upload failed.",
     );
+  }
+}
+
+
+// ---------------------------------------------------------------------------
+// Rejection: delete the account and free its email / mobile
+// ---------------------------------------------------------------------------
+
+/**
+ * Reject a profile: delete it, its account and its files outright.
+ *
+ * This is a HARD delete, chosen so the unique `email` and `mobile` are
+ * genuinely released — a soft delete keeps the rows, and the person would hit
+ * "an account with this email already exists" forever. It cannot be undone and
+ * leaves no audit trail of the person, which is the trade this feature asks
+ * for.
+ *
+ * Two refusals protect the operation from itself:
+ *   - an ADMIN or SUPER_ADMIN account is never deletable here (moderation is
+ *     not a tool for removing colleagues, and one misclick would be
+ *     unrecoverable);
+ *   - an account tied to verification assignments is refused rather than
+ *     silently stripping those records, because they carry fee amounts and
+ *     another agent's work. Those relations are onDelete: Restrict in the
+ *     schema, so the delete would fail anyway — this turns a Prisma error into
+ *     an explanation.
+ *
+ * `profileId` is what the verification queue lists, and it also covers an
+ * agency-managed profile that has no login account at all: that case deletes
+ * the Profile and its photos, with no User to remove.
+ */
+export async function adminRejectProfile(
+  profileId: string,
+  reason?: string,
+): Promise<AdminResult> {
+  const adminId = await assertAdmin();
+  if (!adminId) return err("FORBIDDEN");
+
+  try {
+    const profile = await prisma.profile.findUnique({
+      where: { id: profileId },
+      select: {
+        id: true,
+        userId: true,
+        images: { select: { originalKey: true, blurredKey: true } },
+        user: {
+          select: {
+            id: true,
+            role: true,
+            agencyLogo: true,
+            agentAvatarKey: true,
+            nidFrontKey: true,
+            nidBackKey: true,
+            selfieKey: true,
+            tradeLicenseUrl: true,
+            agencyApplications: { select: { tradeLicenseDocumentKey: true } },
+            agentApplications: {
+              select: {
+                nidFrontKey: true,
+                nidBackKey: true,
+                policeVerificationKey: true,
+              },
+            },
+            _count: {
+              select: {
+                assignmentsCreated: true,
+                assignmentsReceived: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!profile) return err("NOT_FOUND");
+
+    const user = profile.user;
+    if (user) {
+      if (user.id === adminId) return err("SELF");
+      if (isAdminRole(user.role)) return err("IS_ADMIN");
+      if (user._count.assignmentsCreated + user._count.assignmentsReceived > 0) {
+        return err("HAS_ASSIGNMENTS");
+      }
+    }
+
+    // Collected BEFORE the delete: once the rows are gone the keys are
+    // unrecoverable, and orphaned objects in a private bucket are invisible.
+    const photoKeys = profile.images.flatMap((i) =>
+      [i.originalKey, i.blurredKey].filter(Boolean),
+    );
+    const docKeys = user
+      ? [
+          user.agencyLogo,
+          user.agentAvatarKey,
+          user.nidFrontKey,
+          user.nidBackKey,
+          user.selfieKey,
+          user.tradeLicenseUrl,
+          ...user.agencyApplications.map((a) => a.tradeLicenseDocumentKey),
+          ...user.agentApplications.flatMap((a) => [
+            a.nidFrontKey,
+            a.nidBackKey,
+            a.policeVerificationKey,
+          ]),
+        ].filter((k): k is string => Boolean(k))
+      : [];
+
+    // Deleting the User cascades to the Profile, its images, interests,
+    // requests, messages, notifications, OTP challenges and applications (all
+    // onDelete: Cascade in the schema), so one delete covers the relational
+    // side and releases the unique email and mobile with it.
+    if (user) {
+      await prisma.user.delete({ where: { id: user.id } });
+    } else {
+      // Agency-managed client: there is no account, only the profile.
+      await prisma.profile.delete({ where: { id: profile.id } });
+    }
+
+    // Storage last, and best-effort: the account is already gone, and a
+    // failure here must not resurrect it. Orphaned files are recoverable by
+    // the audit script; a half-deleted account is not.
+    await removeObjects(photoKeys);
+    if (docKeys.length) await removeVerificationDocs(docKeys);
+
+    console.info(
+      `[admin] rejected profile=${profileId} user=${user?.id ?? "none"} by=${adminId}` +
+        (reason?.trim() ? ` reason="${reason.trim()}"` : ""),
+    );
+
+    revalidatePath(ADMIN_VERIFY, "page");
+    revalidatePath(ADMIN_USERS, "page");
+    revalidateAdminNav();
+    revalidatePath(BROWSE, "page");
+    revalidatePath("/", "layout");
+    return ok;
+  } catch (error) {
+    console.error("adminRejectProfile failed", error);
+    return err(
+      error instanceof Error
+        ? `Could not reject: ${lastLine(error.message)}`
+        : "Could not reject this profile.",
+    );
+  }
+}
+
+/** Best-effort removal from the private documents bucket. Never throws. */
+async function removeVerificationDocs(keys: string[]): Promise<void> {
+  try {
+    await getSupabaseAdmin().storage.from("verification-docs").remove(keys);
+  } catch (error) {
+    console.error("verification-docs cleanup failed", error);
   }
 }

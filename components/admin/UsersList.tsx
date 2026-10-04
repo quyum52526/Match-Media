@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { CreateProfileModal } from "./CreateProfileModal";
 import { AdminPhotoUploadModal } from "./AdminPhotoUploadModal";
+import { RejectProfileButton } from "./RejectProfileButton";
 import { Badge } from "@/components/ui/Badge";
 import { CheckIcon, XIcon } from "@/components/ui/icons";
 import { formatDate } from "@/lib/utils";
@@ -279,6 +280,16 @@ export function UsersList({ users, canResetPasswords }: UsersListProps) {
                         >
                           Reset password
                         </Button>
+                      )}
+                      {/* Only a profile can be rejected: the action deletes the
+                          account behind it, and an account with no profile is
+                          an agency, an agent or an admin rather than a
+                          candidate awaiting review. */}
+                      {u.hasProfile && u.profileId && (
+                        <RejectProfileButton
+                          profileId={u.profileId}
+                          label={u.profileName ?? u.email}
+                        />
                       )}
                     </div>
                   </td>

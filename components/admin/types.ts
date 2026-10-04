@@ -64,6 +64,8 @@ export interface AdminUser {
   profileName: string | null;
   /** A matrimonial Profile exists — only then can photos be attached. */
   hasProfile: boolean;
+  /** That Profile's id, for actions that address the profile rather than the account. */
+  profileId: string | null;
   hasPhotos: boolean;
   createdAt: string;
 }

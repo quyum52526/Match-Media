@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { ShieldCheckIcon, InboxIcon } from "@/components/ui/icons";
 import { localize } from "@/lib/constants/labels";
+import { RejectProfileButton } from "./RejectProfileButton";
 import type { VerificationProfile } from "./types";
 
 export function VerificationList({
@@ -71,26 +72,30 @@ export function VerificationList({
             </p>
           </div>
 
-          {p.isVerified ? (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => toggle(p.profileId, false)}
-              disabled={pending}
-            >
-              {t("revoke")}
-            </Button>
-          ) : (
-            <Button
-              size="sm"
-              variant="primary"
-              onClick={() => toggle(p.profileId, true)}
-              disabled={pending}
-            >
-              <ShieldCheckIcon width={16} height={16} />
-              {t("grant")}
-            </Button>
-          )}
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+            {p.isVerified ? (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => toggle(p.profileId, false)}
+                disabled={pending}
+              >
+                {t("revoke")}
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                variant="primary"
+                onClick={() => toggle(p.profileId, true)}
+                disabled={pending}
+              >
+                <ShieldCheckIcon width={16} height={16} />
+                {t("grant")}
+              </Button>
+            )}
+            {/* Deletes the account outright — see RejectProfileButton. */}
+            <RejectProfileButton profileId={p.profileId} label={p.name} />
+          </div>
         </li>
       ))}
     </ul>

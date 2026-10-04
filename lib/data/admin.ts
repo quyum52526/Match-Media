@@ -148,6 +148,7 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
       createdAt: true,
       profile: {
         select: {
+          id: true,
           fullName: true,
           _count: { select: { images: true } },
         },
@@ -163,6 +164,7 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
     isPro: u.isPro,
     profileName: u.profile?.fullName ?? null,
     hasProfile: Boolean(u.profile),
+    profileId: u.profile?.id ?? null,
     hasPhotos: (u.profile?._count?.images ?? 0) > 0,
     createdAt: u.createdAt.toISOString(),
   }));
