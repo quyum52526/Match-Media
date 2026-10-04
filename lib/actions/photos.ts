@@ -83,8 +83,15 @@ async function ownImage(imageId: string, clientId?: string | null) {
  * Upload one photo to the caller's gallery (or a managed client's gallery).
  *
  * Optional form fields:
- *   - `privacy`: "PUBLIC" | "BLURRED". Defaults to BLURRED (privacy-first);
- *     onboarding sends the member's "blur / hide my photo" choice here.
+ *   - `privacy`: "PUBLIC" | "BLURRED". Defaults to PUBLIC — a photo is only
+ *     gated when the member asks for it, via the "blur / hide my photo" choice
+ *     in onboarding or the per-photo toggle in the photo manager. The DB column
+ *     still defaults to BLURRED, so any future write that forgets this field
+ *     errs toward hiding rather than exposing.
+ *
+ *     NOTE: moderation is unchanged and still applies first — a photo is
+ *     PENDING until an admin approves it, so PUBLIC never means "visible
+ *     immediately".
  *   - `makePrimary`: "1" makes this the profile photo, demoting any other.
  *
  * A photo also becomes primary whenever the profile has no primary yet, so a
@@ -97,7 +104,9 @@ export async function uploadProfilePhoto(
   const profileId = await resolveAuthorisedProfileId(clientId);
   if (!profileId) return err("NO_PROFILE");
 
-  const privacy = formData.get("privacy") === "PUBLIC" ? "PUBLIC" : "BLURRED";
+  // Explicit BLURRED is honoured; everything else (including an absent field)
+  // is PUBLIC.
+  const privacy = formData.get("privacy") === "BLURRED" ? "BLURRED" : "PUBLIC";
   const forcePrimary = formData.get("makePrimary") === "1";
 
   const file = formData.get("photo");

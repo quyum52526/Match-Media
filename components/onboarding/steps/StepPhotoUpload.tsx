@@ -27,7 +27,9 @@ export function StepPhotoUpload({ onNext, onBack }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   // Privacy-first default, matching the app-wide default for new photos.
-  const [blurred, setBlurred] = useState(true);
+  // Unchecked by default: photos are PUBLIC unless the member opts into the
+  // blur gate. Ticking this is what sends privacy=BLURRED with the upload.
+  const [blurred, setBlurred] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);

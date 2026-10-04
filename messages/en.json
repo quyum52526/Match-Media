@@ -385,7 +385,7 @@
     "title": "Edit your profile",
     "welcome": {
       "title": "Welcome to MatchMedia! 🎉",
-      "body": "Your account is ready. Add a few more details below so the right matches can find you — your photos stay private until you choose to share."
+      "body": "Your account is ready. Add a few more details below so the right matches can find you — and you can blur any photo you'd rather keep private."
     },
     "save": "Save changes",
     "saved": "Profile saved",
@@ -454,7 +454,7 @@
     },
     "photos": {
       "title": "Photos",
-      "subtitle": "Add a profile photo and gallery. Photos stay blurred until you approve a request, unless you make them public.",
+      "subtitle": "Add a profile photo and gallery. Photos are visible to members once approved by our team — blur any you'd rather gate behind a request.",
       "count": "{count} of {max} photos",
       "add": "Add a photo",
       "addFirst": "Add your first photo",
@@ -468,7 +468,7 @@
       "delete": "Delete",
       "limitNote": "Photo limit reached — delete one to add another.",
       "savedHint": "Saved",
-      "privacyHint": "Your primary photo is the thumbnail others see. Blurred photos are revealed only after you approve a photo request.",
+      "privacyHint": "Your primary photo is the thumbnail others see. Blur a photo to hide it behind a request you approve.",
       "needProfile": "Save your basic details first, then you can add photos.",
       "moderationNote": "New photos are reviewed by our team before they're visible to others.",
       "status": {
