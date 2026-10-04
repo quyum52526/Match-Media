@@ -50,8 +50,21 @@ const notoSerifBengali = Noto_Serif_Bengali({
 });
 
 export const metadata: Metadata = {
-  title: "MatchMedia",
-  description: "Privacy-first nationwide matrimonial platform.",
+  metadataBase: new URL("https://www.matchmediabd.xyz"),
+  title: {
+    default: "MatchMedia | বাংলাদেশের প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি সাইট",
+    template: "%s | MatchMedia",
+  },
+  description:
+    "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে। MatchMedia-তে বিয়ের পাত্র-পাত্রী খুঁজুন নিরাপদে, সম্মতির ভিত্তিতে। বাংলাদেশের সব জেলার প্রোফাইল।",
+  openGraph: {
+    title: "MatchMedia | প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি",
+    description: "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে।",
+    url: "https://www.matchmediabd.xyz",
+    siteName: "MatchMedia",
+    locale: "bn_BD",
+    type: "website",
+  },
   // Brand favicon (MM monogram, scalable SVG). shortcut/apple aliases cover
   // legacy favicon lookups and iOS home-screen; SVG scales to any size.
   icons: {

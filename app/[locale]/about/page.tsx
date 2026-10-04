@@ -1,10 +1,22 @@
+import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Card, CardBody } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 
-export const metadata = {
-  title: "About Us · MatchMedia",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: locale === "bn" ? "আমাদের সম্পর্কে" : "About Us",
+    description:
+      locale === "bn"
+        ? "MatchMedia কেন বানানো হলো, আর আপনার গোপনীয়তা আমরা কীভাবে রক্ষা করি।"
+        : "Why MatchMedia was created and how we protect your privacy.",
+  };
+}
 
 export default async function AboutPage({
   params,

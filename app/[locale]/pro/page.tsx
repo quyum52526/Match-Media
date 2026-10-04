@@ -1,12 +1,27 @@
+import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Container } from "@/components/ui/Container";
 import { PlanCards } from "@/components/billing/PlanCards";
 import { getCheckoutPlans, getViewerProStatus } from "@/lib/data/billing";
 import { requireViewerId } from "@/lib/session";
 
-export const metadata = {
-  title: "Go Pro · MatchMedia",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title:
+      locale === "bn"
+        ? "ম্যাচ মিডিয়া প্রো | MatchMedia Pro"
+        : "MatchMedia Pro",
+    description:
+      locale === "bn"
+        ? "আনলিমিটেড কানেকশন ও ডিরেক্ট যোগাযোগের সুবিধা নিয়ে ম্যাচ মিডিয়া প্রো প্ল্যান।"
+        : "Explore MatchMedia Pro plans for unlimited connections and direct communication.",
+  };
+}
 
 export const dynamic = "force-dynamic";
 
