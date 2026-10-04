@@ -4,6 +4,7 @@ import { useState, useTransition, useCallback } from "react";
 import { resetUserPassword } from "@/lib/actions/admin";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
+import { CreateProfileModal } from "./CreateProfileModal";
 import { Badge } from "@/components/ui/Badge";
 import { CheckIcon, XIcon } from "@/components/ui/icons";
 import { formatDate } from "@/lib/utils";
@@ -180,6 +181,7 @@ interface UsersListProps {
 export function UsersList({ users, canResetPasswords }: UsersListProps) {
   const [search, setSearch] = useState("");
   const [resetTarget, setResetTarget] = useState<AdminUser | null>(null);
+  const [creating, setCreating] = useState(false);
 
   const filtered = search.trim()
     ? users.filter(
@@ -191,14 +193,19 @@ export function UsersList({ users, canResetPasswords }: UsersListProps) {
 
   return (
     <div className="space-y-4">
-      {/* Search */}
-      <input
-        type="search"
-        placeholder="Search by email or name…"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="h-10 w-full max-w-sm rounded-xl border border-hairline bg-white px-3 text-sm text-ink placeholder:text-ink/40 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-      />
+      {/* Search + manual intake */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <input
+          type="search"
+          placeholder="Search by email or name…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="h-10 w-full max-w-sm rounded-xl border border-hairline bg-white px-3 text-sm text-ink placeholder:text-ink/40 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+        />
+        <Button size="sm" onClick={() => setCreating(true)}>
+          Create profile
+        </Button>
+      </div>
 
       {filtered.length === 0 ? (
         <p className="py-12 text-center text-sm text-ink/50">No users match your search.</p>
@@ -270,6 +277,8 @@ export function UsersList({ users, canResetPasswords }: UsersListProps) {
           </table>
         </div>
       )}
+
+      {creating && <CreateProfileModal onClose={() => setCreating(false)} />}
 
       {resetTarget && (
         <ResetModal user={resetTarget} onClose={() => setResetTarget(null)} />

@@ -7,12 +7,15 @@ import { assertAdmin, assertSuperAdmin } from "@/lib/session";
 import { notify } from "@/lib/notifications/dispatch";
 import { sendModerationEmail } from "@/lib/email/notifications";
 import { FEATURE_FLAGS, isFeatureFlagKey } from "@/lib/constants/featureFlags";
+import { calcAge, computeCompletion, normalizeBdMobile } from "@/lib/utils";
+import { GENDERS } from "@/lib/constants/profileOptions";
 
 // Dynamic-route literals so revalidation covers every locale param.
 const ADMIN = "/[locale]/admin";
 const ADMIN_PHOTOS = "/[locale]/admin/photos";
 const ADMIN_REPORTS = "/[locale]/admin/reports";
 const ADMIN_VERIFY = "/[locale]/admin/verification";
+const ADMIN_USERS = "/[locale]/admin/users";
 const BROWSE = "/[locale]/browse";
 const PROFILE = "/[locale]/profiles/[id]";
 const PROFILE_EDIT = "/[locale]/profile/edit";
@@ -422,4 +425,182 @@ export async function updateFeatureFlag(
   // guessing which pages read which flag.
   revalidatePath("/", "layout");
   return ok;
+}
+
+// ---------------------------------------------------------------------------
+// Manual profile creation
+// ---------------------------------------------------------------------------
+
+/** What the admin form collects. Everything optional is genuinely optional. */
+export interface AdminCreateProfileInput {
+  fullName: string;
+  gender: string;
+  dateOfBirth: string; // "yyyy-mm-dd"
+  mobile: string;
+  email?: string;
+  district?: string;
+  profession?: string;
+  accountCategory?: "SELF" | "PARENTS" | "MEDIA" | "AGENT";
+  /**
+   * Grant the "Verified" trust badge. OFF by default: that badge tells other
+   * members an identity was CHECKED, so it stays an explicit assertion by the
+   * admin creating the record rather than a side effect of the shortcut.
+   */
+  markVerified?: boolean;
+}
+
+export type AdminCreateProfileResult =
+  | { ok: true; userId: string; email: string; password: string }
+  | { ok: false; error: string };
+
+/** Category -> Role, mirroring registration (lib/actions/auth.ts). */
+const ADMIN_CATEGORY_TO_ROLE = {
+  SELF: "GENERAL",
+  PARENTS: "GUARDIAN",
+  MEDIA: "MEDIA",
+  AGENT: "AGENT",
+} as const;
+
+/**
+ * Create a member account and profile by hand, skipping both OTP gates.
+ *
+ * For intake an admin has already done off-platform — a walk-in, a phone
+ * call, an agency handover — where making the person complete an email code
+ * and an SMS code would be theatre: the admin is the one vouching.
+ *
+ * SCOPE OF THE BYPASS: it sets `isMobileVerified` and `isEmailVerified` (plus
+ * `emailVerifiedAt`) so the account is not stuck behind the signup gate. It
+ * does NOT weaken anything for self-service — /register and /onboarding are
+ * untouched, and this path is reachable only through assertAdmin().
+ *
+ * A random password is generated and returned ONCE to the creating admin, so
+ * the member can be handed working credentials. It is stored only as a bcrypt
+ * hash, exactly like a normal signup.
+ */
+export async function adminCreateUserProfile(
+  input: AdminCreateProfileInput,
+): Promise<AdminCreateProfileResult> {
+  const adminId = await assertAdmin();
+  if (!adminId) return { ok: false, error: "FORBIDDEN" };
+
+  const fullName = input.fullName?.trim();
+  const gender = input.gender?.trim();
+  const dob = input.dateOfBirth?.trim();
+  if (!fullName) return { ok: false, error: "Full name is required." };
+  if (!GENDERS.some((g) => g.value === gender)) {
+    return { ok: false, error: "Select a gender." };
+  }
+  if (!dob) return { ok: false, error: "Date of birth is required." };
+
+  const birthDate = new Date(dob);
+  if (Number.isNaN(birthDate.getTime())) {
+    return { ok: false, error: "Date of birth is not a valid date." };
+  }
+  if (calcAge(birthDate) < 18) {
+    return { ok: false, error: "The member must be at least 18 years old." };
+  }
+
+  // Same shape the public form enforces — an admin shortcut should not seed
+  // numbers the rest of the app cannot match or message.
+  const mobile = normalizeBdMobile(input.mobile ?? "");
+  if (!mobile) return { ok: false, error: "Enter a valid Bangladeshi mobile number." };
+
+  // Email is optional here: a walk-in often has only a phone. One is synthesized
+  // so the unique, non-null column holds something sane, and it is obviously not
+  // a real inbox — nothing will ever be delivered to it.
+  const suppliedEmail = input.email?.trim().toLowerCase();
+  if (suppliedEmail && !suppliedEmail.includes("@")) {
+    return { ok: false, error: "That email address is not valid." };
+  }
+  const email = suppliedEmail || `${mobile}@no-email.matchmedia.local`;
+
+  const [emailTaken, mobileTaken] = await Promise.all([
+    prisma.user.findUnique({ where: { email }, select: { id: true } }),
+    prisma.user.findUnique({ where: { mobile }, select: { id: true } }),
+  ]);
+  if (emailTaken) {
+    return { ok: false, error: "An account with this email already exists." };
+  }
+  if (mobileTaken) {
+    return { ok: false, error: "An account with this mobile number already exists." };
+  }
+
+  const category = input.accountCategory ?? "SELF";
+  const district = input.district?.trim() || null;
+  const profession = input.profession?.trim() || null;
+
+  // Returned to the admin once; stored only as a hash.
+  const password = randomPassword();
+
+  const completionScore = computeCompletion([
+    gender, birthDate, district, null, profession, null,
+    null, null, null, null, null, null,
+  ]);
+
+  try {
+    const user = await prisma.user.create({
+      data: {
+        email,
+        mobile,
+        passwordHash: bcrypt.hashSync(password, 10),
+        role: ADMIN_CATEGORY_TO_ROLE[category],
+        accountCategory: category,
+        // The bypass itself: both gates are satisfied by the admin's own
+        // verification of this person, off-platform.
+        isMobileVerified: true,
+        isEmailVerified: true,
+        emailVerifiedAt: new Date(),
+        contactPerson: category === "SELF" ? null : fullName,
+        // Only a candidate gets a matrimonial profile; the other categories
+        // manage someone else's, exactly as registration decides it.
+        ...(category === "SELF"
+          ? {
+              profile: {
+                create: {
+                  fullName,
+                  gender: gender!,
+                  dateOfBirth: birthDate,
+                  district,
+                  profession,
+                  isVerified: Boolean(input.markVerified),
+                  completionScore,
+                },
+              },
+            }
+          : {}),
+      },
+      select: { id: true, email: true },
+    });
+
+    revalidatePath(ADMIN_USERS, "page");
+    revalidateAdminNav();
+    revalidatePath(BROWSE, "page");
+    revalidatePath("/", "layout");
+
+    return { ok: true, userId: user.id, email: user.email, password };
+  } catch (error) {
+    // Unique-constraint race on email or mobile, despite the checks above.
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      (error as { code?: string }).code === "P2002"
+    ) {
+      return {
+        ok: false,
+        error: "That email or mobile number was just taken. Try again.",
+      };
+    }
+    throw error;
+  }
+}
+
+/** 14 random characters from an unambiguous alphabet. */
+function randomPassword(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+  let out = "";
+  for (let i = 0; i < 14; i++) {
+    out += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return out;
 }
