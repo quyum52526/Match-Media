@@ -59,11 +59,27 @@ export const metadata: Metadata = {
     "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে। MatchMedia-তে বিয়ের পাত্র-পাত্রী খুঁজুন নিরাপদে, সম্মতির ভিত্তিতে। বাংলাদেশের সব জেলার প্রোফাইল।",
   openGraph: {
     title: "MatchMedia | প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি",
-    description: "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে।",
+    description:
+      "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে। MatchMedia-তে বিয়ের পাত্র-পাত্রী খুঁজুন নিরাপদে, সম্মতির ভিত্তিতে।",
     url: "https://www.matchmediabd.xyz",
     siteName: "MatchMedia",
     locale: "bn_BD",
     type: "website",
+    images: [
+      {
+        url: "/opengraph-image.jpg",
+        width: 2848,
+        height: 1504,
+        alt: "MatchMedia - প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MatchMedia | প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি",
+    description:
+      "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে। MatchMedia-তে বিয়ের পাত্র-পাত্রী খুঁজুন নিরাপদে, সম্মতির ভিত্তিতে।",
+    images: ["/opengraph-image.jpg"],
   },
   // Brand favicon (MM monogram, scalable SVG). shortcut/apple aliases cover
   // legacy favicon lookups and iOS home-screen; SVG scales to any size.
