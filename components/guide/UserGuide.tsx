@@ -212,8 +212,8 @@ const GUIDE_SECTIONS: GuideSection[] = [
     videoId: PLACEHOLDER_VIDEO_ID,
     title: { en: "8. Messaging and Call", bn: "৮. Messaging ও Call" },
     body: {
-      en: "Once matched, all communication happens safely inside MatchMedia — phone numbers and emails are never shared:",
-      bn: "Match হওয়ার পর সব যোগাযোগ MatchMedia-র ভেতরেই নিরাপদে হয় — ফোন নম্বর বা email কখনো share করা হয় না:",
+      en: "Once matched, communicate safely inside MatchMedia. Your contact details are never shared without your mutual consent:",
+      bn: "Match হওয়ার পর MatchMedia-র ভেতরে নিরাপদে যোগাযোগ করুন। উভয়ের সম্মতি ছাড়া আপনার যোগাযোগের তথ্য শেয়ার করা হয় না:",
     },
     points: [
       {

@@ -57,7 +57,7 @@
       "premiumDesc": "Verified, serious members who've upgraded for a more committed search.",
       "verifiedTitle": "Verified Professionals",
       "verifiedDesc": "Connect with trusted doctors, engineers, and specialized experts verified for authenticity.",
-      "privacyNote": "To ensure maximum member privacy, photos remain blurred by default until permission is granted."
+      "privacyNote": "Consent-based privacy — control who sees your photos and details."
     },
     "professionals": {
       "title": "Verified Professionals",
@@ -87,7 +87,7 @@
       "step2Title": "Request & consent",
       "step2Body": "Reveals happen only by mutual agreement; both sides must accept before anything opens up.",
       "step3Title": "Connect securely",
-      "step3Body": "Talk over in-app chat and voice calls. Your phone number and email are never shared.",
+      "step3Body": "Talk over in-app chat and voice calls. Your contact details are never shared without your mutual consent.",
       "trust": {
         "verified": "Mobile-verified members",
         "consent": "Consent-based contact",
@@ -324,7 +324,7 @@
     },
     "privacyNote": {
       "title": "Contact details stay private",
-      "body": "For your safety, phone numbers and emails are never shared. Connect through in-app messaging and voice calls once you match.",
+      "body": "Your contact details are never shared without your mutual consent. Connect through in-app messaging and voice calls once you match.",
       "phone": "Phone",
       "email": "Email"
     },
@@ -1006,18 +1006,65 @@
     "colDiscover": "Discover",
     "discoverBrowse": "Browse matches",
     "discoverHow": "How it works",
-    "discoverStories": "Success stories",
     "discoverPricing": "Pricing",
     "colCompany": "Company",
     "companyAbout": "About us",
     "companyBlog": "Blog",
-    "companyCareers": "Careers",
     "colTrust": "Trust & safety",
     "trustSafety": "Safety centre",
-    "trustReport": "Report a profile",
     "signalBlurred": "Photos blurred by default",
-    "signalContact": "Contact details never shared",
+    "signalContact": "Contact details shared only with mutual consent",
     "signalGuardian": "Guardian & agency profiles supported"
+  },
+  "PrivacyPolicy": {
+    "title": "Privacy Policy",
+    "intro": "We collect and use information needed to operate MatchMedia, protect accounts, and help members connect. We do not sell personal information.",
+    "sections": [
+      {
+        "heading": "Photos and contact details",
+        "body": "Photos are subject to review and privacy controls; photos covered by viewing requests remain blurred until the profile owner approves. Your contact details are never shared without your mutual consent. You can use MatchMedia messaging and calling without giving another member your phone number or email."
+      },
+      {
+        "heading": "Verification information",
+        "body": "We use information such as your verified mobile number and profile details to operate the service and support verification. Verification badges indicate that specified checks were completed; they do not guarantee a member's character, intentions, or future conduct."
+      },
+      {
+        "heading": "Data retention and deletion",
+        "body": "We retain personal information only for as long as needed to operate and secure the service. You may request deletion of your account and associated information. We may retain or restrict deletion of records where needed for legal, payment, security, or dispute-resolution obligations; backup copies may remain until routine overwrite."
+      },
+      {
+        "heading": "Payment and third-party services",
+        "body": "Payment information needed to complete a purchase is processed by our payment partner and is not shown to other members. We do not sell personal information."
+      }
+    ]
+  },
+  "SafetyPolicy": {
+    "title": "Trust & Safety",
+    "intro": "MatchMedia provides tools to help members make informed decisions, but no online verification can remove every risk. Take your time and use your own judgment.",
+    "sections": [
+      {
+        "heading": "Verification badges",
+        "body": "A mobile-verified badge confirms that the member completed mobile verification. Verified and Premium Verified badges indicate that the applicable profile or additional checks were completed. A badge is not a guarantee of identity, character, intentions, or safety."
+      },
+      {
+        "heading": "Photos and consent",
+        "body": "Photos are reviewed before display. Photos protected by a viewing-request control remain blurred until the profile owner approves the request. Do not pressure anyone to reveal a photo or other personal information."
+      },
+      {
+        "heading": "Contact details and communication",
+        "body": "Your contact details are never shared without your mutual consent. Use MatchMedia messaging and calling when getting to know a match, and do not attempt to bypass another member's privacy settings."
+      },
+      {
+        "heading": "Recognize and report concerns",
+        "body": "Never send money or share financial credentials with someone you met through the service. If a profile or conversation concerns you, use the in-app Report tool; our moderation team reviews reports and may take action under our Terms."
+      }
+    ]
+  },
+  "Pricing": {
+    "title": "Pricing",
+    "intro": "MatchMedia offers optional Pro features for members who want more from their search.",
+    "details": "Current plans and prices are shown in your account before checkout. No purchase is required to view the available plans, and you can review the terms before confirming payment.",
+    "action": "View Pro plans"
   },
   "LocaleSwitcher": {
     "label": "Language"
@@ -1031,7 +1078,7 @@
     "values": [
       {
         "title": "Privacy by default",
-        "body": "Photos, contact details, and personal information stay hidden until you choose to share them."
+        "body": "Photos and personal information stay hidden until the required consent is given. Contact details are never shared without the mutual consent of both members."
       },
       {
         "title": "Verified members",
@@ -1072,7 +1119,7 @@
       {
         "id": "privacy",
         "heading": "3. Privacy",
-        "body": "Your privacy is the foundation of MatchMedia. We collect only the information needed to operate the service, and we never sell your personal data. Your photos and personal details are shared with other members only in the ways you control: photos remain blurred until you approve a viewing request, and your contact details are never displayed to anyone (see the Data Privacy & Masking Policy below). Communication with your matches happens through MatchMedia's own messaging and calling features, so you never need to hand out a phone number or email address. Data required for payments is processed securely by our payment partner and is never visible to other members. You may request deletion of your account and associated data at any time."
+        "body": "Your privacy is the foundation of MatchMedia. We collect only the information needed to operate the service, and we never sell your personal data. Your photos and personal details are shared with other members only in the ways you control: photos remain blurred until you approve a viewing request, and your contact details are never shared without your mutual consent (see the Data Privacy & Masking Policy below). Communication with your matches happens through MatchMedia's own messaging and calling features, so you never need to hand out a phone number or email address. Data required for payments is processed securely by our payment partner and is never visible to other members. You may request deletion of your account and associated data at any time."
       },
       {
         "id": "verification",
@@ -1092,7 +1139,7 @@
       {
         "id": "masking-policy",
         "heading": "7. Data Privacy & Masking Policy",
-        "body": "We protect member data with masking and blurring by default. Profile photos are stored privately and served only as blurred previews until the owner approves a viewing request; every photo is also reviewed by our moderation team before it becomes visible to anyone. Phone numbers and email addresses are never displayed to other members — on profile pages they appear only in masked form (for example 018****3456 or a***@gmail.com), and this masking is applied on our servers, so the real values never even reach another member's device. Matched members connect through MatchMedia's built-in messaging and voice calling instead of exchanging contact details. Your full contact details are never sold, shared with third parties or revealed to other members; unmasked data is used only to operate your account — login, OTP verification and secure payment processing."
+        "body": "We protect member data with masking and blurring by default. Profile photos are stored privately and served only as blurred previews until the owner approves a viewing request; every photo is also reviewed by our moderation team before it becomes visible to anyone. Phone numbers and email addresses are masked on profile pages. Your contact details are never shared without your mutual consent, and unmasked data is used only to operate your account — login, OTP verification and secure payment processing. Matched members can connect through MatchMedia's built-in messaging and voice calling without exchanging contact details. Your information is never sold to third parties."
       }
     ]
   },

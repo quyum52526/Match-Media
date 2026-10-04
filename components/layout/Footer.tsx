@@ -1,9 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import {
-  FacebookIcon,
-  InstagramIcon,
-  YoutubeIcon,
   ShieldCheckIcon,
   LockIcon,
   UsersIcon,
@@ -12,11 +9,8 @@ import {
 /**
  * App-wide footer — solid Midnight Ink surface with a faint brand watermark,
  * mounted once in the locale layout so every page gets it. Brand + tagline +
- * socials, three link columns, a trust-signal strip, then copyright + the
+ * three link columns, a trust-signal strip, then copyright + the
  * honest legal disclaimer. Server component.
- *
- * NOTE: several links (success stories, careers, safety centre, report a
- * profile, privacy policy) have no dedicated page yet and stay "#" placeholders.
  */
 export async function Footer() {
   const t = await getTranslations("Footer");
@@ -28,8 +22,7 @@ export async function Footer() {
       links: [
         { label: t("discoverBrowse"), href: "/browse" },
         { label: t("discoverHow"), href: "/#how-it-works" },
-        { label: t("discoverStories"), href: "#" },
-        { label: t("discoverPricing"), href: "/pro" },
+        { label: t("discoverPricing"), href: "/pricing" },
       ],
     },
     {
@@ -37,25 +30,17 @@ export async function Footer() {
       links: [
         { label: t("companyAbout"), href: "/about" },
         { label: t("companyBlog"), href: "/blog" },
-        { label: t("companyCareers"), href: "#" },
         { label: t("contact"), href: "/contact" },
       ],
     },
     {
       heading: t("colTrust"),
       links: [
-        { label: t("trustSafety"), href: "#" },
-        { label: t("trustReport"), href: "#" },
-        { label: t("privacy"), href: "#" },
+        { label: t("trustSafety"), href: "/safety" },
+        { label: t("privacy"), href: "/privacy" },
         { label: t("terms"), href: "/terms" },
       ],
     },
-  ];
-
-  const socials = [
-    { label: "Facebook", href: "#", Icon: FacebookIcon },
-    { label: "Instagram", href: "#", Icon: InstagramIcon },
-    { label: "YouTube", href: "#", Icon: YoutubeIcon },
   ];
 
   const signals = [
@@ -87,18 +72,6 @@ export async function Footer() {
             <p className="text-[15px] font-normal leading-relaxed text-[rgba(251,247,242,0.7)]">
               {t("tagline")}
             </p>
-            <div className="flex items-center gap-2.5">
-              {socials.map(({ label, href, Icon }) => (
-                <a
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/[0.14] text-[rgba(251,247,242,0.7)] transition-all duration-150 ease-out hover:border-accent hover:bg-[rgba(200,162,75,0.1)] hover:text-accent"
-                >
-                  <Icon width={18} height={18} />
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* Link columns */}
@@ -107,25 +80,15 @@ export async function Footer() {
               <p className="m-0 text-xs font-medium uppercase tracking-[0.14em] text-accent">
                 {col.heading}
               </p>
-              {col.links.map((l) =>
-                l.href === "#" ? (
-                  <a
-                    key={l.label}
-                    href={l.href}
-                    className="text-sm font-normal leading-[1.9] text-[rgba(251,247,242,0.7)] transition-colors duration-150 ease-out hover:text-canvas"
-                  >
-                    {l.label}
-                  </a>
-                ) : (
-                  <Link
-                    key={l.label}
-                    href={l.href}
-                    className="text-sm font-normal leading-[1.9] text-[rgba(251,247,242,0.7)] transition-colors duration-150 ease-out hover:text-canvas"
-                  >
-                    {l.label}
-                  </Link>
-                ),
-              )}
+              {col.links.map((l) => (
+                <Link
+                  key={l.label}
+                  href={l.href}
+                  className="text-sm font-normal leading-[1.9] text-[rgba(251,247,242,0.7)] transition-colors duration-150 ease-out hover:text-canvas"
+                >
+                  {l.label}
+                </Link>
+              ))}
             </div>
           ))}
         </div>
