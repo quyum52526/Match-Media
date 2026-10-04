@@ -153,43 +153,6 @@ export function StackedFeatureSection({
           <CardFace profile={profile1} isFront badgeName={badgeName} />
         </div>
       </Link>
-
-      {profiles && profiles.length > 3 && (
-        <div className="flex gap-3 overflow-x-auto pb-2 md:col-span-2">
-          {profiles.slice(3).map((profile) => (
-            <Link
-              key={profile.id}
-              href={`/profiles/${profile.id}`}
-              className="flex w-64 shrink-0 items-center gap-3 rounded-xl border border-ink/10 bg-white p-2 shadow-sm transition hover:shadow-md"
-            >
-              {/* `relative` is load-bearing: ShowcaseImage renders with `fill`,
-                  which is position:absolute. Without a positioned ancestor the
-                  photo resolves against the viewport instead of this 64x80 box
-                  and paints itself full-screen over the hero — and `overflow-
-                  hidden` does not clip it, because the clipping box is not its
-                  containing block. */}
-              <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-lg">
-                <ShowcaseImage
-                  profile={profile}
-                  alt={profile.displayName}
-                  sizes="64px"
-                  priority={false}
-                />
-              </div>
-              <span className="min-w-0">
-                <span className="block truncate text-sm font-semibold text-ink">
-                  {profile.displayName}
-                </span>
-                {profile.location && (
-                  <span className="block truncate text-xs text-ink/60">
-                    {profile.location}
-                  </span>
-                )}
-              </span>
-            </Link>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

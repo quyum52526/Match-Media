@@ -158,6 +158,11 @@ export async function getHomepageShowcase(): Promise<HomepageShowcase> {
     // selects only approved photos and pickShowcaseKey preserves privacy.
     where: { isFeatured: true },
     orderBy: [{ isVerified: "desc" }, { createdAt: "desc" }, { id: "asc" }],
+    // The section renders exactly three cards. Featuring more than three used
+    // to spill into a horizontal strip under them; that strip is gone, so
+    // fetching the rest would only cost a row and a signed URL per profile
+    // that nothing displays. The ordering above decides which three win.
+    take: 3,
     include: showcaseInclude,
   });
   const fallbackRows = featuredRows.length < 3
