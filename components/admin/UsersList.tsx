@@ -5,6 +5,7 @@ import { resetUserPassword } from "@/lib/actions/admin";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { CreateProfileModal } from "./CreateProfileModal";
+import { AdminPhotoUploadModal } from "./AdminPhotoUploadModal";
 import { Badge } from "@/components/ui/Badge";
 import { CheckIcon, XIcon } from "@/components/ui/icons";
 import { formatDate } from "@/lib/utils";
@@ -182,6 +183,7 @@ export function UsersList({ users, canResetPasswords }: UsersListProps) {
   const [search, setSearch] = useState("");
   const [resetTarget, setResetTarget] = useState<AdminUser | null>(null);
   const [creating, setCreating] = useState(false);
+  const [photoTarget, setPhotoTarget] = useState<AdminUser | null>(null);
 
   const filtered = search.trim()
     ? users.filter(
@@ -219,9 +221,7 @@ export function UsersList({ users, canResetPasswords }: UsersListProps) {
                 <th className="px-4 py-3 font-semibold text-ink/60">Role / Category</th>
                 <th className="px-4 py-3 font-semibold text-ink/60">Photos</th>
                 <th className="px-4 py-3 font-semibold text-ink/60">Joined</th>
-                {canResetPasswords && (
-                  <th className="px-4 py-3 font-semibold text-ink/60">Actions</th>
-                )}
+                <th className="px-4 py-3 font-semibold text-ink/60">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/5">
@@ -260,17 +260,28 @@ export function UsersList({ users, canResetPasswords }: UsersListProps) {
                   <td className="whitespace-nowrap px-4 py-3 text-ink/50">
                     {formatDate(u.createdAt)}
                   </td>
-                  {canResetPasswords && (
-                    <td className="px-4 py-3">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setResetTarget(u)}
-                      >
-                        Reset password
-                      </Button>
-                    </td>
-                  )}
+                  <td className="px-4 py-3">
+                    <div className="flex flex-wrap gap-2">
+                      {u.hasProfile && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setPhotoTarget(u)}
+                        >
+                          Photos
+                        </Button>
+                      )}
+                      {canResetPasswords && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setResetTarget(u)}
+                        >
+                          Reset password
+                        </Button>
+                      )}
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -282,6 +293,14 @@ export function UsersList({ users, canResetPasswords }: UsersListProps) {
 
       {resetTarget && (
         <ResetModal user={resetTarget} onClose={() => setResetTarget(null)} />
+      )}
+
+      {photoTarget && (
+        <AdminPhotoUploadModal
+          userId={photoTarget.id}
+          label={photoTarget.profileName ?? photoTarget.email}
+          onClose={() => setPhotoTarget(null)}
+        />
       )}
     </div>
   );

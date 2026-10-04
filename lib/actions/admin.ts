@@ -9,6 +9,7 @@ import { sendModerationEmail } from "@/lib/email/notifications";
 import { FEATURE_FLAGS, isFeatureFlagKey } from "@/lib/constants/featureFlags";
 import { calcAge, computeCompletion, normalizeBdMobile } from "@/lib/utils";
 import { GENDERS } from "@/lib/constants/profileOptions";
+import { MAX_PHOTOS, storeProfileImage, validateUpload } from "@/lib/storage/images";
 
 // Dynamic-route literals so revalidation covers every locale param.
 const ADMIN = "/[locale]/admin";
@@ -447,10 +448,26 @@ export interface AdminCreateProfileInput {
    * admin creating the record rather than a side effect of the shortcut.
    */
   markVerified?: boolean;
+  /**
+   * Password to set. Blank means "generate one" — useful when the admin is on
+   * the phone with the person and wants to read out something they chose.
+   * Held only as a bcrypt hash either way.
+   */
+  password?: string;
 }
 
 export type AdminCreateProfileResult =
-  | { ok: true; userId: string; email: string; password: string }
+  | {
+      ok: true;
+      userId: string;
+      email: string;
+      /** The password to hand over; generated when the admin supplied none. */
+      password: string;
+      /** True when it was generated here, so the UI can say "shown once". */
+      generated: boolean;
+      /** Whether a matrimonial profile exists to attach photos to. */
+      hasProfile: boolean;
+    }
   | { ok: false; error: string };
 
 /** Category -> Role, mirroring registration (lib/actions/auth.ts). */
@@ -529,8 +546,15 @@ export async function adminCreateUserProfile(
   const district = input.district?.trim() || null;
   const profession = input.profession?.trim() || null;
 
-  // Returned to the admin once; stored only as a hash.
-  const password = randomPassword();
+  // An admin-chosen password is held to the same floor as self-service signup
+  // (lib/actions/auth.ts), so this path cannot seed accounts weaker than the
+  // ones members create themselves.
+  const supplied = input.password?.trim();
+  if (supplied && supplied.length < 8) {
+    return { ok: false, error: "Password must be at least 8 characters." };
+  }
+  const password = supplied || randomPassword();
+  const generated = !supplied;
 
   const completionScore = computeCompletion([
     gender, birthDate, district, null, profession, null,
@@ -577,7 +601,14 @@ export async function adminCreateUserProfile(
     revalidatePath(BROWSE, "page");
     revalidatePath("/", "layout");
 
-    return { ok: true, userId: user.id, email: user.email, password };
+    return {
+      ok: true,
+      userId: user.id,
+      email: user.email,
+      password,
+      generated,
+      hasProfile: category === "SELF",
+    };
   } catch (error) {
     // Unique-constraint race on email or mobile, despite the checks above.
     if (
@@ -629,4 +660,82 @@ function lastLine(message: string): string {
     .map((line) => line.trim())
     .filter(Boolean);
   return lines[lines.length - 1] ?? message;
+}
+
+
+/**
+ * Upload a photo to a member's gallery on their behalf.
+ *
+ * For the same intake the manual-create form serves: the admin has the
+ * person's photos in hand and should not have to sign in as them to attach
+ * them. Because an admin is the one uploading, the image is stored APPROVED
+ * rather than PENDING — sending it to the moderation queue would mean an admin
+ * queuing work for an admin, and the reviewer is already here.
+ *
+ * Privacy defaults to PUBLIC, matching an ordinary upload, with BLURRED
+ * available for a member who wants the photo-request gate.
+ *
+ * Takes a userId, never a profileId: the admin UI lists accounts, and
+ * resolving the profile here keeps the caller from having to know the
+ * difference.
+ */
+export async function adminUploadProfilePhoto(
+  userId: string,
+  formData: FormData,
+): Promise<AdminResult> {
+  const adminId = await assertAdmin();
+  if (!adminId) return err("FORBIDDEN");
+
+  try {
+    const profile = await prisma.profile.findUnique({
+      where: { userId },
+      select: { id: true, _count: { select: { images: true } } },
+    });
+    if (!profile) return err("NO_PROFILE");
+    if (profile._count.images >= MAX_PHOTOS) return err("LIMIT");
+
+    const file = formData.get("photo");
+    if (!(file instanceof File)) return err("EMPTY");
+    const invalid = validateUpload(file);
+    if (invalid) return err(invalid);
+
+    const privacy =
+      formData.get("privacy") === "BLURRED" ? "BLURRED" : "PUBLIC";
+
+    const { originalKey, blurredKey } = await storeProfileImage(
+      profile.id,
+      file,
+    );
+
+    // First photo becomes the profile photo, so a gallery always has one.
+    const isPrimary = profile._count.images === 0;
+
+    await prisma.profileImage.create({
+      data: {
+        profileId: profile.id,
+        originalKey,
+        blurredKey,
+        privacy,
+        isPrimary,
+        moderationStatus: "APPROVED",
+        reviewedAt: new Date(),
+        reviewedById: adminId,
+      },
+    });
+
+    revalidatePath(ADMIN_USERS, "page");
+    revalidateAdminNav();
+    revalidatePath(BROWSE, "page");
+    revalidatePath(PROFILE, "page");
+    return ok;
+  } catch (error) {
+    // Returned, not rethrown: a throw here would replace the admin screen with
+    // an error boundary and a digest hash instead of saying what failed.
+    console.error("adminUploadProfilePhoto failed", error);
+    return err(
+      error instanceof Error
+        ? `Upload failed: ${lastLine(error.message)}`
+        : "Upload failed.",
+    );
+  }
 }

@@ -62,6 +62,8 @@ export interface AdminUser {
   accountCategory: string | null;
   isPro: boolean;
   profileName: string | null;
+  /** A matrimonial Profile exists — only then can photos be attached. */
+  hasProfile: boolean;
   hasPhotos: boolean;
   createdAt: string;
 }

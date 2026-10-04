@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { GENDERS, PROFESSIONS } from "@/lib/constants/profileOptions";
 import { DISTRICTS } from "@/lib/constants/bdGeo";
+import { AdminPhotoUploadModal } from "./AdminPhotoUploadModal";
 
 /**
  * "Create profile (manual)" — for intake an admin has already handled
@@ -41,9 +42,14 @@ export function CreateProfileModal({ onClose }: { onClose: () => void }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [created, setCreated] = useState<{ email: string; password: string } | null>(
-    null,
-  );
+  const [created, setCreated] = useState<{
+    userId: string;
+    email: string;
+    password: string;
+    generated: boolean;
+    hasProfile: boolean;
+  } | null>(null);
+  const [uploadingFor, setUploadingFor] = useState(false);
 
   const [form, setForm] = useState<AdminCreateProfileInput>({
     fullName: "",
@@ -55,6 +61,7 @@ export function CreateProfileModal({ onClose }: { onClose: () => void }) {
     profession: "",
     accountCategory: "SELF",
     markVerified: false,
+    password: "",
   });
 
   function set<K extends keyof AdminCreateProfileInput>(
@@ -70,7 +77,13 @@ export function CreateProfileModal({ onClose }: { onClose: () => void }) {
     startTransition(async () => {
       const result = await adminCreateUserProfile(form);
       if (result.ok) {
-        setCreated({ email: result.email, password: result.password });
+        setCreated({
+          userId: result.userId,
+          email: result.email,
+          password: result.password,
+          generated: result.generated,
+          hasProfile: result.hasProfile,
+        });
         // The new row, the browse feed and the nav counts all move.
         router.refresh();
       } else {
@@ -103,7 +116,9 @@ export function CreateProfileModal({ onClose }: { onClose: () => void }) {
               </code>
             </div>
             <div>
-              <span className={LABEL}>Password — shown once</span>
+              <span className={LABEL}>
+                Password{created.generated ? " — generated, shown once" : " (as you set it)"}
+              </span>
               <code className="block select-all rounded-xl border border-hairline bg-ink/5 px-3 py-2 font-mono text-sm text-ink">
                 {created.password}
               </code>
@@ -113,9 +128,29 @@ export function CreateProfileModal({ onClose }: { onClose: () => void }) {
             Copy these now. The password is stored only as a hash and cannot be
             read again; a SUPER_ADMIN can set a new one from the user row.
           </p>
-          <Button type="button" fullWidth onClick={onClose}>
-            Done
-          </Button>
+          <div className="flex gap-2">
+            {created.hasProfile && (
+              <Button
+                type="button"
+                variant="outline"
+                fullWidth
+                onClick={() => setUploadingFor(true)}
+              >
+                Upload photos
+              </Button>
+            )}
+            <Button type="button" fullWidth onClick={onClose}>
+              Done
+            </Button>
+          </div>
+
+          {uploadingFor && (
+            <AdminPhotoUploadModal
+              userId={created.userId}
+              label={form.fullName || created.email}
+              onClose={() => setUploadingFor(false)}
+            />
+          )}
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -266,6 +301,21 @@ export function CreateProfileModal({ onClose }: { onClose: () => void }) {
               </span>
             </label>
           )}
+
+          <div>
+            <label className={LABEL}>Password</label>
+            <input
+              type="text"
+              value={form.password}
+              onChange={(e) => set("password", e.target.value)}
+              placeholder="Leave blank to auto-generate"
+              autoComplete="off"
+              className={`${INPUT} font-body`}
+            />
+            <p className="mt-1 text-xs text-muted">
+              At least 8 characters, the same floor self-service signup uses.
+            </p>
+          </div>
 
           <p className="rounded-card border border-hairline bg-canvas px-3 py-2 text-xs text-muted">
             Mobile and email verification are marked complete automatically.

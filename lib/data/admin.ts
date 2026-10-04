@@ -162,6 +162,7 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
     accountCategory: u.accountCategory,
     isPro: u.isPro,
     profileName: u.profile?.fullName ?? null,
+    hasProfile: Boolean(u.profile),
     hasPhotos: (u.profile?._count?.images ?? 0) > 0,
     createdAt: u.createdAt.toISOString(),
   }));
