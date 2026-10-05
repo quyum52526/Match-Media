@@ -52,7 +52,7 @@ export async function HomeHero({ marqueeProfiles }: { marqueeProfiles: ShowcaseP
 
         {/* Subtext */}
         <Reveal delay={160} className="mt-4">
-          <p className="mx-auto max-w-2xl text-pretty text-base font-normal leading-relaxed text-muted drop-shadow-[0_2px_4px_rgba(255,255,255,0.8)] sm:text-lg lg:text-xl">
+          <p className="mx-auto max-w-2xl text-pretty text-base font-normal leading-relaxed text-[#44403C] drop-shadow-[0_2px_4px_rgba(255,255,255,0.8)] sm:text-lg lg:text-xl">
             {t("hero.subtext")}
           </p>
         </Reveal>
