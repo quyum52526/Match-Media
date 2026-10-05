@@ -31,11 +31,23 @@
   -webkit-user-drag: none;
 }
 
-/* ivory wash so the headline stays readable over the artwork */
+/* Ivory wash so the headline stays readable over the artwork. The first
+   (linear) layer sits on top of the radial one and deepens the wash across
+   the lower-middle band where the quick-filter bar lands, so the couple
+   reads as background there instead of competing with the control. */
 .scrim {
   position: absolute;
   inset: 0;
-  background: radial-gradient(
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(251, 247, 242, 0) 36%,
+      rgba(251, 247, 242, 0.5) 56%,
+      rgba(251, 247, 242, 0.72) 70%,
+      rgba(251, 247, 242, 0.45) 86%,
+      rgba(251, 247, 242, 0) 100%
+    ),
+    radial-gradient(
     52% 46% at 50% 44%,
     rgba(251, 247, 242, 0.94) 0%,
     rgba(251, 247, 242, 0.78) 42%,

@@ -26,7 +26,7 @@ export async function HomeHero({ marqueeProfiles }: { marqueeProfiles: ShowcaseP
 
       <Container
         as="div"
-        className="relative z-10 flex flex-1 flex-col items-center justify-center py-16 text-center sm:py-24"
+        className="relative z-10 flex flex-1 flex-col items-center justify-center py-10 text-center sm:py-14"
       >
         {/* Trust / consent badge */}
         <Reveal delay={0}>
@@ -58,7 +58,7 @@ export async function HomeHero({ marqueeProfiles }: { marqueeProfiles: ShowcaseP
         </Reveal>
 
         {/* Quick-Filter */}
-        <Reveal delay={240} className="mt-9 w-full">
+        <Reveal delay={240} className="mt-16 w-full">
           <QuickFilter />
         </Reveal>
 
