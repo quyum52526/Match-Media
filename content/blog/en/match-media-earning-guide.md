@@ -1,6 +1,6 @@
 ---
 title: "Earn with Match Media: A New Opportunity for Ghotoks and Verification Agents"
-metaTitle: "Earn with Match Media: Guide for Ghotoks and Verification Agents | Match Media"
+metaTitle: "Earn with Match Media: Guide for Ghotoks and Verification Agents"
 description: "Run a matchmaking business or a marriage media agency? Learn how to earn from Match Media by managing client profiles, or by working as a verification agent in your own area."
 date: "2026-10-06"
 author: "Match Media Team"

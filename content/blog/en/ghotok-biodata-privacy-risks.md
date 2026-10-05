@@ -1,6 +1,6 @@
 ---
 title: "Gave Your Photo and Biodata to a Ghotok? Do You Know Whose Phone It's On Now?"
-metaTitle: "Ghotok Biodata Risks & Matrimonial Photo Privacy | Match Media"
+metaTitle: "Ghotok Biodata Risks & Matrimonial Photo Privacy"
 description: "Worried your photo and number are floating around Facebook groups? See how Match Media's server-side blur and consent-based privacy put 100% control in your hands."
 date: "2026-10-05"
 author: "Match Media Editorial"
