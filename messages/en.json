@@ -1146,6 +1146,10 @@
   "Blog": {
     "title": "Blog",
     "intro": "Stories, advice, and updates from the MatchMedia team.",
+    "empty": "New articles are being prepared. Please check back soon.",
+    "backToBlog": "Back to the blog",
+    "readInEnglish": "Read in English",
+    "readInBengali": "বাংলায় পড়ুন",
     "posts": [
       {
         "title": "5 Tips for a Trustworthy Matrimony Profile",

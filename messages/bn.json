@@ -1146,6 +1146,10 @@
   "Blog": {
     "title": "ব্লগ",
     "intro": "MatchMedia টিমের গল্প, পরামর্শ এবং আপডেট।",
+    "empty": "নতুন লেখা প্রস্তুত করা হচ্ছে। পরে আবার দেখুন।",
+    "backToBlog": "ব্লগে ফিরে যান",
+    "readInEnglish": "Read in English",
+    "readInBengali": "বাংলায় পড়ুন",
     "posts": [
       {
         "title": "বিশ্বস্ত Matrimony Profile তৈরির ৫টি Tips",
