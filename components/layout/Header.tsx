@@ -148,7 +148,7 @@ export async function Header() {
     : [];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-ink/10 bg-canvas/80 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-[#8C2F4A]/10 bg-[rgba(251,247,242,0.85)] backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <div className="flex min-w-0 items-center gap-4">
           {/* Brand wordmark — links home in every locale. Wide horizontal

@@ -44,18 +44,28 @@ export async function HomeHero({ marqueeProfiles }: { marqueeProfiles: ShowcaseP
             the box is still ~736px (same as before this change), and 60px
             text doesn't fit even the first clause on one line there, which
             pushed the headline to three lines instead of two. */}
-        <Reveal delay={80} className="mt-6">
-          <h1 className="text-balance font-display text-4xl font-medium leading-tight tracking-tight text-ink sm:text-5xl lg:text-7xl">
-            {t("hero.headline")}
-          </h1>
-        </Reveal>
+        <div className="relative mt-6">
+          {/* Soft ambient glow behind headline + subtext so the type stays
+              crisp over the bride/groom artwork. Blurred so it has no edge;
+              -z-10 keeps it under the text inside Container's z-10 context. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -inset-x-6 -inset-y-6 -z-10 rounded-[48px] bg-gradient-to-b from-white/80 via-white/50 to-transparent blur-2xl sm:-inset-x-10"
+          />
 
-        {/* Subtext */}
-        <Reveal delay={160} className="mt-4">
-          <p className="mx-auto max-w-2xl text-pretty text-base font-normal leading-relaxed text-muted sm:text-lg lg:text-xl">
-            {t("hero.subtext")}
-          </p>
-        </Reveal>
+          <Reveal delay={80}>
+            <h1 className="text-balance font-display text-4xl font-medium leading-tight tracking-tight text-ink sm:text-5xl lg:text-7xl">
+              {t("hero.headline")}
+            </h1>
+          </Reveal>
+
+          {/* Subtext */}
+          <Reveal delay={160} className="mt-4">
+            <p className="mx-auto max-w-2xl text-pretty text-base font-normal leading-relaxed text-muted sm:text-lg lg:text-xl">
+              {t("hero.subtext")}
+            </p>
+          </Reveal>
+        </div>
 
         {/* Quick-Filter */}
         <Reveal delay={240} className="mt-16 w-full">
