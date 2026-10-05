@@ -8,11 +8,13 @@ export type BlogLocale = (typeof BLOG_LOCALES)[number];
 export interface BlogPost {
   slug: string;
   title: string;
+  metaTitle?: string;
   description: string;
   date: string;
   author: string;
   coverImage: string;
   tags: string[];
+  keywords?: string[];
   translationKey: string;
   draft: boolean;
   content: string;
@@ -67,14 +69,37 @@ function parsePost(source: string, filePath: string, slug: string): BlogPost {
     );
   }
 
+  if (
+    data.metaTitle !== undefined &&
+    (typeof data.metaTitle !== "string" || !data.metaTitle.trim())
+  ) {
+    throw new Error(
+      `Invalid blog post "${filePath}": "metaTitle" must be a non-empty string when provided.`,
+    );
+  }
+
+  if (
+    data.keywords !== undefined &&
+    (!Array.isArray(data.keywords) ||
+      !data.keywords.every(
+        (keyword: unknown) => typeof keyword === "string" && keyword.trim(),
+      ))
+  ) {
+    throw new Error(
+      `Invalid blog post "${filePath}": "keywords" must be an array of non-empty strings when provided.`,
+    );
+  }
+
   return {
     slug,
     title: data.title,
+    metaTitle: data.metaTitle,
     description: data.description,
     date: data.date,
     author: data.author,
     coverImage: data.coverImage,
     tags: data.tags,
+    keywords: data.keywords,
     translationKey: data.translationKey,
     draft: data.draft,
     content,

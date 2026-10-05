@@ -54,13 +54,15 @@ export async function generateMetadata({
       ]),
   );
   const url = new URL(blogPath(locale as BlogLocale, post.slug), siteUrl).toString();
+  const headTitle = post.metaTitle ?? post.title;
 
   return {
-    title: post.title,
+    title: headTitle,
     description: post.description,
+    keywords: post.keywords,
     alternates: { canonical: url, languages },
     openGraph: {
-      title: post.title,
+      title: headTitle,
       description: post.description,
       url,
       type: "article",
@@ -70,7 +72,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: post.title,
+      title: headTitle,
       description: post.description,
       images: [post.coverImage],
     },
