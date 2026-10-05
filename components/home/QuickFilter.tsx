@@ -52,7 +52,7 @@ export function QuickFilter() {
 
   return (
     <div
-      className="mx-auto w-full rounded-card border border-[color:color-mix(in_srgb,var(--color-primary)_22%,transparent)] bg-surface p-2 font-body shadow-[0_12px_32px_-12px_rgba(15,23,42,0.28),0_2px_8px_rgba(15,23,42,0.08)] transition-all duration-150 ease-in-out hover:shadow-[0_14px_36px_-12px_rgba(15,23,42,0.30),0_3px_10px_rgba(15,23,42,0.10)]"
+      className="mx-auto w-full rounded-2xl border border-[#8C2F4A]/15 bg-white p-2 font-body shadow-[0_16px_40px_-6px_rgba(140,47,74,0.10),0_4px_16px_-2px_rgba(0,0,0,0.04)] hover:shadow-[0_22px_48px_-4px_rgba(140,47,74,0.16),0_6px_20px_-2px_rgba(0,0,0,0.06)] hover:border-[#8C2F4A]/25 transition-all duration-200 ease-out"
       role="search"
     >
       {/* Below md: 2x2 field grid with the button on its own full-width row.
