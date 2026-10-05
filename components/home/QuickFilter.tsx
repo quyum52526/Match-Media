@@ -52,7 +52,7 @@ export function QuickFilter() {
 
   return (
     <div
-      className="mx-auto w-full rounded-card border border-hairline bg-surface p-2 font-body shadow-card transition-all duration-150 ease-in-out hover:shadow-md"
+      className="mx-auto w-full rounded-card border border-[color:color-mix(in_srgb,var(--color-primary)_22%,transparent)] bg-surface p-2 font-body shadow-[0_12px_32px_-12px_rgba(15,23,42,0.28),0_2px_8px_rgba(15,23,42,0.08)] transition-all duration-150 ease-in-out hover:shadow-[0_14px_36px_-12px_rgba(15,23,42,0.30),0_3px_10px_rgba(15,23,42,0.10)]"
       role="search"
     >
       {/* Below md: 2x2 field grid with the button on its own full-width row.

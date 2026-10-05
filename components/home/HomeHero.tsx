@@ -21,7 +21,7 @@ export async function HomeHero({ marqueeProfiles }: { marqueeProfiles: ShowcaseP
 
   return (
     <>
-    <section className="relative min-h-[clamp(603px,calc(92vh-97px),843px)] flex flex-col overflow-hidden font-body antialiased">
+    <section className="relative min-h-[clamp(603px,calc(92vh-97px),843px)] flex flex-col overflow-x-clip font-body antialiased">
       <DolnaHero />
 
       <Container
