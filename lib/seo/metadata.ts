@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import {
-  DEFAULT_OG_IMAGE,
   OG_LOCALE,
   SITE_NAME,
   SEO_LOCALES,
   getLocalizedUrl,
+  defaultOgImage,
   hreflangAlternates,
   toSeoLocale,
 } from "./site";
@@ -59,15 +59,13 @@ export function buildPageMetadata({
       alternateLocale: SEO_LOCALES.filter((l) => l !== seoLocale).map(
         (l) => OG_LOCALE[l],
       ),
-      images: [
-        { url: DEFAULT_OG_IMAGE, width: 2848, height: 1504, alt: title },
-      ],
+      images: [defaultOgImage(title)],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [DEFAULT_OG_IMAGE],
+      images: [defaultOgImage(title)],
     },
   };
 }

@@ -9,7 +9,10 @@ export const SITE_URL = (
   process.env.NEXT_PUBLIC_APP_URL || "https://www.matchmediabd.xyz"
 ).replace(/\/+$/, "");
 export const SITE_NAME = "Match Media";
-export const DEFAULT_OG_IMAGE = "/opengraph-image.jpg";
+/** Brand fallback share image (1200x630, ~120KB — light enough for WhatsApp/FB previews). */
+export const DEFAULT_OG_IMAGE = "/images/og-default.jpg";
+export const OG_IMAGE_WIDTH = 1200;
+export const OG_IMAGE_HEIGHT = 630;
 
 export const SEO_LOCALES = ["bn", "en"] as const;
 export type SeoLocale = (typeof SEO_LOCALES)[number];
@@ -55,6 +58,17 @@ export function localePath(locale: SeoLocale, path: string = ""): string {
  */
 export function getLocalizedUrl(locale: string, path: string = ""): string {
   return getAbsoluteUrl(localePath(toSeoLocale(locale), path));
+}
+
+/** Absolute-URL Open Graph image descriptor for the brand fallback image. */
+export function defaultOgImage(alt: string) {
+  return {
+    url: getAbsoluteUrl(DEFAULT_OG_IMAGE),
+    width: OG_IMAGE_WIDTH,
+    height: OG_IMAGE_HEIGHT,
+    type: "image/jpeg",
+    alt,
+  };
 }
 
 /**

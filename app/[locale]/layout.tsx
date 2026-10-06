@@ -9,10 +9,10 @@ import {
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import {
-  DEFAULT_OG_IMAGE,
   OG_LOCALE,
   SITE_NAME,
   SITE_URL,
+  defaultOgImage,
   toSeoLocale,
 } from "@/lib/seo/site";
 import { routing } from "@/i18n/routing";
@@ -78,15 +78,13 @@ export async function generateMetadata({
       title,
       description,
       locale: OG_LOCALE[locale],
-      images: [
-        { url: DEFAULT_OG_IMAGE, width: 2848, height: 1504, alt: title },
-      ],
+      images: [defaultOgImage(title)],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [DEFAULT_OG_IMAGE],
+      images: [defaultOgImage(title)],
     },
     // Brand favicon (MM monogram, scalable SVG). shortcut/apple aliases cover
     // legacy favicon lookups and iOS home-screen; SVG scales to any size.

@@ -11,6 +11,8 @@ export interface BlogPost {
   metaTitle?: string;
   description: string;
   date: string;
+  /** Last substantive edit (YYYY-MM-DD); falls back to `date`. */
+  updated?: string;
   author: string;
   coverImage: string;
   coverAlt?: string;
@@ -89,6 +91,16 @@ function parsePost(source: string, filePath: string, slug: string): BlogPost {
   }
 
   if (
+    data.updated !== undefined &&
+    (typeof data.updated !== "string" ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(data.updated))
+  ) {
+    throw new Error(
+      `Invalid blog post "${filePath}": "updated" must be a YYYY-MM-DD string when provided.`,
+    );
+  }
+
+  if (
     data.keywords !== undefined &&
     (!Array.isArray(data.keywords) ||
       !data.keywords.every(
@@ -106,6 +118,7 @@ function parsePost(source: string, filePath: string, slug: string): BlogPost {
     metaTitle: data.metaTitle,
     description: data.description,
     date: data.date,
+    updated: data.updated,
     author: data.author,
     coverImage: data.coverImage,
     coverAlt: data.coverAlt,

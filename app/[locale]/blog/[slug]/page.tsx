@@ -61,6 +61,11 @@ export async function generateMetadata({
   const languages = hreflangFromUrls(urls);
   const url = getAbsoluteUrl(blogPath(locale as BlogLocale, post.slug));
   const headTitle = post.metaTitle ?? post.title;
+  const publishedTime = new Date(`${post.date}T00:00:00.000Z`).toISOString();
+  const modifiedTime = new Date(
+    `${post.updated ?? post.date}T00:00:00.000Z`,
+  ).toISOString();
+  const coverUrl = getAbsoluteUrl(post.coverImage);
 
   return {
     title: headTitle,
@@ -74,16 +79,17 @@ export async function generateMetadata({
       description: post.description,
       url,
       type: "article",
-      publishedTime: new Date(`${post.date}T00:00:00.000Z`).toISOString(),
-      authors: [post.author],
+      publishedTime,
+      modifiedTime,
+      authors: [SITE_NAME],
       tags: post.tags,
-      images: [{ url: post.coverImage, alt: post.coverAlt || post.title }],
+      images: [{ url: coverUrl, alt: post.coverAlt || post.title }],
     },
     twitter: {
       card: "summary_large_image",
       title: headTitle,
       description: post.description,
-      images: [post.coverImage],
+      images: [{ url: coverUrl, alt: post.coverAlt || post.title }],
     },
   };
 }
@@ -112,6 +118,7 @@ export default async function BlogPostPage({
       description: post.description,
       image: post.coverImage,
       datePublished: post.date,
+      dateModified: post.updated,
       author: post.author,
       keywords: post.keywords,
     }),
