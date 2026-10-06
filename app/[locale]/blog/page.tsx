@@ -82,6 +82,8 @@ export default async function BlogPage({
                     <time dateTime={post.date}>{post.date}</time>
                     <span aria-hidden="true"> · </span>
                     {post.author}
+                    <span aria-hidden="true"> · </span>
+                    {post.readingTime.label}
                   </p>
                   <h2 className="mt-2 text-lg font-semibold text-ink group-hover:text-primary">
                     {post.title}

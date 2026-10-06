@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -9,8 +10,10 @@ import {
   blogPath,
   getAllPosts,
   getPost,
+  getRelatedPosts,
   getTranslation,
   type BlogLocale,
+  type BlogPost,
 } from "@/lib/blog";
 import { articleSchema, breadcrumbSchema } from "@/lib/seo/schema";
 import {
@@ -91,6 +94,11 @@ export async function generateMetadata({
       description: post.description,
       images: [{ url: coverUrl, alt: post.coverAlt || post.title }],
     },
+    // Reading-time label shown in Slack / X link unfurls.
+    other: {
+      "twitter:label1": locale === "bn" ? "পড়ার সময়" : "Reading time",
+      "twitter:data1": post.readingTime.label,
+    },
   };
 }
 
@@ -106,8 +114,11 @@ export default async function BlogPostPage({
 
   const isBengali = locale === "bn";
   const otherLocale: BlogLocale = isBengali ? "en" : "bn";
-  const translated = await getTranslation(post.translationKey, otherLocale);
-  const t = await getTranslations("Blog");
+  const [translated, related, t] = await Promise.all([
+    getTranslation(post.translationKey, otherLocale),
+    getRelatedPosts(post, locale as BlogLocale),
+    getTranslations("Blog"),
+  ]);
   const seoLocale = toSeoLocale(locale);
   const articleUrl = getAbsoluteUrl(blogPath(locale as BlogLocale, post.slug));
   const jsonLd = [
@@ -121,6 +132,7 @@ export default async function BlogPostPage({
       dateModified: post.updated,
       author: post.author,
       keywords: post.keywords,
+      readingMinutes: post.readingTime.minutes,
     }),
     breadcrumbSchema(seoLocale, [
       { name: t("title"), path: "/blog" },
@@ -148,6 +160,8 @@ export default async function BlogPostPage({
             <span>{post.author}</span>
             <span aria-hidden="true">·</span>
             <time dateTime={post.date}>{post.date}</time>
+            <span aria-hidden="true">·</span>
+            <span>{post.readingTime.label}</span>
             {translated && (
               <>
                 <span aria-hidden="true">·</span>
@@ -188,7 +202,60 @@ export default async function BlogPostPage({
           <MDXRemote source={post.content} />
         </div>
       </article>
+
+      {related.length > 0 && (
+        <section
+          aria-labelledby="related-articles"
+          className={`mx-auto mt-16 max-w-5xl border-t border-hairline pt-10 ${
+            isBengali ? "font-bengali" : "font-body"
+          }`}
+        >
+          <h2
+            id="related-articles"
+            className="font-display text-2xl font-semibold text-ink"
+          >
+            {t("relatedTitle")}
+          </h2>
+          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {related.map((item) => (
+              <RelatedCard key={item.slug} post={item} />
+            ))}
+          </div>
+        </section>
+      )}
       <JsonLd data={jsonLd} />
     </Container>
+  );
+}
+
+/** Compact card for the Related Articles grid (mirrors the blog index card). */
+function RelatedCard({ post }: { post: BlogPost }) {
+  return (
+    <article className="overflow-hidden rounded-card border border-hairline bg-surface shadow-card transition-shadow hover:shadow-md">
+      <Link href={`/blog/${post.slug}`} className="group block">
+        <div className="relative aspect-[1200/630] bg-canvas">
+          <Image
+            src={post.coverImage}
+            alt={post.coverAlt || post.title}
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition-transform duration-200 group-hover:scale-[1.02]"
+          />
+        </div>
+        <div className="p-5">
+          <p className="text-xs text-muted">
+            <time dateTime={post.date}>{post.date}</time>
+            <span aria-hidden="true"> · </span>
+            {post.readingTime.label}
+          </p>
+          <h3 className="mt-2 text-base font-semibold text-ink group-hover:text-primary">
+            {post.title}
+          </h3>
+          <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-ink/70">
+            {post.description}
+          </p>
+        </div>
+      </Link>
+    </article>
   );
 }

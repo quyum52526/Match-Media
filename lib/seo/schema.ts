@@ -100,6 +100,8 @@ export interface ArticleSchema extends Thing<"BlogPosting"> {
   };
   mainEntityOfPage: { "@type": "WebPage"; "@id": string };
   keywords?: string;
+  /** ISO 8601 duration, e.g. "PT3M". */
+  timeRequired?: string;
 }
 
 export type JsonLdSchema =
@@ -214,6 +216,8 @@ export function articleSchema(input: {
   dateModified?: string;
   author?: string;
   keywords?: string[];
+  /** Estimated reading time in whole minutes. */
+  readingMinutes?: number;
 }): ArticleSchema {
   const published = new Date(
     `${input.datePublished}T00:00:00.000Z`,
@@ -242,5 +246,8 @@ export function articleSchema(input: {
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": input.url },
     ...(input.keywords?.length ? { keywords: input.keywords.join(", ") } : {}),
+    ...(input.readingMinutes
+      ? { timeRequired: `PT${input.readingMinutes}M` }
+      : {}),
   };
 }

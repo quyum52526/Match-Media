@@ -1275,7 +1275,8 @@
         }
       }
     ],
-    "readMore": "Read"
+    "readMore": "Read",
+    "relatedTitle": "Related articles"
   },
   "Events": {
     "title": "Events",

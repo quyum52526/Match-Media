@@ -1275,7 +1275,8 @@
         }
       }
     ],
-    "readMore": "পড়ুন"
+    "readMore": "পড়ুন",
+    "relatedTitle": "সম্পর্কিত লেখা"
   },
   "Events": {
     "title": "ইভেন্ট",
