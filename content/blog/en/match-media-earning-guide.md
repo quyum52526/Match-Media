@@ -4,7 +4,8 @@ metaTitle: "Earn with Match Media: Guide for Ghotoks and Verification Agents"
 description: "Run a matchmaking business or a marriage media agency? Learn how to earn from Match Media by managing client profiles, or by working as a verification agent in your own area."
 date: "2026-10-06"
 author: "Match Media Team"
-coverImage: "/opengraph-image.jpg"
+coverImage: "/images/blog/match-media-earning-guide.jpg"
+coverAlt: "Monetization opportunities for matrimonial media agencies and local verification agents on Match Media"
 tags: ["Earning", "Media Agency", "Verification Agent", "Ghotok"]
 keywords: ["Match Media income", "earn from Match Media", "ghotok business", "verification agent jobs", "marriage media earning", "matrimonial agency bangladesh"]
 translationKey: "match-media-earning-guide"

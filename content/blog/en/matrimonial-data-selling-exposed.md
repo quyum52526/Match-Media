@@ -4,7 +4,8 @@ metaTitle: "Data Selling on Matrimonial Sites: How Is Match Media Different?"
 description: "Are matrimonial sites selling your photo and phone number to pro users? Find out how Match Media shut down this silent trade."
 date: "2026-10-07"
 author: "Match Media Team"
-coverImage: "/opengraph-image.jpg"
+coverImage: "/images/blog/matrimonial-data-selling-exposed.jpg"
+coverAlt: "Matrimonial pro membership data selling scam contrasted with strict privacy and zero contact reveal architecture"
 tags: ["Privacy", "Data Protection", "Matrimonial Risks", "Security"]
 keywords: ["matrimonial data leak", "biodata selling", "matrimonial data privacy", "Match Media privacy", "safe marriage site", "matrimonial pro membership scam"]
 translationKey: "matrimonial-data-selling-exposed"

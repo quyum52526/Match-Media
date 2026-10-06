@@ -4,7 +4,8 @@ metaTitle: "ম্যাচ মিডিয়া থেকে আয়: ঘট
 description: "ঘটকালি করেন বা ম্যারেজ মিডিয়া চালান? ক্লায়েন্ট প্রোফাইল সামলে, কিংবা নিজের এলাকায় ভেরিফিকেশন এজেন্ট হয়ে Match Media থেকে কীভাবে আয় করবেন, সহজ ভাষায় জেনে নিন।"
 date: "2026-10-06"
 author: "Match Media Team"
-coverImage: "/opengraph-image.jpg"
+coverImage: "/images/blog/match-media-earning-guide.jpg"
+coverAlt: "Monetization opportunities for matrimonial media agencies and local verification agents on Match Media"
 tags: ["Earning", "Media Agency", "Verification Agent", "Ghotok"]
 keywords: ["Match Media income", "ম্যাচ মিডিয়া থেকে আয়", "ঘটকালি ব্যবসা", "verification agent jobs", "marriage media earning", "matrimonial agency bangladesh"]
 translationKey: "match-media-earning-guide"

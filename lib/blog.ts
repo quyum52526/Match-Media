@@ -13,6 +13,7 @@ export interface BlogPost {
   date: string;
   author: string;
   coverImage: string;
+  coverAlt?: string;
   tags: string[];
   keywords?: string[];
   translationKey: string;
@@ -79,6 +80,15 @@ function parsePost(source: string, filePath: string, slug: string): BlogPost {
   }
 
   if (
+    data.coverAlt !== undefined &&
+    (typeof data.coverAlt !== "string" || !data.coverAlt.trim())
+  ) {
+    throw new Error(
+      `Invalid blog post "${filePath}": "coverAlt" must be a non-empty string when provided.`,
+    );
+  }
+
+  if (
     data.keywords !== undefined &&
     (!Array.isArray(data.keywords) ||
       !data.keywords.every(
@@ -98,6 +108,7 @@ function parsePost(source: string, filePath: string, slug: string): BlogPost {
     date: data.date,
     author: data.author,
     coverImage: data.coverImage,
+    coverAlt: data.coverAlt,
     tags: data.tags,
     keywords: data.keywords,
     translationKey: data.translationKey,

@@ -68,7 +68,7 @@ export async function generateMetadata({
       type: "article",
       publishedTime: new Date(`${post.date}T00:00:00.000Z`).toISOString(),
       authors: [post.author],
-      images: [{ url: post.coverImage, alt: post.title }],
+      images: [{ url: post.coverImage, alt: post.coverAlt || post.title }],
     },
     twitter: {
       card: "summary_large_image",
@@ -158,7 +158,7 @@ export default async function BlogPostPage({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={post.coverImage}
-            alt={post.title}
+            alt={post.coverAlt || post.title}
             className="h-full w-full object-cover"
           />
         </div>

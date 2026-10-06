@@ -4,7 +4,8 @@ metaTitle: "Ghotok Biodata Risks & Matrimonial Photo Privacy"
 description: "Worried your photo and number are floating around Facebook groups? See how Match Media's server-side blur and consent-based privacy put 100% control in your hands."
 date: "2026-10-05"
 author: "Match Media Editorial"
-coverImage: "/opengraph-image.jpg"
+coverImage: "/images/blog/ghotok-biodata-privacy-risks.jpg"
+coverAlt: "Bangladeshi traditional matchmaking biodata privacy risk and secure photo protection concept on Match Media"
 tags: ["Privacy", "Safety", "Ghotok"]
 keywords: ["Bangladeshi matrimonial privacy", "biodata privacy", "ghotok problems", "Match Media", "matrimonial photo leak", "privacy-first matrimonial website", "safe marriage site"]
 translationKey: "ghotok-biodata-privacy-risks"

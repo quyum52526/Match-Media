@@ -4,7 +4,8 @@ metaTitle: "ম্যাট্রিমোনিয়াল সাইটে ড
 description: "ম্যাট্রিমোনিয়াল সাইটগুলো কি প্রো ইউজারদের কাছে আপনার ছবি আর ফোন নম্বর বিক্রি করছে? Match Media কীভাবে এই নীরব বাণিজ্য বন্ধ করেছে, জেনে নিন।"
 date: "2026-10-07"
 author: "Match Media Team"
-coverImage: "/opengraph-image.jpg"
+coverImage: "/images/blog/matrimonial-data-selling-exposed.jpg"
+coverAlt: "Matrimonial pro membership data selling scam contrasted with strict privacy and zero contact reveal architecture"
 tags: ["Privacy", "Data Protection", "Matrimonial Risks", "Security"]
 keywords: ["matrimonial data leak", "বায়োডাটা বিক্রি", "ম্যাট্রিমোনিয়াল ডেটা প্রাইভেসি", "Match Media privacy", "নিরাপদ বিয়ে সাইট", "matrimonial pro membership scam"]
 translationKey: "matrimonial-data-selling-exposed"

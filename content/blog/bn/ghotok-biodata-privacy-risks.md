@@ -4,7 +4,8 @@ metaTitle: "ঘটকের কাছে ছবি-বায়োডাটা �
 description: "ছবি আর নম্বর ফেসবুক গ্রুপে ঘুরছে কি না, সেই চিন্তায় আছেন? Match Media-র server-side blur আর কনসেন্ট-বেসড প্রাইভেসিতে ১০০% কন্ট্রোল থাকে আপনার হাতে।"
 date: "2026-10-05"
 author: "ম্যাচ মিডিয়া সম্পাদকীয়"
-coverImage: "/opengraph-image.jpg"
+coverImage: "/images/blog/ghotok-biodata-privacy-risks.jpg"
+coverAlt: "Bangladeshi traditional matchmaking biodata privacy risk and secure photo protection concept on Match Media"
 tags: ["প্রাইভেসি", "নিরাপত্তা", "ঘটকালি"]
 keywords: ["Bangladeshi matrimonial privacy", "বায়োডাটা প্রাইভেসি", "ঘটকালি সমস্যা", "Match Media", "পাত্র পাত্রীর ছবি ফাঁস", "privacy-first matrimonial website", "নিরাপদ বিয়ে সাইট"]
 translationKey: "ghotok-biodata-privacy-risks"

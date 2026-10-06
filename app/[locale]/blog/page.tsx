@@ -93,7 +93,7 @@ export default async function BlogPage({
                 <div className="relative aspect-[1200/630] bg-canvas">
                   <Image
                     src={post.coverImage}
-                    alt=""
+                    alt={post.coverAlt || post.title}
                     fill
                     sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                     className="object-cover transition-transform duration-200 group-hover:scale-[1.02]"
