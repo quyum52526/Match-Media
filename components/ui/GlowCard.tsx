@@ -18,6 +18,7 @@ export function GlowCard({
   enableTilt = false,
   maxTilt = 4,
   glowColor = "140, 47, 74",
+  featured = false,
 }: {
   children: ReactNode;
   className?: string;
@@ -26,6 +27,8 @@ export function GlowCard({
   maxTilt?: number;
   /** Spotlight / border tint as an "r, g, b" triple. Defaults to Garnet. */
   glowColor?: string;
+  /** Stronger gold/garnet base glow for a highlighted card (e.g. best-value plan). */
+  featured?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const frame = useRef<number | null>(null);
@@ -85,7 +88,10 @@ export function GlowCard({
       className={cn(
         // Base (pre-hover) ambient glow: garnet-tinted hairline + soft halo so
         // cards lift off the ivory canvas before the cursor arrives.
-        "group/glow relative isolate h-full overflow-hidden rounded-card border border-primary/15 bg-white/75 shadow-[0_4px_20px_-2px_rgba(140,47,74,0.06)] backdrop-blur-xl",
+        "group/glow relative isolate h-full overflow-hidden rounded-card border bg-white/75 backdrop-blur-xl",
+        featured
+          ? "border-accent/50 shadow-[0_0_0_1px_rgba(200,162,75,0.18),0_8px_28px_-4px_rgba(200,162,75,0.28),0_4px_20px_-2px_rgba(140,47,74,0.10)]"
+          : "border-primary/15 shadow-[0_4px_20px_-2px_rgba(140,47,74,0.06)]",
         "transition-[transform,box-shadow] ease-out will-change-transform hover:shadow-[0_10px_30px_-4px_rgba(140,47,74,0.14)]",
         className,
       )}
@@ -114,7 +120,7 @@ export function GlowCard({
       {/* Border glow — a 1px ring masked to the card edge */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-[inherit] p-px transition-opacity duration-300"
+        className="pointer-events-none absolute inset-0 z-10 rounded-[inherit] p-px transition-opacity duration-300"
         style={{
           opacity: "var(--glow)",
           background: `radial-gradient(220px circle at var(--gx) var(--gy), rgba(${glowColor}, 0.55), transparent 70%)`,

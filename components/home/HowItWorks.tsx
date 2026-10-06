@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { GlowCard } from "@/components/ui/GlowCard";
 import {
   EyeIcon,
   HeartIcon,
@@ -45,20 +46,19 @@ export async function HowItWorks() {
         {/* 3 steps */}
         <ol className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {steps.map(({ n, Icon, title, body }) => (
-            <li
-              key={n}
-              className="group rounded-card border border-hairline bg-surface p-6 shadow-card transition-all duration-150 ease-in-out hover:-translate-y-1 hover:shadow-md"
-            >
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors duration-150 ease-in-out group-hover:bg-primary/15">
-                <Icon width={22} height={22} />
-              </span>
-              <p className="mt-4 font-body text-xs font-medium uppercase tracking-wide text-primary">
-                {t("stepLabel", { n: String(n) })}
-              </p>
-              <h3 className="mt-1 text-base font-medium text-ink">{title}</h3>
-              <p className="mt-2 text-sm font-normal leading-relaxed text-ink/60">
-                {body}
-              </p>
+            <li key={n} className="group">
+              <GlowCard enableTilt={false} className="p-6">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors duration-150 ease-in-out group-hover:bg-primary/15">
+                  <Icon width={22} height={22} />
+                </span>
+                <p className="mt-4 font-body text-xs font-medium uppercase tracking-wide text-primary">
+                  {t("stepLabel", { n: String(n) })}
+                </p>
+                <h3 className="mt-1 text-base font-medium text-ink">{title}</h3>
+                <p className="mt-2 text-sm font-normal leading-relaxed text-ink/60">
+                  {body}
+                </p>
+              </GlowCard>
             </li>
           ))}
         </ol>

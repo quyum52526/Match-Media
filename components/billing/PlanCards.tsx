@@ -3,7 +3,8 @@
 import { useTransition, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
-import { Card, CardBody } from "@/components/ui/Card";
+import { CardBody } from "@/components/ui/Card";
+import { GlowCard } from "@/components/ui/GlowCard";
 import { Badge } from "@/components/ui/Badge";
 import { StarIcon } from "@/components/ui/icons";
 import { formatTaka } from "@/lib/billing/pricing";
@@ -37,9 +38,11 @@ export function PlanCards({
         // The 12-month plan is the best value — highlight it.
         const featured = plan.durationDays >= 365;
         return (
-          <Card
+          <GlowCard
             key={plan.code}
-            className={featured ? "border-accent ring-1 ring-accent/40" : undefined}
+            enableTilt={false}
+            featured={featured}
+            glowColor={featured ? "200, 162, 75" : undefined}
           >
             <CardBody className="flex flex-col items-center text-center">
               {featured && (
@@ -81,7 +84,7 @@ export function PlanCards({
                     : t("choose")}
               </Button>
             </CardBody>
-          </Card>
+          </GlowCard>
         );
       })}
     </div>
