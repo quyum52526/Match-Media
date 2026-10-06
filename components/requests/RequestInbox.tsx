@@ -6,6 +6,7 @@ import { respondToPhotoRequest } from "@/lib/actions/funnel";
 import { localize } from "@/lib/constants/labels";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { GlowCard } from "@/components/ui/GlowCard";
 import {
   LockIcon,
   ShieldCheckIcon,
@@ -63,9 +64,7 @@ export function RequestInbox({ received, sent }: RequestInboxProps) {
               onClick={() => setTab(key)}
               className={cn(
                 "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
-                active
-                  ? "bg-primary text-white"
-                  : "text-ink/60 hover:text-ink",
+                active ? "bg-primary text-white" : "text-ink/60 hover:text-ink",
               )}
             >
               {label}
@@ -87,7 +86,11 @@ export function RequestInbox({ received, sent }: RequestInboxProps) {
         <RequestList
           empty={t("empty.received")}
           items={received.map((r) => (
-            <RequestRow key={r.id} person={r.person} requestedAt={r.requestedAt}>
+            <RequestRow
+              key={r.id}
+              person={r.person}
+              requestedAt={r.requestedAt}
+            >
               {r.status === "PENDING" ? (
                 <div className="flex gap-2">
                   <Button
@@ -119,7 +122,11 @@ export function RequestInbox({ received, sent }: RequestInboxProps) {
         <RequestList
           empty={t("empty.sent")}
           items={sent.map((r) => (
-            <RequestRow key={r.id} person={r.person} requestedAt={r.requestedAt}>
+            <RequestRow
+              key={r.id}
+              person={r.person}
+              requestedAt={r.requestedAt}
+            >
               <StatusBadge status={r.status} />
             </RequestRow>
           ))}
@@ -142,7 +149,7 @@ function RequestList({
 }) {
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-hairline bg-white py-12 text-center">
+      <div className="flex flex-col items-center gap-2 rounded-2xl border border-primary/10 bg-white/60 px-6 py-12 text-center backdrop-blur-md">
         <InboxIcon width={28} height={28} className="text-ink/30" />
         <p className="text-sm text-ink/50">{empty}</p>
       </div>
@@ -164,44 +171,57 @@ function RequestRow({
   const locale = useLocale();
 
   return (
-    <li className="flex flex-col gap-3 rounded-2xl border border-ink/10 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-3">
-        {/* Blurred mini thumbnail (privacy-first) */}
-        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-ink/5">
-          <div
-            className="h-full w-full scale-110 bg-gradient-to-br from-primary/30 via-success/20 to-accent/20 blur-md"
-            aria-hidden
-          />
-          <span className="absolute inset-0 flex items-center justify-center text-ink/70">
-            <LockIcon width={16} height={16} />
-          </span>
-        </div>
+    <li>
+      <GlowCard enableTilt={false} className="p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            {/* Blurred mini thumbnail (privacy-first) */}
+            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-ink/5">
+              <div
+                className="h-full w-full scale-110 bg-gradient-to-br from-primary/30 via-success/20 to-accent/20 blur-md"
+                aria-hidden
+              />
+              <span className="absolute inset-0 flex items-center justify-center text-ink/70">
+                <LockIcon width={16} height={16} />
+              </span>
+            </div>
 
-        <div className="min-w-0">
-          <div className="flex items-center gap-1.5">
-            <span className="truncate text-sm font-semibold text-ink">
-              {person.displayName}
-            </span>
-            {person.nameHidden && (
-              <LockIcon width={12} height={12} className="shrink-0 text-ink/40" />
-            )}
-            {person.isVerified && (
-              <ShieldCheckIcon width={14} height={14} className="shrink-0 text-success" />
-            )}
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="truncate text-sm font-semibold text-ink">
+                  {person.displayName}
+                </span>
+                {person.nameHidden && (
+                  <LockIcon
+                    width={12}
+                    height={12}
+                    className="shrink-0 text-ink/40"
+                  />
+                )}
+                {person.isVerified && (
+                  <ShieldCheckIcon
+                    width={14}
+                    height={14}
+                    className="shrink-0 text-success"
+                  />
+                )}
+              </div>
+              <p className="text-xs text-ink/60">
+                <span className="font-body font-medium text-ink/80">
+                  {person.age}
+                </span>{" "}
+                · {localize(person.upazila, locale)},{" "}
+                {localize(person.district, locale)}
+              </p>
+              <p className="mt-0.5 text-xs text-ink/40">
+                {t("meta.requestedOn", { date: formatDate(requestedAt) })}
+              </p>
+            </div>
           </div>
-          <p className="text-xs text-ink/60">
-            <span className="font-body font-medium text-ink/80">
-              {person.age}
-            </span>{" "}
-            · {localize(person.upazila, locale)}, {localize(person.district, locale)}
-          </p>
-          <p className="mt-0.5 text-xs text-ink/40">
-            {t("meta.requestedOn", { date: formatDate(requestedAt) })}
-          </p>
-        </div>
-      </div>
 
-      <div className="shrink-0 sm:pl-4">{children}</div>
+          <div className="shrink-0 sm:pl-4">{children}</div>
+        </div>
+      </GlowCard>
     </li>
   );
 }

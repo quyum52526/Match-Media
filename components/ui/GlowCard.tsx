@@ -91,7 +91,7 @@ export function GlowCard({
         "group/glow relative isolate h-full overflow-hidden rounded-card border bg-white/75 backdrop-blur-xl",
         featured
           ? "border-accent/50 shadow-[0_0_0_1px_rgba(200,162,75,0.18),0_8px_28px_-4px_rgba(200,162,75,0.28),0_4px_20px_-2px_rgba(140,47,74,0.10)]"
-          : "border-primary/15 shadow-[0_4px_20px_-2px_rgba(140,47,74,0.06)]",
+          : "border-primary/30 shadow-[0_4px_25px_-2px_rgba(140,47,74,0.12)]",
         "transition-[transform,box-shadow] ease-out will-change-transform hover:shadow-[0_10px_30px_-4px_rgba(140,47,74,0.14)]",
         className,
       )}
@@ -114,7 +114,7 @@ export function GlowCard({
         className="pointer-events-none absolute inset-0 -z-10 transition-opacity duration-300"
         style={{
           opacity: "var(--glow)",
-          background: `radial-gradient(320px circle at var(--gx) var(--gy), rgba(${glowColor}, 0.08), transparent 70%)`,
+          background: `radial-gradient(320px circle at var(--gx) var(--gy), rgba(${glowColor}, 0.14), transparent 70%)`,
         }}
       />
       {/* Border glow — a 1px ring masked to the card edge */}
@@ -123,7 +123,7 @@ export function GlowCard({
         className="pointer-events-none absolute inset-0 z-10 rounded-[inherit] p-px transition-opacity duration-300"
         style={{
           opacity: "var(--glow)",
-          background: `radial-gradient(220px circle at var(--gx) var(--gy), rgba(${glowColor}, 0.55), transparent 70%)`,
+          background: `radial-gradient(240px circle at var(--gx) var(--gy), rgba(${glowColor}, 0.85), transparent 70%)`,
           WebkitMask:
             "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
           WebkitMaskComposite: "xor",

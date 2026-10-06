@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { EyeOff, MapPin, PhoneOff, ShieldCheck, Users } from "lucide-react";
-import { Card, CardBody } from "@/components/ui/Card";
+import { GlowCard } from "@/components/ui/GlowCard";
 import { Container } from "@/components/ui/Container";
 
 export async function generateMetadata({
@@ -70,8 +70,8 @@ export default async function AboutPage({
           ))}
         </div>
 
-        <Card className="mt-10">
-          <CardBody className="sm:p-8">
+        <div className="mt-10">
+          <GlowCard enableTilt={false} className="p-5 sm:p-8">
             <h2 className="font-display text-xl font-semibold text-ink">
               {t("missionTitle")}
             </h2>
@@ -80,8 +80,8 @@ export default async function AboutPage({
                 <p key={paragraph}>{paragraph}</p>
               ))}
             </div>
-          </CardBody>
-        </Card>
+          </GlowCard>
+        </div>
 
         <h2 className="mt-12 font-display text-xl font-semibold text-ink">
           {t("valuesTitle")}
@@ -90,19 +90,21 @@ export default async function AboutPage({
           {values.map((value, index) => {
             const Icon = pillarIcons[index] ?? ShieldCheck;
             return (
-              <Card key={value.title}>
-                <CardBody>
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <Icon className="h-5 w-5" aria-hidden="true" />
-                  </span>
-                  <h3 className="mt-4 text-base font-semibold text-ink">
-                    {value.title}
-                  </h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-ink/70">
-                    {value.body}
-                  </p>
-                </CardBody>
-              </Card>
+              <GlowCard
+                key={value.title}
+                enableTilt={false}
+                className="p-5 sm:p-6"
+              >
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <Icon className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <h3 className="mt-4 text-base font-semibold text-ink">
+                  {value.title}
+                </h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-ink/70">
+                  {value.body}
+                </p>
+              </GlowCard>
             );
           })}
         </div>
