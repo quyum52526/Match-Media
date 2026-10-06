@@ -96,15 +96,23 @@ export default async function BlogPostPage({
   const articleUrl = new URL(blogPath(locale as BlogLocale, post.slug), siteUrl).toString();
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
     headline: post.title,
     description: post.description,
     image: [new URL(post.coverImage, siteUrl).toString()],
     datePublished: new Date(`${post.date}T00:00:00.000Z`).toISOString(),
-    author: { "@type": "Person", name: post.author },
-    mainEntityOfPage: articleUrl,
+    author: { "@type": "Person", name: post.author || "Match Media" },
+    mainEntityOfPage: { "@type": "WebPage", "@id": articleUrl },
     inLanguage: isBengali ? "bn-BD" : "en",
-    publisher: { "@type": "Organization", name: "MatchMedia" },
+    publisher: {
+      "@type": "Organization",
+      name: "Match Media",
+      url: siteUrl,
+      logo: {
+        "@type": "ImageObject",
+        url: new URL("/match-media-logo-maine.png", siteUrl).toString(),
+      },
+    },
   };
 
   return (
