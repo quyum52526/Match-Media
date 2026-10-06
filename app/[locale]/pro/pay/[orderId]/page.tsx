@@ -7,7 +7,7 @@ import { formatTaka } from "@/lib/billing/pricing";
 import { getOrderForViewer } from "@/lib/data/billing";
 import { requireViewerId } from "@/lib/session";
 
-export const metadata = { title: "Payment · MatchMedia" };
+export const metadata = { title: "Payment" };
 export const dynamic = "force-dynamic";
 
 /**

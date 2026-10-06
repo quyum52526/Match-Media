@@ -7,7 +7,7 @@ import { getFeatureFlags } from "@/lib/featureFlags";
 import { Container } from "@/components/ui/Container";
 
 export const metadata = {
-  title: "Verification Center · MatchMedia",
+  title: "Verification Center",
 };
 
 async function getUserVerificationState(userId: string) {

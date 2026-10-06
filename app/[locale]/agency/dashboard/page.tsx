@@ -10,7 +10,7 @@ import { AuthBackground } from "@/components/auth/AuthBackground";
 import { Container } from "@/components/ui/Container";
 
 export const metadata = {
-  title: "Agency Dashboard · MatchMedia",
+  title: "Agency Dashboard",
 };
 
 /**

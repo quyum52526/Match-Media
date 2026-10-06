@@ -17,7 +17,7 @@ import { getViewerIdOrGuest, getViewerRole } from "@/lib/session";
 import { isAdminRole } from "@/lib/rbac";
 
 export const metadata = {
-  title: "Profile · MatchMedia",
+  title: "Profile",
 };
 
 // DB-backed, viewer-scoped — render per request (never prerendered at build).

@@ -3,7 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/Container";
 
 export const metadata = {
-  title: "Pricing · MatchMedia",
+  title: "Pricing",
 };
 
 export default async function PricingPage({

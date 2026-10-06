@@ -3,7 +3,7 @@ import { Card, CardBody } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 
 export const metadata = {
-  title: "Events · MatchMedia",
+  title: "Events",
 };
 
 export default async function EventsPage({

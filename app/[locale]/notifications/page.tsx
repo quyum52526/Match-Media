@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { NotificationList } from "@/components/notifications/NotificationList";
 
 export const metadata = {
-  title: "Notifications · MatchMedia",
+  title: "Notifications",
 };
 
 export default async function NotificationsPage({

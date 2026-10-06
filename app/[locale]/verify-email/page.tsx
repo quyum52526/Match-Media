@@ -9,7 +9,7 @@ import { Container } from "@/components/ui/Container";
 import { VerifyEmailForm } from "@/components/auth/VerifyEmailForm";
 
 export const metadata = {
-  title: "Verify your email · MatchMedia",
+  title: "Verify your email",
 };
 
 /**

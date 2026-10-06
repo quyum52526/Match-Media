@@ -5,7 +5,7 @@ import { getConversations } from "@/lib/data/messages";
 import { requireViewerId } from "@/lib/session";
 
 export const metadata = {
-  title: "Messages · MatchMedia",
+  title: "Messages",
 };
 
 export const dynamic = "force-dynamic";

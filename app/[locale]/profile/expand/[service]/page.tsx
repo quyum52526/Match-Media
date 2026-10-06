@@ -12,7 +12,7 @@ import { Container } from "@/components/ui/Container";
 import { Link } from "@/i18n/navigation";
 
 export const metadata = {
-  title: "Service application · MatchMedia",
+  title: "Service application",
 };
 
 /** Mobile numbers are stored as 8801XXXXXXXXX; show the national form. */

@@ -3,7 +3,7 @@ import { Container } from "@/components/ui/Container";
 import { UserGuide, type GuideLang } from "@/components/guide/UserGuide";
 
 export const metadata = {
-  title: "User Guide · MatchMedia",
+  title: "User Guide",
 };
 
 export default async function UserGuidePage({

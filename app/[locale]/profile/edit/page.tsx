@@ -26,7 +26,7 @@ import { prisma } from "@/lib/prisma";
 import { isAdminRole } from "@/lib/rbac";
 
 export const metadata = {
-  title: "Edit Profile · MatchMedia",
+  title: "Edit Profile",
 };
 
 /**

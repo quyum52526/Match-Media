@@ -6,7 +6,7 @@ import { getContactGateStatus } from "@/lib/contactGate";
 import { requireViewerId } from "@/lib/session";
 
 export const metadata = {
-  title: "Conversation · MatchMedia",
+  title: "Conversation",
 };
 
 export const dynamic = "force-dynamic";

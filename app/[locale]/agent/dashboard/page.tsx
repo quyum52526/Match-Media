@@ -11,7 +11,7 @@ import { AuthBackground } from "@/components/auth/AuthBackground";
 import { Container } from "@/components/ui/Container";
 
 export const metadata = {
-  title: "Agent Dashboard · MatchMedia",
+  title: "Agent Dashboard",
 };
 
 /**

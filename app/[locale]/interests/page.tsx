@@ -5,7 +5,7 @@ import { getReceivedInterests } from "@/lib/data/interests";
 import { requireViewerId } from "@/lib/session";
 
 export const metadata = {
-  title: "Received Interests · MatchMedia",
+  title: "Received Interests",
 };
 
 export default async function InterestsPage({

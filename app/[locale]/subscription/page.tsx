@@ -6,7 +6,7 @@ import { getCheckoutPlans } from "@/lib/data/billing";
 import { startPlanCheckout } from "@/lib/actions/billing";
 import { requireViewerId } from "@/lib/session";
 
-export const metadata = { title: "Subscription · MatchMedia" };
+export const metadata = { title: "Subscription" };
 
 // Viewer-scoped pricing + order creation — never prerender.
 export const dynamic = "force-dynamic";

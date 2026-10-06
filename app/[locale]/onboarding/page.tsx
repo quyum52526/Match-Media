@@ -5,7 +5,7 @@ import { getViewerId } from "@/lib/session";
 import { isEmailGateCleared } from "@/lib/emailVerification";
 
 export const metadata = {
-  title: "Set up your profile · MatchMedia",
+  title: "Set up your profile",
 };
 
 /**

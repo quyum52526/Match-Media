@@ -7,7 +7,7 @@ import { Container } from "@/components/ui/Container";
 import { VerifyMobileForm } from "@/components/auth/VerifyMobileForm";
 
 export const metadata = {
-  title: "Verify your mobile · MatchMedia",
+  title: "Verify your mobile",
 };
 
 export default async function VerifyMobilePage({

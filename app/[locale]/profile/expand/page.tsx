@@ -6,7 +6,7 @@ import { ExpandAccountCard } from "@/components/profile/ExpandAccountCard";
 import { Container } from "@/components/ui/Container";
 
 export const metadata = {
-  title: "Expand your account · MatchMedia",
+  title: "Expand your account",
 };
 
 /**

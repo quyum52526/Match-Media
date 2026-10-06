@@ -28,7 +28,7 @@ import { prisma } from "@/lib/prisma";
 import { isAdminRole } from "@/lib/rbac";
 
 export const metadata = {
-  title: "Browse · MatchMedia",
+  title: "Browse",
 };
 
 type SP = Record<string, string | string[] | undefined>;

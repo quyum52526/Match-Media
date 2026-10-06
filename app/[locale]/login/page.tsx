@@ -3,7 +3,7 @@ import { AuthShell } from "@/components/auth/AuthShell";
 import { LoginForm } from "@/components/auth/LoginForm";
 
 export const metadata = {
-  title: "Log in · MatchMedia",
+  title: "Log in",
 };
 
 export default async function LoginPage({

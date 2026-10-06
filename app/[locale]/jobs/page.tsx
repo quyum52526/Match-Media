@@ -10,7 +10,7 @@ import { Container } from "@/components/ui/Container";
 import { isAdminRole } from "@/lib/rbac";
 
 export const metadata = {
-  title: "Job Board · MatchMedia",
+  title: "Job Board",
 };
 
 export default async function JobsPage({

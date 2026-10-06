@@ -5,7 +5,7 @@ import { getProfileViewers } from "@/lib/data/viewers";
 import { requireViewerId } from "@/lib/session";
 
 export const metadata = {
-  title: "Who viewed me · MatchMedia",
+  title: "Who viewed me",
 };
 
 export default async function ViewersPage({

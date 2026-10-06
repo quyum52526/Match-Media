@@ -6,7 +6,7 @@ import { getAdminNavCounts } from "@/lib/data/admin";
 import { CountBadge } from "@/components/ui/CountBadge";
 
 export const metadata = {
-  title: "Admin · MatchMedia",
+  title: "Admin",
 };
 
 // Admin views are DB-backed and per-request — never prerendered.

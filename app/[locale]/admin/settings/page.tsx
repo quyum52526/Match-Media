@@ -7,7 +7,7 @@ import { getFeatureFlags, FEATURE_FLAG_KEYS } from "@/lib/featureFlags";
 import { isViewerSuperAdmin } from "@/lib/session";
 
 export const metadata = {
-  title: "Settings · Admin · MatchMedia",
+  title: "Settings · Admin",
 };
 
 export const dynamic = "force-dynamic";

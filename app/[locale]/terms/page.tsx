@@ -3,7 +3,7 @@ import { Container } from "@/components/ui/Container";
 import { TermsBody, type TermsSection } from "@/components/terms/TermsBody";
 
 export const metadata = {
-  title: "Terms and Conditions · MatchMedia",
+  title: "Terms and Conditions",
 };
 
 export default async function TermsPage({

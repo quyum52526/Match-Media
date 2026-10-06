@@ -8,7 +8,7 @@ import { formatTaka } from "@/lib/billing/pricing";
 import { getOrderForViewer } from "@/lib/data/billing";
 import { requireViewerId } from "@/lib/session";
 
-export const metadata = { title: "Checkout · MatchMedia" };
+export const metadata = { title: "Checkout" };
 export const dynamic = "force-dynamic";
 
 export default async function CheckoutPage({

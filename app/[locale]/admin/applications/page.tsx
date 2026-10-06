@@ -8,7 +8,7 @@ import {
 import { RoleApplicationsQueue } from "@/components/admin/RoleApplicationsQueue";
 
 export const metadata = {
-  title: "Role Applications · Admin · MatchMedia",
+  title: "Role Applications · Admin",
 };
 
 /**

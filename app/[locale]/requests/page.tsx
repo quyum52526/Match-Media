@@ -5,7 +5,7 @@ import { getReceivedRequests, getSentRequests } from "@/lib/data/requests";
 import { requireViewerId } from "@/lib/session";
 
 export const metadata = {
-  title: "Photo Requests · MatchMedia",
+  title: "Photo Requests",
 };
 
 export default async function RequestsPage({

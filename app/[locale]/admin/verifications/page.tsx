@@ -9,7 +9,7 @@ import {
 import { AdminVerificationsHub } from "@/components/admin/AdminVerificationsHub";
 
 export const metadata = {
-  title: "Document Verifications · Admin · MatchMedia",
+  title: "Document Verifications · Admin",
 };
 
 export default async function AdminVerificationsPage({
