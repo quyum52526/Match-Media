@@ -227,7 +227,7 @@ export function moderationEmail(
     `${copy.heading}\n\n${copy.body}\n\n` +
     (reason ? `Reason from our team: ${reason}\n\n` : "") +
     `${copy.cta}: ${url}\n\n` +
-    `— MatchMedia\n${base}\n\nYou are receiving this because of activity on your MatchMedia account.`;
+    `— Match Media\n${base}\n\nYou are receiving this because of activity on your Match Media account.`;
 
   const reasonBlock = reason
     ? `<tr><td style="padding:0 32px 20px">
@@ -253,7 +253,7 @@ export function moderationEmail(
       <tr><td style="height:4px;line-height:4px;font-size:0;background:${BRAND.primary}">&nbsp;</td></tr>
       <tr><td style="padding:22px 32px 6px;border-bottom:1px solid ${BRAND.hairline}">
         <a href="${base}" style="text-decoration:none">
-          <img src="${logoUrl}" alt="MatchMedia" width="180" style="display:block;width:180px;max-width:100%;height:auto;border:0;margin-bottom:16px">
+          <img src="${logoUrl}" alt="Match Media" width="180" style="display:block;width:180px;max-width:100%;height:auto;border:0;margin-bottom:16px">
         </a>
       </td></tr>
       <tr><td style="padding:28px 32px 8px">
@@ -266,7 +266,7 @@ export function moderationEmail(
         <a href="${url}" style="display:inline-block;background:${BRAND.primary};color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:12px 24px;border-radius:999px">${escapeHtml(copy.cta)}</a>
       </td></tr>
       <tr><td style="padding:16px 32px;border-top:1px solid ${BRAND.hairline};background:${BRAND.bg}">
-        <p style="margin:0;font-size:12px;line-height:1.6;color:${BRAND.muted}">You are receiving this because of activity on your MatchMedia account.<br>
+        <p style="margin:0;font-size:12px;line-height:1.6;color:${BRAND.muted}">You are receiving this because of activity on your Match Media account.<br>
         <a href="${base}" style="color:${BRAND.primaryDark};text-decoration:none">${base.replace(/^https?:\/\//, "")}</a></p>
       </td></tr>
     </table>
@@ -275,7 +275,7 @@ export function moderationEmail(
 </body>
 </html>`;
 
-  return { subject: `${copy.subject} · MatchMedia`, html, text };
+  return { subject: `${copy.subject} · Match Media`, html, text };
 }
 
 /** True when this kind has an email; lets callers skip the address lookup. */

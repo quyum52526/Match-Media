@@ -1,6 +1,6 @@
 {
   "Brand": {
-    "name": "MatchMedia",
+    "name": "Match Media",
     "tagline": "Privacy-first, nationwide matrimony"
   },
   "Nav": {
@@ -27,7 +27,7 @@
     "account": "Account"
   },
   "Home": {
-    "title": "MatchMedia",
+    "title": "Match Media",
     "subtitle": "Privacy-first, nationwide matrimonial platform",
     "viewSample": "View a sample profile",
     "hero": {
@@ -75,11 +75,11 @@
       "professionalsSub": "Doctors, engineers & more",
       "premium": "Premium",
       "mobileVerified": "Mobile-verified",
-      "member": "MatchMedia Member",
+      "member": "Match Media Member",
       "photoPrivate": "Photo private"
     },
     "howItWorks": {
-      "title": "How MatchMedia works",
+      "title": "How Match Media works",
       "subtitle": "Privacy-first from the first tap to the first call.",
       "stepLabel": "Step {n}",
       "step1Title": "Browse blurred",
@@ -118,7 +118,7 @@
     "influencer": {
       "ariaLabel": "Featured influencer testimonial",
       "eyebrow": "Featured Influencer",
-      "quote": "MatchMedia redefined what discretion means to me. I found a genuine connection — private, secure, and refreshingly human — without ever compromising who I am.",
+      "quote": "Match Media redefined what discretion means to me. I found a genuine connection — private, secure, and refreshingly human — without ever compromising who I am.",
       "name": "Giyanna Rose",
       "designation": "Social Media Influencer"
     }
@@ -384,7 +384,7 @@
   "ProfileEdit": {
     "title": "Edit your profile",
     "welcome": {
-      "title": "Welcome to MatchMedia! 🎉",
+      "title": "Welcome to Match Media! 🎉",
       "body": "Your account is ready. Add a few more details below so the right matches can find you — and you can blur any photo you'd rather keep private."
     },
     "save": "Save changes",
@@ -1002,7 +1002,7 @@
     "contact": "Contact",
     "privacy": "Privacy Policy",
     "terms": "Terms",
-    "rights": "© {year} MatchMedia. All rights reserved.",
+    "rights": "© {year} Match Media. All rights reserved.",
     "colDiscover": "Discover",
     "discoverBrowse": "Browse matches",
     "discoverHow": "How it works",
@@ -1018,11 +1018,11 @@
   },
   "PrivacyPolicy": {
     "title": "Privacy Policy",
-    "intro": "We collect and use information needed to operate MatchMedia, protect accounts, and help members connect. We do not sell personal information.",
+    "intro": "We collect and use information needed to operate Match Media, protect accounts, and help members connect. We do not sell personal information.",
     "sections": [
       {
         "heading": "Photos and contact details",
-        "body": "Photos are subject to review and privacy controls; photos covered by viewing requests remain blurred until the profile owner approves. Your contact details are never shared without your mutual consent. You can use MatchMedia messaging and calling without giving another member your phone number or email."
+        "body": "Photos are subject to review and privacy controls; photos covered by viewing requests remain blurred until the profile owner approves. Your contact details are never shared without your mutual consent. You can use Match Media messaging and calling without giving another member your phone number or email."
       },
       {
         "heading": "Verification information",
@@ -1040,7 +1040,7 @@
   },
   "SafetyPolicy": {
     "title": "Trust & Safety",
-    "intro": "MatchMedia provides tools to help members make informed decisions, but no online verification can remove every risk. Take your time and use your own judgment.",
+    "intro": "Match Media provides tools to help members make informed decisions, but no online verification can remove every risk. Take your time and use your own judgment.",
     "sections": [
       {
         "heading": "Verification badges",
@@ -1052,7 +1052,7 @@
       },
       {
         "heading": "Contact details and communication",
-        "body": "Your contact details are never shared without your mutual consent. Use MatchMedia messaging and calling when getting to know a match, and do not attempt to bypass another member's privacy settings."
+        "body": "Your contact details are never shared without your mutual consent. Use Match Media messaging and calling when getting to know a match, and do not attempt to bypass another member's privacy settings."
       },
       {
         "heading": "Recognize and report concerns",
@@ -1062,7 +1062,7 @@
   },
   "Pricing": {
     "title": "Pricing",
-    "intro": "MatchMedia offers optional Pro features for members who want more from their search.",
+    "intro": "Match Media offers optional Pro features for members who want more from their search.",
     "details": "Current plans and prices are shown in your account before checkout. No purchase is required to view the available plans, and you can review the terms before confirming payment.",
     "action": "View Pro plans"
   },
@@ -1138,12 +1138,12 @@
   },
   "Terms": {
     "title": "Terms and Conditions",
-    "intro": "By using MatchMedia, you agree to the following terms. Please read them carefully.",
+    "intro": "By using Match Media, you agree to the following terms. Please read them carefully.",
     "sections": [
       {
         "id": "acceptance-of-terms",
         "heading": "1. Acceptance of Terms",
-        "body": "MatchMedia is an online introduction and matchmaking platform that helps members and their families discover, evaluate and connect with potential life partners. By creating an account you confirm that you are at least 18 years old, legally able to enter into an agreement, and that you accept these Terms and Conditions in full. MatchMedia acts solely as a facilitator: we provide the tools for discovery, verification and communication, but every decision about a relationship or marriage rests entirely with you and your family. We may update these terms from time to time as the platform evolves; when we make material changes we will notify you in the app, and your continued use of MatchMedia after an update means you accept the revised terms."
+        "body": "Match Media is an online introduction and matchmaking platform that helps members and their families discover, evaluate and connect with potential life partners. By creating an account you confirm that you are at least 18 years old, legally able to enter into an agreement, and that you accept these Terms and Conditions in full. Match Media acts solely as a facilitator: we provide the tools for discovery, verification and communication, but every decision about a relationship or marriage rests entirely with you and your family. We may update these terms from time to time as the platform evolves; when we make material changes we will notify you in the app, and your continued use of Match Media after an update means you accept the revised terms."
       },
       {
         "id": "account-responsibility",
@@ -1153,33 +1153,33 @@
       {
         "id": "privacy",
         "heading": "3. Privacy",
-        "body": "Your privacy is the foundation of MatchMedia. We collect only the information needed to operate the service, and we never sell your personal data. Your photos and personal details are shared with other members only in the ways you control: photos remain blurred until you approve a viewing request, and your contact details are never shared without your mutual consent (see the Data Privacy & Masking Policy below). Communication with your matches happens through MatchMedia's own messaging and calling features, so you never need to hand out a phone number or email address. Data required for payments is processed securely by our payment partner and is never visible to other members. You may request deletion of your account and associated data at any time."
+        "body": "Your privacy is the foundation of Match Media. We collect only the information needed to operate the service, and we never sell your personal data. Your photos and personal details are shared with other members only in the ways you control: photos remain blurred until you approve a viewing request, and your contact details are never shared without your mutual consent (see the Data Privacy & Masking Policy below). Communication with your matches happens through Match Media's own messaging and calling features, so you never need to hand out a phone number or email address. Data required for payments is processed securely by our payment partner and is never visible to other members. You may request deletion of your account and associated data at any time."
       },
       {
         "id": "verification",
         "heading": "4. Verification",
-        "body": "Trust on MatchMedia is built through verification. Our network of registered Verification Agents — trained, independently verified field agents — review and confirm member details such as identity documents (NID), locality and stated profession. Agents are compensated per completed task from the verification budget attached to each request, which keeps the process independent and accountable. Profiles that pass these checks receive the \"Verified\" badge, and those that complete additional background checks receive \"Premium Verified\". Verification significantly raises the reliability of a profile, but it is not a guarantee of character or intent: members and their families should always exercise their own judgment before advancing a relationship."
+        "body": "Trust on Match Media is built through verification. Our network of registered Verification Agents — trained, independently verified field agents — review and confirm member details such as identity documents (NID), locality and stated profession. Agents are compensated per completed task from the verification budget attached to each request, which keeps the process independent and accountable. Profiles that pass these checks receive the \"Verified\" badge, and those that complete additional background checks receive \"Premium Verified\". Verification significantly raises the reliability of a profile, but it is not a guarantee of character or intent: members and their families should always exercise their own judgment before advancing a relationship."
       },
       {
         "id": "prohibited-conduct",
         "heading": "5. Prohibited Conduct",
-        "body": "MatchMedia is a respectful, family-oriented community, and conduct that undermines it is prohibited. This includes harassment or abusive language toward any member; impersonation or the creation of fake profiles; publishing false or misleading information; attempting to obtain another member's phone number, email or other contact details outside the platform or to circumvent the masking and photo-privacy protections; requesting money, gifts or financial information from any member; and any commercial solicitation unrelated to legitimate matchmaking. Violations may lead to content removal, suspension or a permanent ban, and where the law requires it we will cooperate with the authorities. Please report suspicious behaviour with the in-app Report tool — our moderation team reviews every report."
+        "body": "Match Media is a respectful, family-oriented community, and conduct that undermines it is prohibited. This includes harassment or abusive language toward any member; impersonation or the creation of fake profiles; publishing false or misleading information; attempting to obtain another member's phone number, email or other contact details outside the platform or to circumvent the masking and photo-privacy protections; requesting money, gifts or financial information from any member; and any commercial solicitation unrelated to legitimate matchmaking. Violations may lead to content removal, suspension or a permanent ban, and where the law requires it we will cooperate with the authorities. Please report suspicious behaviour with the in-app Report tool — our moderation team reviews every report."
       },
       {
         "id": "liability",
         "heading": "6. Liability",
-        "body": "MatchMedia is an introduction platform, not a marriage bureau or a party to any relationship. We do not arrange, broker or guarantee marriages, and we make no promises about the number or quality of matches, responses or outcomes. While verification and moderation substantially reduce risk, we cannot vouch for the character, conduct or intentions of any member, and we are not responsible for interactions that take place outside the platform, including in-person meetings. You are responsible for your own due diligence: meet first in safe public places, involve your family early, and never send money to anyone you meet on the platform. To the maximum extent permitted by the laws of Bangladesh, MatchMedia's total liability for any claim arising from the use of the service is limited to the fees you have paid to us."
+        "body": "Match Media is an introduction platform, not a marriage bureau or a party to any relationship. We do not arrange, broker or guarantee marriages, and we make no promises about the number or quality of matches, responses or outcomes. While verification and moderation substantially reduce risk, we cannot vouch for the character, conduct or intentions of any member, and we are not responsible for interactions that take place outside the platform, including in-person meetings. You are responsible for your own due diligence: meet first in safe public places, involve your family early, and never send money to anyone you meet on the platform. To the maximum extent permitted by the laws of Bangladesh, Match Media's total liability for any claim arising from the use of the service is limited to the fees you have paid to us."
       },
       {
         "id": "masking-policy",
         "heading": "7. Data Privacy & Masking Policy",
-        "body": "We protect member data with masking and blurring by default. Profile photos are stored privately and served only as blurred previews until the owner approves a viewing request; every photo is also reviewed by our moderation team before it becomes visible to anyone. Phone numbers and email addresses are masked on profile pages. Your contact details are never shared without your mutual consent, and unmasked data is used only to operate your account — login, OTP verification and secure payment processing. Matched members can connect through MatchMedia's built-in messaging and voice calling without exchanging contact details. Your information is never sold to third parties."
+        "body": "We protect member data with masking and blurring by default. Profile photos are stored privately and served only as blurred previews until the owner approves a viewing request; every photo is also reviewed by our moderation team before it becomes visible to anyone. Phone numbers and email addresses are masked on profile pages. Your contact details are never shared without your mutual consent, and unmasked data is used only to operate your account — login, OTP verification and secure payment processing. Matched members can connect through Match Media's built-in messaging and voice calling without exchanging contact details. Your information is never sold to third parties."
       }
     ]
   },
   "Blog": {
     "title": "Blog",
-    "intro": "Stories, advice, and updates from the MatchMedia team.",
+    "intro": "Stories, advice, and updates from the Match Media team.",
     "empty": "New articles are being prepared. Please check back soon.",
     "backToBlog": "Back to the blog",
     "readInEnglish": "Read in English",
@@ -1276,7 +1276,7 @@
   },
   "Events": {
     "title": "Events",
-    "intro": "Meetups, webinars, and community sessions hosted by MatchMedia.",
+    "intro": "Meetups, webinars, and community sessions hosted by Match Media.",
     "items": [
       {
         "title": "Matchmaking Q&A Webinar",
@@ -1288,7 +1288,7 @@
         "title": "Dhaka Community Meetup",
         "date": "2026-08-02",
         "location": "Dhaka",
-        "description": "An in-person meetup for verified members to meet the MatchMedia team."
+        "description": "An in-person meetup for verified members to meet the Match Media team."
       },
       {
         "title": "Safe Matchmaking Workshop",

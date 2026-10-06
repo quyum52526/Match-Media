@@ -14,12 +14,12 @@ export async function generateMetadata({
   return {
     title:
       locale === "bn"
-        ? "ম্যাচ মিডিয়া প্রো | MatchMedia Pro"
-        : "MatchMedia Pro",
+        ? "ম্যাচ মিডিয়া প্রো | Match Media Pro"
+        : "Match Media Pro",
     description:
       locale === "bn"
         ? "আনলিমিটেড কানেকশন ও ডিরেক্ট যোগাযোগের সুবিধা নিয়ে ম্যাচ মিডিয়া প্রো প্ল্যান।"
-        : "Explore MatchMedia Pro plans for unlimited connections and direct communication.",
+        : "Explore Match Media Pro plans for unlimited connections and direct communication.",
   };
 }
 

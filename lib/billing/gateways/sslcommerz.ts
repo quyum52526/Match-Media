@@ -80,7 +80,7 @@ export class SSLCommerzGateway implements PaymentGateway {
       product_category: "Subscription",
       product_profile: "non-physical-goods",
       num_of_item: "1",
-      cus_name: user?.profile?.fullName?.trim() || user?.email || "MatchMedia Member",
+      cus_name: user?.profile?.fullName?.trim() || user?.email || "Match Media Member",
       cus_email: user?.email ?? "noreply@matchmedia.com.bd",
       cus_add1: "N/A",
       cus_city: "Dhaka",

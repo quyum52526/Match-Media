@@ -84,14 +84,14 @@ export function otpEmail(code: string, minutes: number): {
   text: string;
 } {
   return {
-    subject: `${code} is your MatchMedia verification code`,
+    subject: `${code} is your Match Media verification code`,
     text:
-      `Your MatchMedia verification code is ${code}.\n\n` +
+      `Your Match Media verification code is ${code}.\n\n` +
       `It expires in ${minutes} minutes. If you did not request it, ignore this email.`,
     html: `<!doctype html>
 <html><body style="margin:0;padding:24px;background:#faf7f2;font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#2b2b2b">
   <div style="max-width:440px;margin:0 auto;background:#fff;border:1px solid #ece7df;border-radius:14px;padding:28px">
-    <p style="margin:0 0 6px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#7f1a4b;font-weight:600">MatchMedia</p>
+    <p style="margin:0 0 6px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#7f1a4b;font-weight:600">Match Media</p>
     <h1 style="margin:0 0 14px;font-size:19px;font-weight:700">Verify your email</h1>
     <p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#5c5c5c">Enter this code to confirm your email address.</p>
     <p style="margin:0 0 18px;font-size:30px;font-weight:700;letter-spacing:.22em;font-variant-numeric:tabular-nums">${code}</p>

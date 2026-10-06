@@ -60,7 +60,7 @@ export function VideoModal({ open, onClose, videoId, title }: VideoModalProps) {
         <div className="aspect-video w-full overflow-hidden rounded-card bg-secondary shadow-card">
           <iframe
             src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
-            title={title ?? "MatchMedia guide video"}
+            title={title ?? "Match Media guide video"}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             className="h-full w-full"

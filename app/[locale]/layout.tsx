@@ -56,11 +56,11 @@ export const metadata: Metadata = {
     template: "%s | Match Media",
   },
   description:
-    "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে। MatchMedia-তে বিয়ের পাত্র-পাত্রী খুঁজুন নিরাপদে, সম্মতির ভিত্তিতে। বাংলাদেশের সব জেলার প্রোফাইল।",
+    "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে। Match Media-তে বিয়ের পাত্র-পাত্রী খুঁজুন নিরাপদে, সম্মতির ভিত্তিতে। বাংলাদেশের সব জেলার প্রোফাইল।",
   openGraph: {
     title: "Match Media | প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি",
     description:
-      "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে। MatchMedia-তে বিয়ের পাত্র-পাত্রী খুঁজুন নিরাপদে, সম্মতির ভিত্তিতে।",
+      "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে। Match Media-তে বিয়ের পাত্র-পাত্রী খুঁজুন নিরাপদে, সম্মতির ভিত্তিতে।",
     url: "https://www.matchmediabd.xyz",
     siteName: "Match Media",
     locale: "bn_BD",
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Match Media | প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি",
     description:
-      "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে। MatchMedia-তে বিয়ের পাত্র-পাত্রী খুঁজুন নিরাপদে, সম্মতির ভিত্তিতে।",
+      "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে। Match Media-তে বিয়ের পাত্র-পাত্রী খুঁজুন নিরাপদে, সম্মতির ভিত্তিতে।",
     images: ["/opengraph-image.jpg"],
   },
   // Brand favicon (MM monogram, scalable SVG). shortcut/apple aliases cover

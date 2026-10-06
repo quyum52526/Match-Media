@@ -44,8 +44,8 @@ const PLACEHOLDER_VIDEO_ID = "M7lc1UVf-VE";
 const UI_TEXT: Record<string, Localized> = {
   heading: { en: "User Guide", bn: "ব্যবহার নির্দেশিকা" },
   intro: {
-    en: "New to MatchMedia? Here's how to get started in a few simple steps.",
-    bn: "MatchMedia-তে নতুন? কয়েকটি সহজ ধাপে শুরু করুন।",
+    en: "New to Match Media? Here's how to get started in a few simple steps.",
+    bn: "Match Media-তে নতুন? কয়েকটি সহজ ধাপে শুরু করুন।",
   },
   watchVideo: { en: "Watch Video", bn: "ভিডিও দেখুন" },
 };
@@ -143,8 +143,8 @@ const GUIDE_SECTIONS: GuideSection[] = [
       bn: "৫. Interest ও Match ব্যবস্থাপনা",
     },
     body: {
-      en: "Track everything from your Interests page — who you've sent Interests to and who has shown interest in you. When someone accepts your Interest (or you accept theirs), you become a match and can start talking inside MatchMedia.",
-      bn: "Interests পেজ থেকে সবকিছু track করুন — আপনি কাকে Interest পাঠিয়েছেন এবং কে আপনাকে আগ্রহ দেখিয়েছে। কেউ আপনার Interest accept করলে (বা আপনি করলে) আপনারা match হয়ে যাবেন এবং MatchMedia-র ভেতরেই কথা বলা শুরু করতে পারবেন।",
+      en: "Track everything from your Interests page — who you've sent Interests to and who has shown interest in you. When someone accepts your Interest (or you accept theirs), you become a match and can start talking inside Match Media.",
+      bn: "Interests পেজ থেকে সবকিছু track করুন — আপনি কাকে Interest পাঠিয়েছেন এবং কে আপনাকে আগ্রহ দেখিয়েছে। কেউ আপনার Interest accept করলে (বা আপনি করলে) আপনারা match হয়ে যাবেন এবং Match Media-র ভেতরেই কথা বলা শুরু করতে পারবেন।",
     },
   },
   {
@@ -164,8 +164,8 @@ const GUIDE_SECTIONS: GuideSection[] = [
       bn: "৭. প্রোফাইলের ধরন বুঝুন",
     },
     body: {
-      en: "MatchMedia supports four profile types, each with a different role on the platform:",
-      bn: "MatchMedia-তে চার ধরনের প্রোফাইল আছে, প্রতিটির ভূমিকা আলাদা:",
+      en: "Match Media supports four profile types, each with a different role on the platform:",
+      bn: "Match Media-তে চার ধরনের প্রোফাইল আছে, প্রতিটির ভূমিকা আলাদা:",
     },
     // Unique placeholder video per profile type — replace with the real
     // walkthroughs once produced.
@@ -212,8 +212,8 @@ const GUIDE_SECTIONS: GuideSection[] = [
     videoId: PLACEHOLDER_VIDEO_ID,
     title: { en: "8. Messaging and Call", bn: "৮. Messaging ও Call" },
     body: {
-      en: "Once matched, communicate safely inside MatchMedia. Your contact details are never shared without your mutual consent:",
-      bn: "Match হওয়ার পর MatchMedia-র ভেতরে নিরাপদে যোগাযোগ করুন। উভয়ের সম্মতি ছাড়া আপনার যোগাযোগের তথ্য শেয়ার করা হয় না:",
+      en: "Once matched, communicate safely inside Match Media. Your contact details are never shared without your mutual consent:",
+      bn: "Match হওয়ার পর Match Media-র ভেতরে নিরাপদে যোগাযোগ করুন। উভয়ের সম্মতি ছাড়া আপনার যোগাযোগের তথ্য শেয়ার করা হয় না:",
     },
     points: [
       {
@@ -225,8 +225,8 @@ const GUIDE_SECTIONS: GuideSection[] = [
         bn: "Voice ও video call — app-এর ভেতরেই ফ্রি voice call করুন (video call শীঘ্রই আসছে)। Call করতে verified মোবাইল নম্বর লাগবে।",
       },
       {
-        en: "Safety advice — never share financial information or send money to anyone. Keep conversations inside MatchMedia, and report any suspicious profile — our moderation team reviews every report.",
-        bn: "নিরাপত্তা পরামর্শ — আর্থিক তথ্য share করবেন না বা কাউকে টাকা পাঠাবেন না। কথোপকথন MatchMedia-র ভেতরেই রাখুন এবং সন্দেহজনক প্রোফাইল report করুন — আমাদের moderation team প্রতিটি report যাচাই করে।",
+        en: "Safety advice — never share financial information or send money to anyone. Keep conversations inside Match Media, and report any suspicious profile — our moderation team reviews every report.",
+        bn: "নিরাপত্তা পরামর্শ — আর্থিক তথ্য share করবেন না বা কাউকে টাকা পাঠাবেন না। কথোপকথন Match Media-র ভেতরেই রাখুন এবং সন্দেহজনক প্রোফাইল report করুন — আমাদের moderation team প্রতিটি report যাচাই করে।",
       },
     ],
   },

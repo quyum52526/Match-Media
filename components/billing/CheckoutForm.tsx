@@ -41,7 +41,7 @@ const inputClass =
   "h-12 w-full rounded-xl border border-hairline bg-white px-3.5 text-base text-ink outline-none transition-colors placeholder:text-ink/30 focus:border-primary focus:ring-2 focus:ring-primary/30";
 
 export function CheckoutForm({
-  planName = "MatchMedia Pro",
+  planName = "Match Media Pro",
   durationDays = 30,
   baseAmount = 49900,
   discountAmount = 0,

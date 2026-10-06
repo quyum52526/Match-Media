@@ -23,8 +23,8 @@ export async function generateMetadata({
   return {
     title: isBengali ? "ব্লগ" : "Blog",
     description: isBengali
-      ? "MatchMedia-র পরামর্শ, নিরাপদ matchmaking এবং গোপনীয়তা নিয়ে লেখা।"
-      : "Articles from MatchMedia about thoughtful matchmaking, safety, and privacy.",
+      ? "Match Media-র পরামর্শ, নিরাপদ matchmaking এবং গোপনীয়তা নিয়ে লেখা।"
+      : "Articles from Match Media about thoughtful matchmaking, safety, and privacy.",
     alternates: {
       canonical: url,
       languages: {
@@ -36,8 +36,8 @@ export async function generateMetadata({
       siteName: "Match Media",
       title: isBengali ? "ব্লগ | Match Media" : "Blog | Match Media",
       description: isBengali
-        ? "MatchMedia-র পরামর্শ, নিরাপদ matchmaking এবং গোপনীয়তা নিয়ে লেখা।"
-        : "Articles from MatchMedia about thoughtful matchmaking, safety, and privacy.",
+        ? "Match Media-র পরামর্শ, নিরাপদ matchmaking এবং গোপনীয়তা নিয়ে লেখা।"
+        : "Articles from Match Media about thoughtful matchmaking, safety, and privacy.",
       url,
       type: "website",
       images: ["/opengraph-image.jpg"],
@@ -46,8 +46,8 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: isBengali ? "ব্লগ | Match Media" : "Blog | Match Media",
       description: isBengali
-        ? "MatchMedia-র পরামর্শ, নিরাপদ matchmaking এবং গোপনীয়তা নিয়ে লেখা।"
-        : "Articles from MatchMedia about thoughtful matchmaking, safety, and privacy.",
+        ? "Match Media-র পরামর্শ, নিরাপদ matchmaking এবং গোপনীয়তা নিয়ে লেখা।"
+        : "Articles from Match Media about thoughtful matchmaking, safety, and privacy.",
       images: ["/opengraph-image.jpg"],
     },
   };

@@ -158,7 +158,7 @@ export async function Header() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/matchmedia-logo-home.svg"
-              alt="MatchMedia Logo"
+              alt="Match Media Logo"
               className="h-3.5 w-auto sm:h-4 lg:h-3.5 xl:h-4"
             />
           </Link>

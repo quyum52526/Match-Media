@@ -109,7 +109,7 @@ export async function sendMobileOtp(mobile?: string): Promise<SendOtpResult> {
   try {
     await getSmsProvider().send(
       normalized,
-      `MatchMedia: your verification code is ${code}. It expires in 5 minutes.`,
+      `Match Media: your verification code is ${code}. It expires in 5 minutes.`,
     );
   } catch (smsError) {
     console.error("OTP SMS send failed", smsError);
