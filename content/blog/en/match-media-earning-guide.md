@@ -17,7 +17,7 @@ If you work in matchmaking, you already know the problem. You have plenty of goo
 Match Media was built with exactly this problem in mind. It gives ghotoks, marriage agencies, and field verifiers a modern way to earn. Let's see how it works.
 
 ## 1. Media Account: for ghotoks and marriage agencies
-If you're a professional ghotok or run a marriage bureau, you can open a MEDIA category account on Match Media. Your work becomes far more organized, and it opens up a path to earning.
+If you're a professional ghotok or run a marriage bureau, you can open a [MEDIA category account](/en/register) on Match Media. Your work becomes far more organized, and it opens up a path to earning.
 
 - **As many clients as you want:** From one agency account, you can create and manage unlimited groom and bride profiles. No more separate notebooks.
 - **Safety for photos and details:** No worry about a client's photo or information leaking. Who sees a photo and who doesn't is controlled from your dashboard.
@@ -27,7 +27,7 @@ If you're a professional ghotok or run a marriage bureau, you can open a MEDIA c
 ## 2. Verification Agent: work from your own area
 In marriage, whether the information is true is the biggest question. To check it, Match Media needs trusted local verifiers in every district. With an AGENT account, you can do this work right from your own area.
 
-- **Job board:** Verification requests from different districts and upazilas are posted on the platform's job board. You can look at jobs in your area and bid on them directly.
+- **Job board:** Verification requests from different districts and upazilas are posted on the platform's [job board](/en/jobs). You can look at jobs in your area and bid on them directly.
 - **Fixed share, transparent payment:** From the verification budget set by the client or the platform, the agent gets their share. Once you finish the job and submit it, payment is settled through the platform. No haggling over money.
 - **On-the-ground checks:** You visit in person to verify the candidate's address, family background, and the accuracy of their details, then submit your notes. The better your work, the more your trust score and your income grow.
 

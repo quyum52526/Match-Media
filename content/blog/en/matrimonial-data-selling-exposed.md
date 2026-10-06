@@ -25,6 +25,8 @@ Look closely at the business model of these platforms and the picture becomes cl
 
 **Put simply:** there, you are not the user. Your life story is the product they sell.
 
+It isn't only online sites. Traditional matchmaking carries the same risk of photo and biodata leaks. Read: [Gave Your Photo and Biodata to a Ghotok? Do You Know Whose Phone It's On Now?](/en/blog/ghotok-biodata-privacy-risks)
+
 ## 2. How is Match Media different?
 Match Media is not a data broker. From day one it was built as a Strict Privacy-First Platform. Even if someone pays, there is no way to break another person's privacy here.
 
@@ -53,4 +55,4 @@ Looking for a life partner is a very sensitive decision. Nobody should lose the 
 
 When paying is enough to hand your personal information to someone else, how safe is it to keep your biodata there? The decision is yours.
 
-Find your partner safely and with dignity. Keep your privacy intact while searching for a life partner for yourself or your family. Visit Match Media. Always keep control of your information in your own hands.
+[Find your partner safely](/en/browse) and with dignity. Keep your privacy intact while searching for a life partner for yourself or your family. Visit Match Media. Always keep control of your information in your own hands.
