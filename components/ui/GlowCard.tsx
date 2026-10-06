@@ -83,8 +83,10 @@ export function GlowCard({
       onPointerMove={onMove}
       onPointerLeave={onLeave}
       className={cn(
-        "group/glow relative isolate h-full overflow-hidden rounded-card border border-white/50 bg-white/75 shadow-card backdrop-blur-xl",
-        "transition-[transform,box-shadow] ease-out will-change-transform hover:shadow-[0_10px_30px_rgba(30,36,54,0.10)]",
+        // Base (pre-hover) ambient glow: garnet-tinted hairline + soft halo so
+        // cards lift off the ivory canvas before the cursor arrives.
+        "group/glow relative isolate h-full overflow-hidden rounded-card border border-primary/15 bg-white/75 shadow-[0_4px_20px_-2px_rgba(140,47,74,0.06)] backdrop-blur-xl",
+        "transition-[transform,box-shadow] ease-out will-change-transform hover:shadow-[0_10px_30px_-4px_rgba(140,47,74,0.14)]",
         className,
       )}
       style={

@@ -174,67 +174,65 @@ export async function Dashboard({
         </div>
 
         {/* Match discovery banner */}
-        <section
-          className={cn(
-            GLASS,
-            "relative overflow-hidden bg-gradient-to-br from-white/80 via-white/70 to-[rgba(140,47,74,0.06)] p-5 sm:p-6",
-          )}
-        >
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-3">
-              <IconPill tone="primary">
-                <Sparkles size={18} strokeWidth={1.75} />
-              </IconPill>
-              <div>
-                <p className="font-display text-lg font-medium text-ink">
-                  {t("cta.title")}
-                </p>
-                <p className="mt-0.5 text-sm text-muted">{t("cta.body")}</p>
+        <section>
+          <GlowCard
+            enableTilt={false}
+            className="bg-gradient-to-br from-white/80 via-white/70 to-[rgba(140,47,74,0.06)] p-5 sm:p-6"
+          >
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <IconPill tone="primary">
+                  <Sparkles size={18} strokeWidth={1.75} />
+                </IconPill>
+                <div>
+                  <p className="font-display text-lg font-medium text-ink">
+                    {t("cta.title")}
+                  </p>
+                  <p className="mt-0.5 text-sm text-muted">{t("cta.body")}</p>
+                </div>
               </div>
+              <Link
+                href="/browse"
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-pill bg-primary px-5 py-2.5 text-sm font-medium text-white shadow-[0_6px_20px_rgba(140,47,74,0.25)] transition hover:bg-primary-dark active:scale-[0.98]"
+              >
+                <Search size={16} />
+                {t("cta.action")}
+              </Link>
             </div>
-            <Link
-              href="/browse"
-              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-pill bg-primary px-5 py-2.5 text-sm font-medium text-white shadow-[0_6px_20px_rgba(140,47,74,0.25)] transition hover:bg-primary-dark active:scale-[0.98]"
-            >
-              <Search size={16} />
-              {t("cta.action")}
-            </Link>
-          </div>
 
-          <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-hairline/70 pt-4">
-            <span className="mr-1 text-xs font-medium text-muted">
-              {t("cta.quickLabel")}
-            </span>
-            {QUICK_DISTRICTS.map((d) => {
-              const label =
-                locale === "bn"
-                  ? (DISTRICTS.find((x) => x.value === d)?.bn ?? d)
-                  : d;
-              return (
+            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-hairline/70 pt-4">
+              <span className="mr-1 text-xs font-medium text-muted">
+                {t("cta.quickLabel")}
+              </span>
+              {QUICK_DISTRICTS.map((d) => {
+                const label =
+                  locale === "bn"
+                    ? (DISTRICTS.find((x) => x.value === d)?.bn ?? d)
+                    : d;
+                return (
+                  <FilterPill
+                    key={d}
+                    href={`/browse?district=${encodeURIComponent(d)}`}
+                    icon={<MapPin size={13} />}
+                    label={label}
+                  />
+                );
+              })}
+              {QUICK_PROFESSIONS.map((p) => (
                 <FilterPill
-                  key={d}
-                  href={`/browse?district=${encodeURIComponent(d)}`}
-                  icon={<MapPin size={13} />}
-                  label={label}
+                  key={p}
+                  href={`/browse?profession=${encodeURIComponent(p)}`}
+                  label={localize(p, locale)}
                 />
-              );
-            })}
-            {QUICK_PROFESSIONS.map((p) => (
-              <FilterPill
-                key={p}
-                href={`/browse?profession=${encodeURIComponent(p)}`}
-                label={localize(p, locale)}
-              />
-            ))}
-          </div>
+              ))}
+            </div>
+          </GlowCard>
         </section>
 
         {/* Who viewed me */}
         <section className="mt-8">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <h2 className="text-base font-semibold text-ink">
-              {v("heading")}
-            </h2>
+            <h2 className="text-base font-semibold text-ink">{v("heading")}</h2>
             {viewers.total > viewers.viewers.length && (
               <Link
                 href="/viewers"
@@ -251,7 +249,9 @@ export async function Dashboard({
         {myPostedJobs !== undefined && (
           <section className="mt-10">
             <div className="mb-4 flex items-center justify-between gap-2">
-              <h2 className="text-base font-semibold text-ink">My Posted Jobs</h2>
+              <h2 className="text-base font-semibold text-ink">
+                My Posted Jobs
+              </h2>
             </div>
             <MyPostedJobs jobs={myPostedJobs} />
           </section>
@@ -261,8 +261,13 @@ export async function Dashboard({
         {agentApplications !== undefined && (
           <section className="mt-10">
             <div className="mb-4 flex items-center justify-between gap-2">
-              <h2 className="text-base font-semibold text-ink">My Job Applications</h2>
-              <Link href="/jobs" className="text-sm font-medium text-primary hover:underline">
+              <h2 className="text-base font-semibold text-ink">
+                My Job Applications
+              </h2>
+              <Link
+                href="/jobs"
+                className="text-sm font-medium text-primary hover:underline"
+              >
                 Browse jobs →
               </Link>
             </div>
@@ -310,7 +315,7 @@ function FilterPill({
   return (
     <Link
       href={href}
-      className="inline-flex items-center gap-1 rounded-pill border border-hairline bg-white/70 px-3 py-1 text-xs font-medium text-ink/75 backdrop-blur-md transition hover:border-[rgba(140,47,74,0.35)] hover:bg-white hover:text-primary"
+      className="inline-flex items-center gap-1 rounded-pill border border-hairline bg-white/70 px-3 py-1 text-xs font-medium text-ink/75 backdrop-blur-md transition duration-200 hover:-translate-y-0.5 hover:border-[rgba(140,47,74,0.35)] hover:bg-white hover:text-primary hover:shadow-[0_4px_12px_-2px_rgba(140,47,74,0.18)]"
     >
       {icon}
       {label}

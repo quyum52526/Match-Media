@@ -88,7 +88,7 @@ function ApplicationRow({
 export function MyPostedJobs({ jobs }: MyPostedJobsProps) {
   if (jobs.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-hairline py-10 text-center">
+      <div className="bg-white/60 backdrop-blur-md border border-primary/10 rounded-2xl p-6 text-center">
         <p className="text-sm font-semibold text-ink">No jobs posted yet</p>
         <p className="mt-1 text-xs text-muted">
           Jobs you post will appear here along with agent applications.
@@ -104,7 +104,7 @@ export function MyPostedJobs({ jobs }: MyPostedJobsProps) {
         return (
           <div
             key={job.id}
-            className="rounded-card border border-hairline bg-surface p-5 shadow-card"
+            className="bg-white/60 backdrop-blur-md border border-primary/10 rounded-2xl p-6"
           >
             {/* Job header */}
             <div className="mb-3 flex items-start justify-between gap-2">

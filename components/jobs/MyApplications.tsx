@@ -23,7 +23,7 @@ const APP_STATUS: Record<
 export function MyApplications({ applications }: MyApplicationsProps) {
   if (applications.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-hairline py-10 text-center">
+      <div className="bg-white/60 backdrop-blur-md border border-primary/10 rounded-2xl p-6 text-center">
         <p className="text-sm font-semibold text-ink">No applications yet</p>
         <p className="mt-1 text-xs text-muted">
           Jobs you apply for will appear here.
@@ -45,7 +45,7 @@ export function MyApplications({ applications }: MyApplicationsProps) {
         return (
           <div
             key={app.id}
-            className="flex flex-col gap-2 rounded-card border border-hairline bg-surface p-4 shadow-card sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-2 bg-white/60 backdrop-blur-md border border-primary/10 rounded-2xl p-6 sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="space-y-1">
               <p className="text-sm font-semibold text-ink">{app.job.title}</p>
