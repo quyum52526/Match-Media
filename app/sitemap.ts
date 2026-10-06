@@ -10,7 +10,18 @@ import {
 const siteUrl = "https://www.matchmediabd.xyz";
 
 // Public marketing routes, listed once per locale in the sitemap.
-const staticRoutes = ["/", "/about", "/contact", "/pricing"];
+const staticRoutes = [
+  "/",
+  "/about",
+  "/contact",
+  "/pricing",
+  "/browse",
+  "/safety",
+  "/terms",
+  "/privacy",
+  "/user-guide",
+  "/events",
+];
 
 function absoluteBlogUrl(locale: BlogLocale, slug?: string): string {
   return new URL(blogPath(locale, slug), siteUrl).toString();
