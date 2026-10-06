@@ -11,11 +11,17 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   return {
-    title: locale === "bn" ? "আমাদের সম্পর্কে" : "About Us",
+    // Absolute: these titles already carry the brand, so skip the layout template.
+    title: {
+      absolute:
+        locale === "bn"
+          ? "আমাদের সম্পর্কে | নিরাপদ ও আধুনিক ম্যাট্রিমোনিয়াল | Match Media"
+          : "About Match Media | Privacy-First Matrimonial Platform",
+    },
     description:
       locale === "bn"
-        ? "MatchMedia কেন বানানো হলো, আর আপনার গোপনীয়তা আমরা কীভাবে রক্ষা করি।"
-        : "Why MatchMedia was created and how we protect your privacy.",
+        ? "জানুন কীভাবে ম্যাচ মিডিয়া সার্ভার-সাইড ব্লার, জিরো কনটাক্ট রিভিল এবং ভেরিফাইড প্রোফাইলের মাধ্যমে বাংলাদেশে নিরাপদ জীবনসঙ্গী খোঁজার ব্যবস্থা নিশ্চিত করে।"
+        : "Learn how Match Media protects biodata privacy in Bangladesh with server-side photo blur, zero contact reveal, and verified profiles.",
   };
 }
 
