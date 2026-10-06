@@ -3,6 +3,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { EyeOff, MapPin, PhoneOff, ShieldCheck, Users } from "lucide-react";
 import { GlowCard } from "@/components/ui/GlowCard";
 import { Container } from "@/components/ui/Container";
+import { getPageMetadata } from "@/lib/seo/metadata";
+import { breadcrumbSchema, organizationSchema } from "@/lib/seo/schema";
+import { toSeoLocale } from "@/lib/seo/site";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export async function generateMetadata({
   params,
@@ -10,38 +14,8 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return {
-    // Absolute: these titles already carry the brand, so skip the layout template.
-    title: {
-      absolute:
-        locale === "bn"
-          ? "আমাদের সম্পর্কে | নিরাপদ ও আধুনিক ম্যাট্রিমোনিয়াল | Match Media"
-          : "About Match Media | Privacy-First Matrimonial Platform",
-    },
-    description:
-      locale === "bn"
-        ? "জানুন কীভাবে ম্যাচ মিডিয়া সার্ভার-সাইড ব্লার, জিরো কনটাক্ট রিভিল এবং ভেরিফাইড প্রোফাইলের মাধ্যমে বাংলাদেশে নিরাপদ জীবনসঙ্গী খোঁজার ব্যবস্থা নিশ্চিত করে।"
-        : "Learn how Match Media protects biodata privacy in Bangladesh with server-side photo blur, zero contact reveal, and verified profiles.",
-  };
+  return getPageMetadata(locale, "about", "/about");
 }
-
-const organizationJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Match Media",
-  url: "https://www.matchmediabd.xyz",
-  logo: "https://www.matchmediabd.xyz/match-media-logo-maine.png",
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: "Nasirabad, Chattogram",
-    addressCountry: "BD",
-  },
-  contactPoint: {
-    "@type": "ContactPoint",
-    telephone: "+8801962434901",
-    contactType: "customer service",
-  },
-};
 
 // One icon per pillar, in the same order as About.values in messages.
 const pillarIcons = [EyeOff, PhoneOff, ShieldCheck, Users];
@@ -123,11 +97,13 @@ export default async function AboutPage({
           </div>
         </div>
       </div>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(organizationJsonLd).replace(/</g, "\\u003c"),
-        }}
+      <JsonLd
+        data={[
+          organizationSchema(),
+          breadcrumbSchema(toSeoLocale(locale), [
+            { name: t("title"), path: "/about" },
+          ]),
+        ]}
       />
     </Container>
   );

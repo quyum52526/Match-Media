@@ -5,6 +5,7 @@ import { Clock, Mail, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { Card, CardBody } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
+import { getPageMetadata } from "@/lib/seo/metadata";
 
 export async function generateMetadata({
   params,
@@ -12,17 +13,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return {
-    // Absolute: these titles already carry the brand, so skip the layout template.
-    title: {
-      absolute:
-        locale === "bn" ? "যোগাযোগ করুন | Match Media" : "Contact Us | Match Media",
-    },
-    description:
-      locale === "bn"
-        ? "ম্যাচ মিডিয়া কাস্টমার সাপোর্টের সাথে যোগাযোগ করুন। নাসিরাবাদ, চট্টগ্রাম অফিস, অফিসিয়াল হোয়াটসঅ্যাপ বা ইমেইলের মাধ্যমে সরাসরি বার্তা পাঠান।"
-        : "Get in touch with Match Media support in Nasirabad, Chattogram. Connect via WhatsApp (+8801962434901) or email for inquiries, agency partnerships, and account help.",
-  };
+  return getPageMetadata(locale, "contact", "/contact");
 }
 
 const EMAIL = "info@matchmediabd.xyz";

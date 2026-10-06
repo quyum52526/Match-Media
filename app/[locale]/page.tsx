@@ -8,7 +8,11 @@
 // lib/data/showcase.ts. See the comment there.
 export const revalidate = 600;
 
+import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getPageMetadata } from "@/lib/seo/metadata";
+import { organizationSchema, websiteSchema } from "@/lib/seo/schema";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { Sparkles, Crown, ShieldCheck } from "lucide-react";
 import { HomeHero } from "@/components/home/HomeHero";
 import { StackedFeatureSection } from "@/components/home/StackedFeatureSection";
@@ -20,6 +24,15 @@ import {
   getCachedMarqueeProfiles,
 } from "@/lib/data/showcase";
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return getPageMetadata(locale, "home", "/");
+}
+
 export default async function Home({
   params,
 }: {
@@ -30,12 +43,15 @@ export default async function Home({
 
   // Public homepage renders for everyone — signed-in users reach their
   // personal dashboard via the "Dashboard" link in the nav.
-  const [tf, { recommendedProfiles, premiumProfiles, newProfiles, verifiedProfiles }, marqueeProfiles] =
-    await Promise.all([
-      getTranslations("Home.featured"),
-      getCachedHomepageShowcase(),
-      getCachedMarqueeProfiles(),
-    ]);
+  const [
+    tf,
+    { recommendedProfiles, premiumProfiles, newProfiles, verifiedProfiles },
+    marqueeProfiles,
+  ] = await Promise.all([
+    getTranslations("Home.featured"),
+    getCachedHomepageShowcase(),
+    getCachedMarqueeProfiles(),
+  ]);
 
   return (
     <main>
@@ -82,6 +98,7 @@ export default async function Home({
       <InteractiveMap />
       <HowItWorks />
       <FeaturedInfluencer />
+      <JsonLd data={[organizationSchema(), websiteSchema()]} />
     </main>
   );
 }

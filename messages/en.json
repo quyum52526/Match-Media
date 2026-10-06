@@ -1388,5 +1388,43 @@
     "agency": "Agency",
     "agent": "Verification agent",
     "underReview": "Under review"
+  },
+  "Seo": {
+    "home": {
+      "title": "Match Media | Privacy-First Matrimony in Bangladesh",
+      "description": "Find a life partner safely on Match Media. Blurred photos, consent-based contact and verified profiles from every district of Bangladesh."
+    },
+    "about": {
+      "title": "About Match Media | Privacy-First Matrimonial Platform",
+      "description": "Learn how Match Media protects biodata privacy in Bangladesh with server-side photo blur, zero contact reveal, and verified profiles."
+    },
+    "contact": {
+      "title": "Contact Us | Match Media",
+      "description": "Get in touch with Match Media support in Nasirabad, Chattogram. Connect via WhatsApp (+8801962434901) or email for inquiries, agency partnerships, and account help."
+    },
+    "pricing": {
+      "title": "Pricing & Pro Plans | Match Media",
+      "description": "Match Media is free to join. Compare Pro plans for unlimited photo requests, instant 'Who viewed me' and more, paid securely in BDT."
+    },
+    "safety": {
+      "title": "Trust & Safety | Match Media",
+      "description": "How Match Media keeps members safe: photo blur, consent-based contact, verified profiles, moderation and easy reporting."
+    },
+    "terms": {
+      "title": "Terms and Conditions | Match Media",
+      "description": "The terms that govern your use of Match Media, the privacy-first matrimonial platform for Bangladesh."
+    },
+    "privacy": {
+      "title": "Privacy Policy | Match Media",
+      "description": "How Match Media collects, protects and uses your data — and how we keep your photos and contact details private."
+    },
+    "userGuide": {
+      "title": "User Guide | Match Media",
+      "description": "Step-by-step guide to Match Media: create your profile, request photos, send interests, message matches and stay safe."
+    },
+    "events": {
+      "title": "Events | Match Media",
+      "description": "Upcoming Match Media events and community meetups for families and members across Bangladesh."
+    }
   }
 }

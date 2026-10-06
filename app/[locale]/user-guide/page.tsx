@@ -1,10 +1,17 @@
+import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { Container } from "@/components/ui/Container";
 import { UserGuide, type GuideLang } from "@/components/guide/UserGuide";
+import { getPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata = {
-  title: "User Guide",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return getPageMetadata(locale, "userGuide", "/user-guide");
+}
 
 export default async function UserGuidePage({
   params,

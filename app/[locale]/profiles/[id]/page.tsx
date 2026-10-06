@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -14,10 +15,13 @@ import { getPhotoRequestQuota } from "@/lib/data/billing";
 import { getContactGateStatus } from "@/lib/contactGate";
 import { FREE_DAILY_LIMIT } from "@/lib/constants/plans";
 import { getViewerIdOrGuest, getViewerRole } from "@/lib/session";
+import { NO_INDEX } from "@/lib/seo/metadata";
 import { isAdminRole } from "@/lib/rbac";
 
-export const metadata = {
+// Member-only: also robots-disallowed in app/robots.ts.
+export const metadata: Metadata = {
   title: "Profile",
+  ...NO_INDEX,
 };
 
 // DB-backed, viewer-scoped — render per request (never prerendered at build).

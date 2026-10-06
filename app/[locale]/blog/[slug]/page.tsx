@@ -12,8 +12,16 @@ import {
   getTranslation,
   type BlogLocale,
 } from "@/lib/blog";
-
-const siteUrl = "https://www.matchmediabd.xyz";
+import { articleSchema, breadcrumbSchema } from "@/lib/seo/schema";
+import {
+  OG_LOCALE,
+  SITE_NAME,
+  getAbsoluteUrl,
+  hreflangFromUrls,
+  toSeoLocale,
+  type SeoLocale,
+} from "@/lib/seo/site";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export async function generateStaticParams() {
   const localizedPosts = await Promise.all(
@@ -42,19 +50,16 @@ export async function generateMetadata({
         language === locale
           ? post
           : await getTranslation(post.translationKey, language);
-      return translated ? [language, translated] as const : null;
+      return translated ? ([language, translated] as const) : null;
     }),
   );
-  const languages: Record<string, string> = Object.fromEntries(
-    translations
-      .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
-      .map(([language, translated]) => [
-        language === "bn" ? "bn-BD" : "en",
-        new URL(blogPath(language, translated.slug), siteUrl).toString(),
-      ]),
-  );
-  if (languages["bn-BD"]) languages["x-default"] = languages["bn-BD"];
-  const url = new URL(blogPath(locale as BlogLocale, post.slug), siteUrl).toString();
+  const urls: Partial<Record<SeoLocale, string>> = {};
+  for (const entry of translations) {
+    if (entry)
+      urls[entry[0]] = getAbsoluteUrl(blogPath(entry[0], entry[1].slug));
+  }
+  const languages = hreflangFromUrls(urls);
+  const url = getAbsoluteUrl(blogPath(locale as BlogLocale, post.slug));
   const headTitle = post.metaTitle ?? post.title;
 
   return {
@@ -63,13 +68,15 @@ export async function generateMetadata({
     keywords: post.keywords,
     alternates: { canonical: url, languages },
     openGraph: {
-      siteName: "Match Media",
+      siteName: SITE_NAME,
+      locale: OG_LOCALE[toSeoLocale(locale)],
       title: headTitle,
       description: post.description,
       url,
       type: "article",
       publishedTime: new Date(`${post.date}T00:00:00.000Z`).toISOString(),
       authors: [post.author],
+      tags: post.tags,
       images: [{ url: post.coverImage, alt: post.coverAlt || post.title }],
     },
     twitter: {
@@ -95,27 +102,24 @@ export default async function BlogPostPage({
   const otherLocale: BlogLocale = isBengali ? "en" : "bn";
   const translated = await getTranslation(post.translationKey, otherLocale);
   const t = await getTranslations("Blog");
-  const articleUrl = new URL(blogPath(locale as BlogLocale, post.slug), siteUrl).toString();
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    description: post.description,
-    image: [new URL(post.coverImage, siteUrl).toString()],
-    datePublished: new Date(`${post.date}T00:00:00.000Z`).toISOString(),
-    author: { "@type": "Person", name: post.author || "Match Media" },
-    mainEntityOfPage: { "@type": "WebPage", "@id": articleUrl },
-    inLanguage: isBengali ? "bn-BD" : "en",
-    publisher: {
-      "@type": "Organization",
-      name: "Match Media",
-      url: siteUrl,
-      logo: {
-        "@type": "ImageObject",
-        url: new URL("/match-media-logo-maine.png", siteUrl).toString(),
-      },
-    },
-  };
+  const seoLocale = toSeoLocale(locale);
+  const articleUrl = getAbsoluteUrl(blogPath(locale as BlogLocale, post.slug));
+  const jsonLd = [
+    articleSchema({
+      locale: seoLocale,
+      url: articleUrl,
+      headline: post.title,
+      description: post.description,
+      image: post.coverImage,
+      datePublished: post.date,
+      author: post.author,
+      keywords: post.keywords,
+    }),
+    breadcrumbSchema(seoLocale, [
+      { name: t("title"), path: "/blog" },
+      { name: post.title, path: `/blog/${post.slug}` },
+    ]),
+  ];
 
   return (
     <Container className="py-10">
@@ -177,12 +181,7 @@ export default async function BlogPostPage({
           <MDXRemote source={post.content} />
         </div>
       </article>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-        }}
-      />
+      <JsonLd data={jsonLd} />
     </Container>
   );
 }

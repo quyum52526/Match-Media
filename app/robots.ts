@@ -1,22 +1,33 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/seo/site";
 
-// Private, signed-in, onboarding and admin areas. Rules match by prefix, so
-// most are listed without a trailing slash to block the bare route (e.g.
-// /dashboard) as well as everything under it. /profile/ keeps its slash so it
-// does not also block the public /profiles/[id] pages. Each path is repeated
+// Private, signed-in, member-only, onboarding and admin areas. Rules match by
+// prefix, so each entry also blocks everything beneath it. Note "/profile"
+// covers both the owner's /profile/* pages and the member /profiles/[id]
+// pages, and "/pro" covers /pro/checkout + /pro/pay. Each path is repeated
 // under /en because English routes carry the locale prefix.
+//
+// Everything not listed (home, about, contact, pricing, safety, terms,
+// privacy, user-guide, events, blog/*) stays crawlable and is in the sitemap.
 const privatePaths = [
+  "/browse",
+  "/profile",
   "/dashboard",
   "/messages",
   "/requests",
-  "/admin",
-  "/onboarding",
-  "/subscription",
   "/interests",
-  "/notifications",
-  "/profile/",
   "/viewers",
+  "/notifications",
+  "/subscription",
+  "/pro",
+  "/jobs",
+  "/agency",
+  "/agent",
+  "/onboarding",
+  "/verify-email",
+  "/verify-mobile",
   "/settings",
+  "/admin",
 ];
 
 export default function robots(): MetadataRoute.Robots {
@@ -30,7 +41,7 @@ export default function robots(): MetadataRoute.Robots {
         ...privatePaths.map((path) => `/en${path}`),
       ],
     },
-    sitemap: "https://www.matchmediabd.xyz/sitemap.xml",
-    host: "https://www.matchmediabd.xyz",
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   };
 }

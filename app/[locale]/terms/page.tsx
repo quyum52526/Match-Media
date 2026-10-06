@@ -1,10 +1,17 @@
+import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Container } from "@/components/ui/Container";
 import { TermsBody, type TermsSection } from "@/components/terms/TermsBody";
+import { getPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata = {
-  title: "Terms and Conditions",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return getPageMetadata(locale, "terms", "/terms");
+}
 
 export default async function TermsPage({
   params,

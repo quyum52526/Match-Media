@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Container } from "@/components/ui/Container";
+import { getPageMetadata } from "@/lib/seo/metadata";
 
 export async function generateMetadata({
   params,
@@ -8,9 +9,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return {
-    title: locale === "bn" ? "গোপনীয়তা নীতি" : "Privacy Policy",
-  };
+  return getPageMetadata(locale, "privacy", "/privacy");
 }
 
 export default async function PrivacyPage({

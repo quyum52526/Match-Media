@@ -3,9 +3,11 @@ import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Container } from "@/components/ui/Container";
 import { Link } from "@/i18n/navigation";
-import { BLOG_LOCALES, blogPath, getAllPosts, type BlogLocale } from "@/lib/blog";
-
-const siteUrl = "https://www.matchmediabd.xyz";
+import { BLOG_LOCALES, getAllPosts, type BlogLocale } from "@/lib/blog";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+import { breadcrumbSchema } from "@/lib/seo/schema";
+import { toSeoLocale } from "@/lib/seo/site";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export async function generateStaticParams() {
   return BLOG_LOCALES.map((locale) => ({ locale }));
@@ -18,39 +20,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const isBengali = locale === "bn";
-  const url = new URL(blogPath(locale as BlogLocale), siteUrl).toString();
-
-  return {
-    title: isBengali ? "ব্লগ" : "Blog",
+  return buildPageMetadata({
+    locale,
+    path: "/blog",
+    title: isBengali ? "ব্লগ | Match Media" : "Blog | Match Media",
     description: isBengali
       ? "Match Media-র পরামর্শ, নিরাপদ matchmaking এবং গোপনীয়তা নিয়ে লেখা।"
       : "Articles from Match Media about thoughtful matchmaking, safety, and privacy.",
-    alternates: {
-      canonical: url,
-      languages: {
-        "bn-BD": new URL(blogPath("bn"), siteUrl).toString(),
-        en: new URL(blogPath("en"), siteUrl).toString(),
-      },
-    },
-    openGraph: {
-      siteName: "Match Media",
-      title: isBengali ? "ব্লগ | Match Media" : "Blog | Match Media",
-      description: isBengali
-        ? "Match Media-র পরামর্শ, নিরাপদ matchmaking এবং গোপনীয়তা নিয়ে লেখা।"
-        : "Articles from Match Media about thoughtful matchmaking, safety, and privacy.",
-      url,
-      type: "website",
-      images: ["/opengraph-image.jpg"],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: isBengali ? "ব্লগ | Match Media" : "Blog | Match Media",
-      description: isBengali
-        ? "Match Media-র পরামর্শ, নিরাপদ matchmaking এবং গোপনীয়তা নিয়ে লেখা।"
-        : "Articles from Match Media about thoughtful matchmaking, safety, and privacy.",
-      images: ["/opengraph-image.jpg"],
-    },
-  };
+  });
 }
 
 export default async function BlogPage({
@@ -138,6 +115,11 @@ export default async function BlogPage({
           {t("empty")}
         </p>
       )}
+      <JsonLd
+        data={breadcrumbSchema(toSeoLocale(locale), [
+          { name: t("title"), path: "/blog" },
+        ])}
+      />
     </Container>
   );
 }

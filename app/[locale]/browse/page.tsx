@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -25,10 +26,13 @@ import { getViewerIdOrGuest } from "@/lib/session";
 import { isFeatureEnabled } from "@/lib/featureFlags";
 import { GUEST_VIEWER_ID } from "@/lib/guest";
 import { prisma } from "@/lib/prisma";
+import { NO_INDEX } from "@/lib/seo/metadata";
 import { isAdminRole } from "@/lib/rbac";
 
-export const metadata = {
+// Member-only: also robots-disallowed in app/robots.ts.
+export const metadata: Metadata = {
   title: "Browse",
+  ...NO_INDEX,
 };
 
 type SP = Record<string, string | string[] | undefined>;

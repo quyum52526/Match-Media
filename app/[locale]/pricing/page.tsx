@@ -1,10 +1,17 @@
+import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Container } from "@/components/ui/Container";
+import { getPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata = {
-  title: "Pricing",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return getPageMetadata(locale, "pricing", "/pricing");
+}
 
 export default async function PricingPage({
   params,

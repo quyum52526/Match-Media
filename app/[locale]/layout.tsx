@@ -7,7 +7,14 @@ import {
   Noto_Serif_Bengali,
 } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import {
+  DEFAULT_OG_IMAGE,
+  OG_LOCALE,
+  SITE_NAME,
+  SITE_URL,
+  toSeoLocale,
+} from "@/lib/seo/site";
 import { routing } from "@/i18n/routing";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -49,46 +56,47 @@ const notoSerifBengali = Noto_Serif_Bengali({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://www.matchmediabd.xyz"),
-  title: {
-    default: "Match Media | বাংলাদেশের প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি সাইট",
-    template: "%s | Match Media",
-  },
-  description:
-    "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে। Match Media-তে বিয়ের পাত্র-পাত্রী খুঁজুন নিরাপদে, সম্মতির ভিত্তিতে। বাংলাদেশের সব জেলার প্রোফাইল।",
-  openGraph: {
-    title: "Match Media | প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি",
-    description:
-      "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে। Match Media-তে বিয়ের পাত্র-পাত্রী খুঁজুন নিরাপদে, সম্মতির ভিত্তিতে।",
-    url: "https://www.matchmediabd.xyz",
-    siteName: "Match Media",
-    locale: "bn_BD",
-    type: "website",
-    images: [
-      {
-        url: "/opengraph-image.jpg",
-        width: 2848,
-        height: 1504,
-        alt: "Match Media - প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Match Media | প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি",
-    description:
-      "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে। Match Media-তে বিয়ের পাত্র-পাত্রী খুঁজুন নিরাপদে, সম্মতির ভিত্তিতে।",
-    images: ["/opengraph-image.jpg"],
-  },
-  // Brand favicon (MM monogram, scalable SVG). shortcut/apple aliases cover
-  // legacy favicon lookups and iOS home-screen; SVG scales to any size.
-  icons: {
-    icon: [{ url: "/matchmedia-favicon.svg", type: "image/svg+xml" }],
-    shortcut: "/matchmedia-favicon.svg",
-    apple: "/matchmedia-favicon.svg",
-  },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = toSeoLocale((await params).locale);
+  const t = await getTranslations({ locale, namespace: "Seo.home" });
+  const title = t("title");
+  const description = t("description");
+
+  // Site-wide fallbacks. Public pages override title/description/canonical/
+  // hreflang/openGraph via lib/seo/metadata.ts; private pages inherit these.
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: { default: title, template: `%s | ${SITE_NAME}` },
+    description,
+    openGraph: {
+      type: "website",
+      siteName: SITE_NAME,
+      title,
+      description,
+      locale: OG_LOCALE[locale],
+      images: [
+        { url: DEFAULT_OG_IMAGE, width: 2848, height: 1504, alt: title },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [DEFAULT_OG_IMAGE],
+    },
+    // Brand favicon (MM monogram, scalable SVG). shortcut/apple aliases cover
+    // legacy favicon lookups and iOS home-screen; SVG scales to any size.
+    icons: {
+      icon: [{ url: "/matchmedia-favicon.svg", type: "image/svg+xml" }],
+      shortcut: "/matchmedia-favicon.svg",
+      apple: "/matchmedia-favicon.svg",
+    },
+  };
+}
 
 // NOTE: We intentionally do NOT export generateStaticParams. Pre-enumerating
 // the locale forced Next to prerender every [locale] page at build — which is

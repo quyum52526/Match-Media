@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Container } from "@/components/ui/Container";
+import { getPageMetadata } from "@/lib/seo/metadata";
 
 export async function generateMetadata({
   params,
@@ -8,10 +9,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return {
-    title:
-      locale === "bn" ? "বিশ্বাস ও নিরাপত্তা" : "Trust & Safety",
-  };
+  return getPageMetadata(locale, "safety", "/safety");
 }
 
 export default async function SafetyPage({
