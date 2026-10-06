@@ -14,15 +14,31 @@ import {
 const CONTEXT = "https://schema.org" as const;
 const ORG_ID = `${SITE_URL}/#organization`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
-const LOGO_URL = getAbsoluteUrl("/match-media-logo-maine.png");
+const LOGO_URL = getAbsoluteUrl("/matchmedia-logo-home.svg");
+
+/**
+ * Official brand social profiles for Organization.sameAs. Add each profile's
+ * canonical URL here once it exists; while empty, `sameAs` is omitted.
+ */
+export const SOCIAL_PROFILES: readonly string[] = [];
+
+const BRAND_DESCRIPTION: Record<SeoLocale, string> = {
+  bn: "Match Media বাংলাদেশের প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি প্ল্যাটফর্ম — ছবি ঝাপসা থাকে, যোগাযোগ হয় সম্মতির ভিত্তিতে, আর প্রোফাইল যাচাই করা হয়।",
+  en: "Match Media is Bangladesh's privacy-first matrimonial platform — photos stay blurred, contact is consent-based, and profiles are verified.",
+};
 
 type Thing<T extends string> = { "@context": typeof CONTEXT; "@type": T };
+
+/** A reference to another node in the graph by its @id. */
+type NodeRef = { "@id": string };
 
 export interface OrganizationSchema extends Thing<"Organization"> {
   "@id": string;
   name: string;
   url: string;
   logo: string;
+  description: string;
+  foundingLocation: { "@type": "Place"; name: string };
   address: {
     "@type": "PostalAddress";
     addressLocality: string;
@@ -34,6 +50,7 @@ export interface OrganizationSchema extends Thing<"Organization"> {
     contactType: string;
     availableLanguage: string[];
   };
+  sameAs?: string[];
 }
 
 export interface WebSiteSchema extends Thing<"WebSite"> {
@@ -41,25 +58,31 @@ export interface WebSiteSchema extends Thing<"WebSite"> {
   name: string;
   url: string;
   inLanguage: string[];
-  publisher: { "@id": string };
+  publisher: NodeRef;
+}
+
+export interface ListItem {
+  "@type": "ListItem";
+  /** 1-indexed. */
+  position: number;
+  name: string;
+  /** Absolute URL. */
+  item: string;
 }
 
 export interface BreadcrumbListSchema extends Thing<"BreadcrumbList"> {
-  itemListElement: {
-    "@type": "ListItem";
-    position: number;
-    name: string;
-    item: string;
-  }[];
+  itemListElement: ListItem[];
+}
+
+export interface FAQQuestion {
+  "@type": "Question";
+  name: string;
+  acceptedAnswer: { "@type": "Answer"; text: string };
 }
 
 export interface FAQPageSchema extends Thing<"FAQPage"> {
-  inLanguage: string;
-  mainEntity: {
-    "@type": "Question";
-    name: string;
-    acceptedAnswer: { "@type": "Answer"; text: string };
-  }[];
+  inLanguage?: string;
+  mainEntity: FAQQuestion[];
 }
 
 export interface ArticleSchema extends Thing<"BlogPosting"> {
@@ -69,9 +92,8 @@ export interface ArticleSchema extends Thing<"BlogPosting"> {
   datePublished: string;
   dateModified: string;
   inLanguage: string;
-  author: { "@type": "Person" | "Organization"; name: string };
-  publisher: {
-    "@id": string;
+  author: { "@type": "Person" | "Organization"; name: string; url?: string };
+  publisher: NodeRef & {
     "@type": "Organization";
     name: string;
     logo: { "@type": "ImageObject"; url: string };
@@ -88,7 +110,9 @@ export type JsonLdSchema =
   | ArticleSchema;
 
 /** a) Organization — homepage + About. Stable @id lets other nodes reference it. */
-export function organizationSchema(): OrganizationSchema {
+export function organizationSchema(
+  locale: SeoLocale = "bn",
+): OrganizationSchema {
   return {
     "@context": CONTEXT,
     "@type": "Organization",
@@ -96,6 +120,8 @@ export function organizationSchema(): OrganizationSchema {
     name: SITE_NAME,
     url: SITE_URL,
     logo: LOGO_URL,
+    description: BRAND_DESCRIPTION[locale],
+    foundingLocation: { "@type": "Place", name: "Bangladesh" },
     address: {
       "@type": "PostalAddress",
       addressLocality: "Nasirabad, Chattogram",
@@ -107,6 +133,7 @@ export function organizationSchema(): OrganizationSchema {
       contactType: "customer service",
       availableLanguage: ["Bengali", "English"],
     },
+    ...(SOCIAL_PROFILES.length ? { sameAs: [...SOCIAL_PROFILES] } : {}),
   };
 }
 
@@ -121,14 +148,14 @@ export function websiteSchema(): WebSiteSchema {
     "@id": WEBSITE_ID,
     name: SITE_NAME,
     url: SITE_URL,
-    inLanguage: [HREFLANG.bn, HREFLANG.en],
+    inLanguage: ["bn-BD", "en-US"],
     publisher: { "@id": ORG_ID },
   };
 }
 
 /**
  * b) BreadcrumbList — internal pages. `path`s are unprefixed app paths; they
- * are localized here. The home crumb is prepended automatically.
+ * are localized + made absolute here. The home crumb is prepended automatically.
  */
 export function breadcrumbSchema(
   locale: SeoLocale,
@@ -149,26 +176,34 @@ export function breadcrumbSchema(
 }
 
 /**
- * c) FAQPage — FAQ/help pages. Answers must be visible on the page itself
- * (Google requirement); pass plain text, not HTML.
+ * c) FAQPage — FAQ/help pages. Each question and answer must be visible on
+ * the page (collapsed accordions are fine); pass plain text, not HTML.
+ * Empty pairs are dropped so a missing translation can't emit blank nodes.
  */
 export function faqPageSchema(
-  locale: SeoLocale,
   faqs: { question: string; answer: string }[],
+  locale?: SeoLocale,
 ): FAQPageSchema {
   return {
     "@context": CONTEXT,
     "@type": "FAQPage",
-    inLanguage: HREFLANG[locale],
-    mainEntity: faqs.map(({ question, answer }) => ({
-      "@type": "Question",
-      name: question,
-      acceptedAnswer: { "@type": "Answer", text: answer },
-    })),
+    ...(locale ? { inLanguage: HREFLANG[locale] } : {}),
+    mainEntity: faqs
+      .filter(({ question, answer }) => question.trim() && answer.trim())
+      .map(({ question, answer }) => ({
+        "@type": "Question",
+        name: question.trim(),
+        acceptedAnswer: { "@type": "Answer", text: answer.trim() },
+      })),
   };
 }
 
-/** Blog article (BlogPosting is the Article subtype Google expects for blogs). */
+/**
+ * Blog article (BlogPosting is the Article subtype Google expects for blogs).
+ * Bylines that name the brand (e.g. "Match Media Editorial") are typed as an
+ * Organization; anything else as a Person. Publisher references the
+ * Organization node by @id.
+ */
 export function articleSchema(input: {
   locale: SeoLocale;
   url: string;
@@ -186,6 +221,7 @@ export function articleSchema(input: {
   const modified = input.dateModified
     ? new Date(`${input.dateModified}T00:00:00.000Z`).toISOString()
     : published;
+  const author = input.author?.trim() || SITE_NAME;
   return {
     "@context": CONTEXT,
     "@type": "BlogPosting",
@@ -195,9 +231,9 @@ export function articleSchema(input: {
     datePublished: published,
     dateModified: modified,
     inLanguage: HREFLANG[input.locale],
-    author: input.author
-      ? { "@type": "Person", name: input.author }
-      : { "@type": "Organization", name: SITE_NAME },
+    author: author.startsWith(SITE_NAME)
+      ? { "@type": "Organization", name: author, url: SITE_URL }
+      : { "@type": "Person", name: author },
     publisher: {
       "@id": ORG_ID,
       "@type": "Organization",

@@ -12,6 +12,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getPageMetadata } from "@/lib/seo/metadata";
 import { organizationSchema, websiteSchema } from "@/lib/seo/schema";
+import { toSeoLocale } from "@/lib/seo/site";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Sparkles, Crown, ShieldCheck } from "lucide-react";
 import { HomeHero } from "@/components/home/HomeHero";
@@ -98,7 +99,9 @@ export default async function Home({
       <InteractiveMap />
       <HowItWorks />
       <FeaturedInfluencer />
-      <JsonLd data={[organizationSchema(), websiteSchema()]} />
+      <JsonLd
+        data={[organizationSchema(toSeoLocale(locale)), websiteSchema()]}
+      />
     </main>
   );
 }

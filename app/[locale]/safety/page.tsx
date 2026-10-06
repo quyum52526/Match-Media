@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Container } from "@/components/ui/Container";
 import { getPageMetadata } from "@/lib/seo/metadata";
+import { breadcrumbSchema, faqPageSchema } from "@/lib/seo/schema";
+import { toSeoLocale } from "@/lib/seo/site";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export async function generateMetadata({
   params,
@@ -40,6 +43,20 @@ export default async function SafetyPage({
           </section>
         ))}
       </div>
+      <JsonLd
+        data={[
+          faqPageSchema(
+            sections.map((section) => ({
+              question: section.heading,
+              answer: section.body,
+            })),
+            toSeoLocale(locale),
+          ),
+          breadcrumbSchema(toSeoLocale(locale), [
+            { name: t("title"), path: "/safety" },
+          ]),
+        ]}
+      />
     </Container>
   );
 }

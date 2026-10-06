@@ -99,7 +99,7 @@ export default async function AboutPage({
       </div>
       <JsonLd
         data={[
-          organizationSchema(),
+          organizationSchema(toSeoLocale(locale)),
           breadcrumbSchema(toSeoLocale(locale), [
             { name: t("title"), path: "/about" },
           ]),

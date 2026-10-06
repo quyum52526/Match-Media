@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { Container } from "@/components/ui/Container";
 import { UserGuide, type GuideLang } from "@/components/guide/UserGuide";
+import { UI_TEXT, guideFaqs } from "@/components/guide/guideContent";
+import { breadcrumbSchema, faqPageSchema } from "@/lib/seo/schema";
+import { toSeoLocale } from "@/lib/seo/site";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { getPageMetadata } from "@/lib/seo/metadata";
 
 export async function generateMetadata({
@@ -20,12 +24,21 @@ export default async function UserGuidePage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const lang: GuideLang = locale === "bn" ? "bn" : "en";
 
   return (
     <Container className="py-10">
       {/* Guide content is self-contained with its own EN/BN toggle; the
           route locale only seeds the initial language. */}
-      <UserGuide initialLang={locale === "bn" ? "bn" : ("en" as GuideLang)} />
+      <UserGuide initialLang={lang} />
+      <JsonLd
+        data={[
+          faqPageSchema(guideFaqs(lang), toSeoLocale(locale)),
+          breadcrumbSchema(toSeoLocale(locale), [
+            { name: UI_TEXT.heading[lang], path: "/user-guide" },
+          ]),
+        ]}
+      />
     </Container>
   );
 }
