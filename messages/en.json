@@ -136,7 +136,8 @@
     "cta": {
       "title": "Find your match",
       "body": "Browse verified profiles from across Bangladesh",
-      "action": "Browse matches"
+      "action": "Browse matches",
+      "quickLabel": "Popular searches"
     },
     "pro": {
       "statusPro": "Pro Member",
@@ -150,7 +151,9 @@
       "freeHint": "Upgrade for unlimited access and instant ‘Who viewed me’",
       "upgrade": "Upgrade to Pro",
       "renew": "Renew",
-      "renewNow": "Renew now"
+      "renewNow": "Renew now",
+      "expiredShort": "Expired {date}",
+      "renewPro": "Renew Pro"
     }
   },
   "Viewers": {

@@ -136,7 +136,8 @@
     "cta": {
       "title": "আপনার Match খুঁজুন",
       "body": "সারা বাংলাদেশের verified profile browse করুন",
-      "action": "Match browse করুন"
+      "action": "Match browse করুন",
+      "quickLabel": "জনপ্রিয় খোঁজ"
     },
     "pro": {
       "statusPro": "Pro Member",
@@ -150,7 +151,9 @@
       "freeHint": "Unlimited access এবং সাথে সাথে ‘কে দেখেছে’-এর জন্য upgrade করুন",
       "upgrade": "Pro নিন",
       "renew": "Renew করুন",
-      "renewNow": "এখনই renew করুন"
+      "renewNow": "এখনই renew করুন",
+      "expiredShort": "{date} শেষ হয়েছে",
+      "renewPro": "Pro renew করুন"
     }
   },
   "Viewers": {
