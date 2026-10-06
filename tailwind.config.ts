@@ -11,16 +11,16 @@ const config: Config = {
       colors: {
         // --- Brand Guidelines v1.0 (2026) — Garnet / Ivory premium identity ---
         // Mapped to the CSS variables in app/globals.css (single source of truth).
-        primary: "var(--color-primary)", // Garnet
-        "primary-dark": "var(--color-primary-dark)",
-        secondary: "var(--color-secondary)", // Midnight Ink
-        accent: "var(--color-accent)", // Champagne Gold
-        canvas: "var(--color-bg)", // Ivory background
-        surface: "var(--color-surface)", // White
-        success: "var(--color-success)",
-        ink: "var(--text-primary)", // primary text
-        muted: "var(--text-secondary)", // secondary text
-        hairline: "var(--color-hairline)", // borders / dividers
+        primary: "rgb(var(--color-primary-rgb) / <alpha-value>)", // Garnet
+        "primary-dark": "rgb(var(--color-primary-dark-rgb) / <alpha-value>)",
+        secondary: "rgb(var(--color-secondary-rgb) / <alpha-value>)", // Midnight Ink
+        accent: "rgb(var(--color-accent-rgb) / <alpha-value>)", // Champagne Gold
+        canvas: "rgb(var(--color-bg-rgb) / <alpha-value>)", // Ivory background
+        surface: "rgb(var(--color-surface-rgb) / <alpha-value>)", // White
+        success: "rgb(var(--color-success-rgb) / <alpha-value>)",
+        ink: "rgb(var(--text-primary-rgb) / <alpha-value>)", // primary text
+        muted: "rgb(var(--text-secondary-rgb) / <alpha-value>)", // secondary text
+        hairline: "rgb(var(--color-hairline-rgb) / <alpha-value>)", // borders / dividers
       },
       fontFamily: {
         // Headings: Fraunces (EN) → Noto Serif Bengali (BN fallback).

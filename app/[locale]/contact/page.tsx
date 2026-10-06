@@ -23,7 +23,7 @@ function ChannelRow({
 }) {
   return (
     <div className="flex items-start gap-4 py-4 first:pt-0 last:pb-0">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--color-primary)_10%,white)] text-primary">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
         {icon}
       </span>
       <div className="min-w-0">
@@ -84,7 +84,7 @@ export default async function ContactPage({
                     className="inline-flex items-center gap-2 hover:text-primary hover:underline"
                   >
                     <span dir="ltr">{t("phone")}</span>
-                    <span className="rounded-full bg-[color-mix(in_srgb,var(--color-success)_12%,white)] px-2 py-0.5 text-[11px] font-semibold text-success">
+                    <span className="rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success">
                       WhatsApp
                     </span>
                   </a>
@@ -102,14 +102,14 @@ export default async function ContactPage({
                   href={WHATSAPP_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-pill bg-success px-5 text-sm font-medium text-white transition-all duration-150 hover:-translate-y-0.5 hover:bg-[color-mix(in_srgb,var(--color-success)_85%,black)] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success focus-visible:ring-offset-2"
+                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-pill bg-success px-5 text-sm font-medium text-white transition-all duration-150 hover:-translate-y-0.5 hover:bg-success/90 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success focus-visible:ring-offset-2"
                 >
                   <MessageCircle className="h-4 w-4" aria-hidden="true" />
                   {t("whatsappCta")}
                 </a>
                 <a
                   href={`mailto:${EMAIL}`}
-                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-pill border border-primary px-5 text-sm font-medium text-primary transition-all duration-150 hover:bg-[color-mix(in_srgb,var(--color-primary)_6%,white)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-pill border border-primary px-5 text-sm font-medium text-primary transition-all duration-150 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 >
                   <Mail className="h-4 w-4" aria-hidden="true" />
                   {t("emailCta")}
@@ -118,7 +118,7 @@ export default async function ContactPage({
             </CardBody>
           </Card>
 
-          <div className="flex items-start gap-3 rounded-card border border-[color-mix(in_srgb,var(--color-success)_25%,white)] bg-[color-mix(in_srgb,var(--color-success)_6%,white)] p-4">
+          <div className="flex items-start gap-3 rounded-card border border-success/20 bg-success/5 p-4">
             <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-success" aria-hidden="true" />
             <p className="text-sm leading-relaxed text-muted">{t("privacyNote")}</p>
           </div>

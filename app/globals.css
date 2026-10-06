@@ -43,16 +43,26 @@
    These exact tokens are the single source of truth; the Tailwind config maps
    semantic color/radius/shadow utilities onto them. */
 :root {
-  --color-primary: #8c2f4a; /* Garnet */
-  --color-primary-dark: #5e1e31;
-  --color-secondary: #1e2436; /* Midnight Ink */
-  --color-accent: #c8a24b; /* Champagne Gold */
-  --color-bg: #fbf7f2; /* Ivory */
-  --color-surface: #ffffff;
-  --color-success: #2e7d5b;
-  --text-primary: #241f26;
-  --text-secondary: #686470;
-  --color-hairline: #ece6de;
+  --color-primary-rgb: 140 47 74; /* Garnet — #8c2f4a */
+  --color-primary: rgb(var(--color-primary-rgb));
+  --color-primary-dark-rgb: 94 30 49; /* #5e1e31 */
+  --color-primary-dark: rgb(var(--color-primary-dark-rgb));
+  --color-secondary-rgb: 30 36 54; /* Midnight Ink — #1e2436 */
+  --color-secondary: rgb(var(--color-secondary-rgb));
+  --color-accent-rgb: 200 162 75; /* Champagne Gold — #c8a24b */
+  --color-accent: rgb(var(--color-accent-rgb));
+  --color-bg-rgb: 251 247 242; /* Ivory — #fbf7f2 */
+  --color-bg: rgb(var(--color-bg-rgb));
+  --color-surface-rgb: 255 255 255; /* #ffffff */
+  --color-surface: rgb(var(--color-surface-rgb));
+  --color-success-rgb: 46 125 91; /* #2e7d5b */
+  --color-success: rgb(var(--color-success-rgb));
+  --text-primary-rgb: 36 31 38; /* #241f26 */
+  --text-primary: rgb(var(--text-primary-rgb));
+  --text-secondary-rgb: 104 100 112; /* #686470 */
+  --text-secondary: rgb(var(--text-secondary-rgb));
+  --color-hairline-rgb: 236 230 222; /* #ece6de */
+  --color-hairline: rgb(var(--color-hairline-rgb));
 
   --radius-pill: 999px;
   --radius-md: 14px;

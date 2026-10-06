@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/Button";
 const CATEGORIES: ContactCategory[] = ["general", "account", "agency", "verification"];
 
 const fieldClass =
-  "w-full rounded-xl border border-hairline bg-white px-3 text-sm text-ink outline-none transition-colors placeholder:text-muted focus:border-primary focus:ring-2 focus:ring-[color-mix(in_srgb,var(--color-primary)_30%,transparent)]";
+  "w-full rounded-xl border border-hairline bg-white px-3 text-sm text-ink outline-none transition-colors placeholder:text-muted focus:border-primary focus:ring-2 focus:ring-primary/30";
 
 export function ContactForm() {
   const t = useTranslations("Contact");
@@ -26,7 +26,7 @@ export function ContactForm() {
     return (
       <div
         role="status"
-        className="flex flex-col items-center gap-3 rounded-card bg-[color-mix(in_srgb,var(--color-success)_12%,white)] px-6 py-10 text-center"
+        className="flex flex-col items-center gap-3 rounded-card bg-success/10 px-6 py-10 text-center"
       >
         <CircleCheck className="h-10 w-10 text-success" aria-hidden="true" />
         <p className="text-sm font-medium text-ink">{t("success")}</p>
