@@ -9,6 +9,12 @@ export const SITE_URL = (
   process.env.NEXT_PUBLIC_APP_URL || "https://www.matchmediabd.xyz"
 ).replace(/\/+$/, "");
 export const SITE_NAME = "Match Media";
+
+/** Official brand social profiles — single source for the footer and Organization.sameAs. */
+export const SOCIAL_LINKS = {
+  facebook: "https://www.facebook.com/bdmatchmedia",
+  instagram: "https://www.instagram.com/matc_hmedia/",
+} as const;
 /** Brand fallback share image (1200x630, ~120KB — light enough for WhatsApp/FB previews). */
 export const DEFAULT_OG_IMAGE = "/images/og-default.jpg";
 export const OG_IMAGE_WIDTH = 1200;

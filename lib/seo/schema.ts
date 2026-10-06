@@ -6,6 +6,7 @@ import {
   HREFLANG,
   SITE_NAME,
   SITE_URL,
+  SOCIAL_LINKS,
   getAbsoluteUrl,
   getLocalizedUrl,
   type SeoLocale,
@@ -16,11 +17,11 @@ const ORG_ID = `${SITE_URL}/#organization`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
 const LOGO_URL = getAbsoluteUrl("/matchmedia-logo-home.svg");
 
-/**
- * Official brand social profiles for Organization.sameAs. Add each profile's
- * canonical URL here once it exists; while empty, `sameAs` is omitted.
- */
-export const SOCIAL_PROFILES: readonly string[] = [];
+/** Official brand social profiles for Organization.sameAs (Knowledge Graph links). */
+export const SOCIAL_PROFILES: readonly string[] = [
+  SOCIAL_LINKS.facebook,
+  SOCIAL_LINKS.instagram,
+];
 
 const BRAND_DESCRIPTION: Record<SeoLocale, string> = {
   bn: "Match Media বাংলাদেশের প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি প্ল্যাটফর্ম — ছবি ঝাপসা থাকে, যোগাযোগ হয় সম্মতির ভিত্তিতে, আর প্রোফাইল যাচাই করা হয়।",

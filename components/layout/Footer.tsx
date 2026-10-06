@@ -4,7 +4,10 @@ import {
   ShieldCheckIcon,
   LockIcon,
   UsersIcon,
+  FacebookIcon,
+  InstagramIcon,
 } from "@/components/ui/icons";
+import { SOCIAL_LINKS } from "@/lib/seo/site";
 
 /**
  * App-wide footer — solid Midnight Ink surface with a faint brand watermark,
@@ -49,6 +52,11 @@ export async function Footer() {
     { Icon: UsersIcon, label: t("signalGuardian") },
   ];
 
+  const socials = [
+    { Icon: FacebookIcon, label: "Facebook", href: SOCIAL_LINKS.facebook },
+    { Icon: InstagramIcon, label: "Instagram", href: SOCIAL_LINKS.instagram },
+  ];
+
   return (
     <footer className="relative overflow-hidden bg-secondary antialiased">
       {/* Faint brand watermark. Opacity uses the `opacity` utility (not a
@@ -72,6 +80,20 @@ export async function Footer() {
             <p className="text-[15px] font-normal leading-relaxed text-[rgba(251,247,242,0.7)]">
               {t("tagline")}
             </p>
+            <div className="flex items-center gap-3">
+              {socials.map(({ Icon, label, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-[rgba(251,247,242,0.7)] transition-colors duration-150 ease-out hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                >
+                  <Icon width={18} height={18} aria-hidden="true" />
+                </a>
+              ))}
+            </div>
           </div>
 
           {/* Link columns */}
