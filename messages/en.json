@@ -1070,25 +1070,37 @@
     "label": "Language"
   },
   "About": {
-    "title": "About Us",
-    "intro": "Welcome to Match Media — a nationwide matrimonial platform built around one core principle: matchmaking should be safe, dignified, and grounded in trust. We understand that privacy is non-negotiable when it comes to something this personal, which is why we've created a dedicated space for Bangladeshi families to pursue meaningful, long-term connections with confidence.",
+    "title": "About Match Media",
+    "intro": [
+      "Match Media is a modern, trustworthy matrimonial platform for Bangladesh, built for people looking for a life partner safely, respectfully, and with complete privacy.",
+      "On traditional matrimonial sites and through matchmaker arrangements, personal phone numbers, photos, and family addresses are often misused, and sometimes turned into a business. Match Media began in Nasirabad, Chattogram, with one goal: to put an end to that unsafe practice. We have built a platform where protecting a bride's or groom's information, and respecting the family's consent, comes before money or memberships."
+    ],
     "missionTitle": "Our Mission",
-    "missionBody": "We believe matchmaking should never be a guessing game. Our mission is simple: protect your privacy, and give you complete clarity about who you're truly connecting with. From your first expression of interest to the moment you decide to make that first call, you remain in full control of your journey — every step of the way.",
-    "valuesTitle": "What We Stand For",
+    "missionBody": [
+      "Our mission is simple: to make choosing a life partner easier and more dependable, while keeping your information as private as possible.",
+      "Marriage is one of the most sensitive decisions a family makes. Nobody should have to worry about their identity, photos, or phone number being put at risk. On Match Media, you stay in full control of your own information, always."
+    ],
+    "valuesTitle": "What Makes Match Media Different and Safer",
     "values": [
       {
-        "title": "Privacy by default",
-        "body": "Photos and personal information stay hidden until the required consent is given. Contact details are never shared without the mutual consent of both members."
+        "title": "Server-side blur by default",
+        "body": "We don't blur photos in the browser or with simple front-end code. Your photos are protected at the server level. Without your permission, no user or paid member can see your original photo."
       },
       {
-        "title": "Verified members",
-        "body": "Mobile verification and manual review keep the community genuine."
+        "title": "Zero contact reveal",
+        "body": "There is no way to buy or unlock anyone's phone number on our platform. Every number stays masked at all times, and all communication happens through the platform's own secure chat."
       },
       {
-        "title": "No pressure",
-        "body": "Browse, connect, and decide at your own pace — there's no rush and no spam."
+        "title": "Mandatory multi-step verification",
+        "body": "Every account is verified with a mobile OTP, a National ID (NID), and a live selfie check. That leaves no room for fake profiles or fraud."
+      },
+      {
+        "title": "Guardian and Media accounts",
+        "body": "Guardians can manage a candidate's profile directly. Professional matchmakers and marriage bureaus can also work on the platform as registered organizations, but only with the candidate's direct consent."
       }
-    ]
+    ],
+    "accountabilityTitle": "Local Presence and Accountability",
+    "accountabilityBody": "Match Media is run from Nasirabad, Chattogram, and we are not an anonymous data broker. We are a transparent, accountable Bangladeshi tech company, and our promise is to keep the marriage process safe for people across the country."
   },
   "Contact": {
     "title": "Contact Us",
