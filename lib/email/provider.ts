@@ -33,6 +33,8 @@ export interface SendEmailInput {
   subject: string;
   html: string;
   text: string;
+  /** Address replies should go to (e.g. the visitor on a contact form). */
+  replyTo?: string;
 }
 
 /**
@@ -58,6 +60,7 @@ export async function sendEmail(input: SendEmailInput): Promise<boolean> {
       subject: input.subject,
       html: input.html,
       text: input.text,
+      replyTo: input.replyTo,
     });
     if (error) {
       console.error("resend send failed", error);
