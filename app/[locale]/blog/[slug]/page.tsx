@@ -45,7 +45,7 @@ export async function generateMetadata({
       return translated ? [language, translated] as const : null;
     }),
   );
-  const languages = Object.fromEntries(
+  const languages: Record<string, string> = Object.fromEntries(
     translations
       .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
       .map(([language, translated]) => [
@@ -53,6 +53,7 @@ export async function generateMetadata({
         new URL(blogPath(language, translated.slug), siteUrl).toString(),
       ]),
   );
+  if (languages["bn-BD"]) languages["x-default"] = languages["bn-BD"];
   const url = new URL(blogPath(locale as BlogLocale, post.slug), siteUrl).toString();
   const headTitle = post.metaTitle ?? post.title;
 
