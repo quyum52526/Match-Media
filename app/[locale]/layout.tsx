@@ -52,17 +52,17 @@ const notoSerifBengali = Noto_Serif_Bengali({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.matchmediabd.xyz"),
   title: {
-    default: "MatchMedia | বাংলাদেশের প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি সাইট",
-    template: "%s | MatchMedia",
+    default: "Match Media | বাংলাদেশের প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি সাইট",
+    template: "%s | Match Media",
   },
   description:
     "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে। MatchMedia-তে বিয়ের পাত্র-পাত্রী খুঁজুন নিরাপদে, সম্মতির ভিত্তিতে। বাংলাদেশের সব জেলার প্রোফাইল।",
   openGraph: {
-    title: "MatchMedia | প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি",
+    title: "Match Media | প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি",
     description:
       "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে। MatchMedia-তে বিয়ের পাত্র-পাত্রী খুঁজুন নিরাপদে, সম্মতির ভিত্তিতে।",
     url: "https://www.matchmediabd.xyz",
-    siteName: "MatchMedia",
+    siteName: "Match Media",
     locale: "bn_BD",
     type: "website",
     images: [
@@ -70,13 +70,13 @@ export const metadata: Metadata = {
         url: "/opengraph-image.jpg",
         width: 2848,
         height: 1504,
-        alt: "MatchMedia - প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি",
+        alt: "Match Media - প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "MatchMedia | প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি",
+    title: "Match Media | প্রাইভেসি-ফার্স্ট ম্যাট্রিমনি",
     description:
       "ছবি ঝাপসা, নিয়ন্ত্রণ আপনার হাতে। MatchMedia-তে বিয়ের পাত্র-পাত্রী খুঁজুন নিরাপদে, সম্মতির ভিত্তিতে।",
     images: ["/opengraph-image.jpg"],

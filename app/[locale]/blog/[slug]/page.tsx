@@ -63,6 +63,7 @@ export async function generateMetadata({
     keywords: post.keywords,
     alternates: { canonical: url, languages },
     openGraph: {
+      siteName: "Match Media",
       title: headTitle,
       description: post.description,
       url,

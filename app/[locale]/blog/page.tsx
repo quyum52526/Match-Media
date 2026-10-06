@@ -33,7 +33,8 @@ export async function generateMetadata({
       },
     },
     openGraph: {
-      title: isBengali ? "ব্লগ | MatchMedia" : "Blog | MatchMedia",
+      siteName: "Match Media",
+      title: isBengali ? "ব্লগ | Match Media" : "Blog | Match Media",
       description: isBengali
         ? "MatchMedia-র পরামর্শ, নিরাপদ matchmaking এবং গোপনীয়তা নিয়ে লেখা।"
         : "Articles from MatchMedia about thoughtful matchmaking, safety, and privacy.",
@@ -43,7 +44,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: isBengali ? "ব্লগ | MatchMedia" : "Blog | MatchMedia",
+      title: isBengali ? "ব্লগ | Match Media" : "Blog | Match Media",
       description: isBengali
         ? "MatchMedia-র পরামর্শ, নিরাপদ matchmaking এবং গোপনীয়তা নিয়ে লেখা।"
         : "Articles from MatchMedia about thoughtful matchmaking, safety, and privacy.",
