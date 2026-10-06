@@ -1427,5 +1427,43 @@
       "title": "Events | Match Media",
       "description": "Upcoming Match Media events and community meetups for families and members across Bangladesh."
     }
+  },
+  "Find": {
+    "metaTitle": "Find Verified Brides & Grooms in {district} | Match Media",
+    "metaDescription": "Meet verified brides and grooms from {district} on Match Media — photos stay blurred until you approve, contact is consent-based, and profiles are NID-verified.",
+    "eyebrow": "{district}, Bangladesh",
+    "heading": "Find a trusted life partner in {district}",
+    "intro": "Browse privacy-first profiles from {district}. Photos stay blurred and contact details stay hidden until both sides agree.",
+    "verifiedBadge": "{count}+ verified profiles registered",
+    "membersBadge": "{count} members from {district}",
+    "newBadge": "New members from {district} are joining",
+    "previewTitle": "Members from {district}",
+    "previewNote": "Previews are anonymized. Names, photos and contact details are only shared with consent.",
+    "emptyPreview": "Be among the first members from {district}.",
+    "groom": "Groom",
+    "bride": "Bride",
+    "age": "{age} yrs",
+    "verified": "Verified",
+    "locked": "Join to view",
+    "ctaRegister": "Create free account",
+    "ctaLogin": "Log in",
+    "ctaTitle": "Ready to meet members from {district}?",
+    "ctaBody": "Registration is free. Your photos and contact details stay private until you decide.",
+    "featuresTitle": "Why families in {district} trust Match Media",
+    "features": {
+      "nid": {
+        "title": "NID verification",
+        "body": "Members can verify their National ID — the Verified badge is only granted after a manual check."
+      },
+      "privacy": {
+        "title": "Privacy-first photo control",
+        "body": "Every photo is blurred by default. You decide who sees the clear version."
+      },
+      "agent": {
+        "title": "Field agent verification",
+        "body": "Local verification agents confirm member details on the ground for extra assurance."
+      }
+    },
+    "breadcrumbFind": "Find matches"
   }
 }

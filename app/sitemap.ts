@@ -12,6 +12,7 @@ import {
   hreflangAlternates,
   hreflangFromUrls,
 } from "@/lib/seo/site";
+import { FEATURED_DISTRICT_SLUGS } from "@/lib/data/publicDirectory";
 
 // Public marketing routes, listed once per locale. Member-only routes
 // (/browse, /profiles/*, dashboards…) are robots-disallowed and stay out.
@@ -26,6 +27,8 @@ const staticRoutes = [
   "/user-guide",
   "/events",
   "/blog",
+  // Public district landing pages (anonymized, privacy-preserving).
+  ...FEATURED_DISTRICT_SLUGS.map((slug) => `/find/${slug}`),
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

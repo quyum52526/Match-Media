@@ -399,7 +399,7 @@ export async function hydrateProfileCards(
 }
 
 /** 0-100 share of the supplied trust signals that are satisfied. */
-function trustScoreOf(signals: boolean[]): number {
+export function trustScoreOf(signals: boolean[]): number {
   if (signals.length === 0) return 0;
   return Math.round((signals.filter(Boolean).length / signals.length) * 100);
 }

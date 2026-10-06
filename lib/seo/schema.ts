@@ -104,7 +104,27 @@ export interface ArticleSchema extends Thing<"BlogPosting"> {
   timeRequired?: string;
 }
 
+export interface CollectionPageSchema extends Thing<"CollectionPage"> {
+  "@id": string;
+  url: string;
+  name: string;
+  description: string;
+  inLanguage: string;
+  isPartOf: NodeRef;
+  publisher: NodeRef;
+  about: {
+    "@type": "Place";
+    name: string;
+    address: {
+      "@type": "PostalAddress";
+      addressRegion: string;
+      addressCountry: "BD";
+    };
+  };
+}
+
 export type JsonLdSchema =
+  | CollectionPageSchema
   | OrganizationSchema
   | WebSiteSchema
   | BreadcrumbListSchema
@@ -249,5 +269,40 @@ export function articleSchema(input: {
     ...(input.readingMinutes
       ? { timeRequired: `PT${input.readingMinutes}M` }
       : {}),
+  };
+}
+
+/**
+ * CollectionPage — public directory landing pages (e.g. /find/[district]).
+ * Describes the page and the place it is about; it deliberately lists no
+ * member profiles, which are private.
+ */
+export function collectionPageSchema(input: {
+  locale: SeoLocale;
+  path: string;
+  name: string;
+  description: string;
+  placeName: string;
+}): CollectionPageSchema {
+  const url = getLocalizedUrl(input.locale, input.path);
+  return {
+    "@context": CONTEXT,
+    "@type": "CollectionPage",
+    "@id": `${url}#collection`,
+    url,
+    name: input.name,
+    description: input.description,
+    inLanguage: HREFLANG[input.locale],
+    isPartOf: { "@id": WEBSITE_ID },
+    publisher: { "@id": ORG_ID },
+    about: {
+      "@type": "Place",
+      name: input.placeName,
+      address: {
+        "@type": "PostalAddress",
+        addressRegion: input.placeName,
+        addressCountry: "BD",
+      },
+    },
   };
 }
