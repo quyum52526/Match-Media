@@ -19,6 +19,8 @@ interface ProfilePhotoGalleryProps {
   name: string;
   adminView: boolean;
   onRequest?: () => void;
+  /** Withdraw the viewer's own pending request. */
+  onCancel?: () => void;
   pending?: boolean;
   requestDisabled?: boolean;
 }
@@ -38,6 +40,7 @@ export function ProfilePhotoGallery({
   name,
   adminView,
   onRequest,
+  onCancel,
   pending,
   requestDisabled,
 }: ProfilePhotoGalleryProps) {
@@ -59,6 +62,7 @@ export function ProfilePhotoGallery({
         state={accessState}
         name={name}
         onRequest={onRequest}
+        onCancel={onCancel}
         pending={pending}
         requestDisabled={requestDisabled}
         adminView={adminView}
@@ -86,6 +90,7 @@ export function ProfilePhotoGallery({
           src={current.url}
           name={name}
           onRequest={onRequest}
+          onCancel={onCancel}
           pending={pending}
           requestDisabled={requestDisabled}
           adminView={adminView}

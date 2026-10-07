@@ -105,6 +105,25 @@ export async function requestPhotoAccess(
   };
 }
 
+/**
+ * Viewer withdraws their own still-PENDING photo request. The row is deleted
+ * (not marked REVOKED, which means "the owner took access back") so the owner's
+ * inbox clears and the viewer returns to a fresh state. A later re-request is
+ * a brand-new request and counts against the daily cap again.
+ */
+export async function cancelPhotoRequest(ownerId: string): Promise<void> {
+  const viewerId = await getViewerId();
+  if (!viewerId || !ownerId) return;
+
+  await prisma.photoAccessRequest.deleteMany({
+    where: { viewerId, ownerId, status: "PENDING" },
+  });
+
+  revalidatePath(BROWSE, "page");
+  revalidatePath(REQUESTS, "page");
+  revalidatePath(PROFILE, "page");
+}
+
 /** Owner approves or denies a photo-access request they received. */
 export async function respondToPhotoRequest(
   requestId: string,
@@ -173,6 +192,22 @@ export async function sendInterest(
     });
   }
 
+  revalidatePath(PROFILE, "page");
+}
+
+/**
+ * Viewer withdraws an interest they sent that is still unanswered (SENT). Once
+ * the receiver has accepted or declined, the decision stands.
+ */
+export async function cancelInterest(receiverId: string): Promise<void> {
+  const senderId = await getViewerId();
+  if (!senderId || !receiverId) return;
+
+  await prisma.interest.deleteMany({
+    where: { senderId, receiverId, status: "SENT" },
+  });
+
+  revalidatePath(INTERESTS, "page");
   revalidatePath(PROFILE, "page");
 }
 

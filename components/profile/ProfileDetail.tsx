@@ -7,6 +7,8 @@ import { useTranslations, useLocale } from "next-intl";
 import {
   requestPhotoAccess as requestPhotoAccessAction,
   sendInterest as sendInterestAction,
+  cancelPhotoRequest as cancelPhotoRequestAction,
+  cancelInterest as cancelInterestAction,
 } from "@/lib/actions/funnel";
 import { startConversation } from "@/lib/actions/messages";
 import { QuotaNote } from "@/components/billing/PhotoQuota";
@@ -172,6 +174,18 @@ export function ProfileDetail({
     });
   }
 
+  function cancelPhotoRequest() {
+    startTransition(async () => {
+      await cancelPhotoRequestAction(data.id);
+    });
+  }
+
+  function withdrawInterest() {
+    startTransition(async () => {
+      await cancelInterestAction(data.id);
+    });
+  }
+
   function openExpressInterest() {
     if (guestGate()) return; // guest -> AuthGateModal shown, modal never opens
     setInterestModalOpen(true);
@@ -212,6 +226,7 @@ export function ProfileDetail({
             accessState={viewer.photoAccess}
             name={data.displayName}
             onRequest={requestPhotoAccess}
+            onCancel={cancelPhotoRequest}
             pending={isPending}
             requestDisabled={photoLimitReached}
             adminView={viewer.isAdmin}
@@ -223,6 +238,7 @@ export function ProfileDetail({
           <InterestAction
             state={viewer.interest}
             onExpress={openExpressInterest}
+            onWithdraw={withdrawInterest}
             pending={isPending}
           />
 
@@ -452,10 +468,12 @@ function Fact({
 function InterestAction({
   state,
   onExpress,
+  onWithdraw,
   pending,
 }: {
   state: ViewerState["interest"];
   onExpress: () => void;
+  onWithdraw: () => void;
   pending?: boolean;
 }) {
   const t = useTranslations("Profile.interest");
@@ -470,9 +488,20 @@ function InterestAction({
   }
   if (state === "SENT") {
     return (
-      <Button variant="outline" fullWidth disabled>
-        {t("sent")}
-      </Button>
+      <div className="space-y-1.5">
+        <p className="flex items-center justify-center gap-1.5 text-sm text-muted">
+          <CheckIcon width={16} height={16} />
+          {t("sent")}
+        </p>
+        <Button
+          variant="outline"
+          fullWidth
+          onClick={onWithdraw}
+          disabled={pending}
+        >
+          {t("withdraw")}
+        </Button>
+      </div>
     );
   }
   if (state === "DECLINED") {

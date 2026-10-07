@@ -293,7 +293,8 @@
       "modalBody": "একটি ছোট introductory note যোগ করুন, অথবা note ছাড়াই পাঠান।",
       "notePlaceholder": "নিজের সম্পর্কে সংক্ষেপে কিছু সুন্দর কথা লিখুন…",
       "cancel": "Cancel",
-      "send": "Interest পাঠান"
+      "send": "Interest পাঠান",
+      "withdraw": "Interest প্রত্যাহার করুন"
     },
     "photo": {
       "blurredNotice": "Privacy রক্ষায় Photo ঝাপসা রাখা হয়েছে",
@@ -303,6 +304,7 @@
       "denied": "Request গ্রহণ করা হয়নি",
       "revoked": "Photo দেখার অনুমতি প্রত্যাহার করা হয়েছে",
       "requestAgain": "আবার Request পাঠান",
+      "cancelRequest": "Request বাতিল করুন",
       "granted": "Photo access পেয়েছেন",
       "adminView": "Admin view · আসল ছবি",
       "moderationPending": "Moderation-এর অপেক্ষায়",

@@ -18,6 +18,8 @@ interface BlurredImageProps {
   /** Display name, used to build the alt text. */
   name: string;
   onRequest?: () => void;
+  /** Withdraw the viewer's own pending request (shown while PENDING). */
+  onCancel?: () => void;
   pending?: boolean;
   /** Blocked by the free-tier daily request cap. */
   requestDisabled?: boolean;
@@ -45,6 +47,7 @@ export function BlurredImage({
   src,
   name,
   onRequest,
+  onCancel,
   pending,
   requestDisabled,
   adminView = false,
@@ -84,10 +87,21 @@ export function BlurredImage({
           {state === "PENDING" ? (
             <>
               <p className="text-sm font-medium text-white">{t("pending")}</p>
-              <Button size="sm" variant="secondary" disabled>
-                <ClockIcon width={16} height={16} />
-                {t("waiting")}
-              </Button>
+              {onCancel ? (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={onCancel}
+                  disabled={pending}
+                >
+                  {t("cancelRequest")}
+                </Button>
+              ) : (
+                <Button size="sm" variant="secondary" disabled>
+                  <ClockIcon width={16} height={16} />
+                  {t("waiting")}
+                </Button>
+              )}
             </>
           ) : state === "DENIED" || state === "REVOKED" ? (
             <>
