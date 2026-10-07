@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations, useLocale } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { respondToPhotoRequest } from "@/lib/actions/funnel";
 import { localize } from "@/lib/constants/labels";
 import { Button } from "@/components/ui/Button";
@@ -174,7 +175,12 @@ function RequestRow({
     <li>
       <GlowCard enableTilt={false} className="p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
+          {/* Person details open their profile; the action buttons live outside
+              this link so Approve/Deny clicks never navigate. */}
+          <Link
+            href={`/profiles/${person.id}`}
+            className="group flex min-w-0 items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          >
             {/* Blurred mini thumbnail (privacy-first) */}
             <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-ink/5">
               <div
@@ -188,7 +194,7 @@ function RequestRow({
 
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="truncate text-sm font-semibold text-ink">
+                <span className="truncate text-sm font-semibold text-ink transition-colors group-hover:text-primary group-hover:underline">
                   {person.displayName}
                 </span>
                 {person.nameHidden && (
@@ -217,7 +223,7 @@ function RequestRow({
                 {t("meta.requestedOn", { date: formatDate(requestedAt) })}
               </p>
             </div>
-          </div>
+          </Link>
 
           <div className="shrink-0 sm:pl-4">{children}</div>
         </div>
