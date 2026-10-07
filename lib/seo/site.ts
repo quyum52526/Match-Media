@@ -14,6 +14,7 @@ export const SITE_NAME = "Match Media";
 export const SOCIAL_LINKS = {
   facebook: "https://www.facebook.com/bdmatchmedia",
   instagram: "https://www.instagram.com/matc_hmedia/",
+  youtube: "https://www.youtube.com/@matchmediabd",
 } as const;
 /** Brand fallback share image (1200x630, ~120KB — light enough for WhatsApp/FB previews). */
 export const DEFAULT_OG_IMAGE = "/images/og-default.jpg";

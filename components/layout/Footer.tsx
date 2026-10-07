@@ -6,6 +6,7 @@ import {
   UsersIcon,
   FacebookIcon,
   InstagramIcon,
+  YoutubeIcon,
 } from "@/components/ui/icons";
 import { SOCIAL_LINKS } from "@/lib/seo/site";
 
@@ -55,6 +56,7 @@ export async function Footer() {
   const socials = [
     { Icon: FacebookIcon, label: "Facebook", href: SOCIAL_LINKS.facebook },
     { Icon: InstagramIcon, label: "Instagram", href: SOCIAL_LINKS.instagram },
+    { Icon: YoutubeIcon, label: "YouTube", href: SOCIAL_LINKS.youtube },
   ];
 
   return (

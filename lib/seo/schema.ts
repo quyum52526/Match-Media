@@ -21,6 +21,7 @@ const LOGO_URL = getAbsoluteUrl("/matchmedia-logo-home.svg");
 export const SOCIAL_PROFILES: readonly string[] = [
   SOCIAL_LINKS.facebook,
   SOCIAL_LINKS.instagram,
+  SOCIAL_LINKS.youtube,
 ];
 
 const BRAND_DESCRIPTION: Record<SeoLocale, string> = {
